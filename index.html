@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="./js/codemirror/lib/codemirror.js"></script>
+    <script src="./js/codemirror/lua.js"></script>
+    <script src="./js/codemirror/simplescrollbars.js"></script>
+    <script src="./js/detectMobile.js"></script>
+    <script src="./js/resizeEditor.js"></script>
+    <script src="./js/handleCode.js"></script>
+    <script src="./js/panel.js"></script>
+    <link href="./js/codemirror/dracula.css" rel="stylesheet"/>
+    <link href="./js/codemirror/lib/codemirror.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    
+    <title>XeduR's Solar2D Playground</title>
+</head>
+
+<body>
+    <div class="container">
+        <main class="content">
+            <div id="wrapper">
+                <nav>
+                    <ul class="menu">
+                        <li class="logo"><a href="#"><img class="logo-image" src="img/logo.png" alt="Solar2D Playground"></a></li>
+                        <div id="break"></div>
+                        <li class="item"><button id="code" class="button-header" onclick="togglePanel('code')">Code</button></li>
+                        <li class="item"><button id="info" class="button-header" onclick="togglePanel('info')">Info</button></li>
+                        <li class="item last"><a href="https://solar2d.com/" target="_blank">Get Solar2D</a></li>
+                    </ul>
+                </nav>
+                
+        		<noscript><h4>JavaScript disabled. You must enable JavaScript to use the Playground.</h4></noscript>
+                <div class="mobile"><p class="hidden" id="mobile-disclaimer"></p></div>
+                
+                <div id="panel-code" class="panel">
+                    <span onclick="closePanel('code')" class="close-button">x</span>
+                    
+                    <div>
+                        <div id="line"></div>
+                        <h2>Select Sample Project:</h2>
+                        <div id="sample-buttons"></div>
+                        <div id="line"></div>
+                    </div>
+                </div>
+                
+                <div id="panel-info" class="panel">
+                    <span onclick="closePanel('info')" class="close-button">x</span>
+                    
+                    <div>
+                        <div id="line"></div>
+                        <h2>Information:</h2>
+                        <p>Solar2D Playground is developed by <a href="https://www.erantanen.com">Eetu Rantanen</a>. Solar2D Playground is my personal project. The logo is courtesy of the Solar2D project. Some of the sample projects and images are also courtesy of other Solar2D developers.</p>
+                        <p>You can find more of my personal projects over at <a href="https://www.xedur.com">www.xedur.com</a>. I create all sorts of cool projects and plugins on my spare time, so if you are enjoying Solar2D Playground, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
+                        <button class="kofi"><span><a href="https://ko-fi.com/xedur"><img src="./img/support-me.svg" max-width="306" width="100%"></a></span></button>
+                        <div id="line"></div>
+                        <p>Solar2D development is sponsored by its users. Support the project on <a href="https://github.com/sponsors/shchvova">GitHub Sponsors</a> or <a href="https://www.patreon.com/shchvova">Patreon</a>.</p>
+                        <div id="line"></div>
+                        <p><span style="text-decoration:line-through">Source available under the MIT License</span> (TomorrowTM)</p>
+                        <div id="line"></div>
+                        <h2>Limitations:</h2>
+                        <p>Solar2D Playground does not support network requests, uploading or using your personal images or requiring external plugins. To unlock all these features, all you need to do is <a href="https://solar2d.com/" target="_blank">Get Solar2D</a>, a free and open source game engine.</p>
+                        <div id="line"></div>
+                    </div>
+                </div>
+                
+                <div class="column-left">
+                    <textarea id="editor"></textarea>
+                </div>
+                
+                <div class="column-right">
+                    <div class="iframe-container">
+                        <iframe id="app-frame" src="app/index.html"></iframe>
+                    </div>
+                </div>
+            
+                <script>
+                    var appModule = document.getElementById("app-frame").contentWindow.Module;
+                    var getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                    var sampleProject;
+                        
+                    if (window.mobileCheck()) {
+                        document.getElementById("mobile-disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly or at all on your device.";
+                        document.getElementById("mobile-disclaimer").style.padding = "20px";
+                        document.getElementById("mobile-disclaimer").style.margin = "0px";
+                    }
+                    
+                    var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+                        mode: "lua",
+                        theme: "dracula",
+                        lineNumbers: true,
+                        scrollbarStyle: "simple"
+                    });
+
+                    $.ajax({
+                        url: "./demos/demos.json",
+                        type: "HEAD",
+                        error: function() {
+                            document.getElementById("mobile-disclaimer").innerHTML = "There was a problem with loading the sample projects. Try again later.";
+                            document.getElementById("mobile-disclaimer").style.padding = "20px";
+                            document.getElementById("mobile-disclaimer").style.margin = "0px";
+                            document.getElementById("sample-buttons").innerHTML = "<p>Sample projects are missing.</p>";
+                        },
+                        success: function() {
+                            $.getJSON( "./demos/demos.json", function(json) {
+                                sampleProject = json;
+                                
+                                var buttons = "";
+                                for (var i = 0; i < sampleProject.length; i++) {
+                                    buttons += '<button id="project-'+i+'" class="button-code" onclick="loadCode('+i+')">'+sampleProject[i].title+'</button>'
+                                }
+                                document.getElementById("sample-buttons").innerHTML = buttons;
+                                // Open the code panel and crate project by default.
+                                document.getElementById("code").click();
+                                document.getElementById("project-1").click();
+                            });
+                        }
+                    });
+                    // Match the code editor's height with the app's height.
+                    function resizeEditor(){
+                        editor.setSize(null,getHeight());
+                    }
+                    editor.setSize(null,getHeight());
+                    window.addEventListener("resize", resizeEditor);
+                </script>
+            </div>    
+        </main>
+            
+        <footer><p><a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu Rantanen</a></p></footer>
+    </div>
+</body>
+</html>

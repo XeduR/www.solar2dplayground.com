@@ -1,0 +1,307 @@
+#wrapper {
+    max-width: 1920px;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+body { 
+    background: #0E0E0E;
+    font-family: 'Roboto', sans-serif;
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    height: 50px;
+    flex-shrink: 0;
+    color: #FCBA04;
+    background: #080808;
+    text-align: center;
+    padding: 4px 0px;
+    margin: 0px;
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+}
+
+h2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    color: #FCBA04;
+    text-decoration: underline;
+    font-weight: normal;
+    padding: 0px;
+}
+
+h4 {
+	color: #ffffff;
+	background: #be0019;
+	font-size: 22px;
+	padding: 20px 20px;
+	margin: 0;
+	text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.hidden {
+    margin: 0;
+    padding: 0;
+}
+
+.mobile {
+    display: block;
+    color: #FCBA04;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: #fcba04;
+}
+
+a:hover {
+    font-weight: bold;
+}
+
+.column-left {
+    float: left;
+    width: 50%;
+}
+
+.column-right {
+    float: left;
+    width: 50%;
+    max-width: 960px;
+}
+
+.iframe-container {
+    padding-top: 66.66%;
+    position: relative;
+}
+
+.iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    max-height: 640px;
+    max-width: 960px;
+    left: 0;
+    top: 0;
+    border: 0;
+    position: absolute;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+nav {
+    width: 100%;
+    background: #080808;
+    color: #FCBA04;
+    margin: 0px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0 10px;
+}
+
+.menu li {
+    font-size: 16px;
+    padding: 0 16px;
+    white-space: nowrap;
+}
+
+/* Mobile menu */
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item {
+    width: 100%;
+    text-align: center;
+    order: 1;
+    display: none;
+}
+
+.last {
+    margin-right: 20px;
+}
+
+.active {
+    text-decoration: underline;
+}
+
+#break {
+    display: none;
+}
+
+@media all and (max-width: 720px) {
+    #break {
+        display: flex;
+        flex-basis: 100%;
+        height: 0;
+    }
+}
+
+.button-header {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    border: none;
+    outline: 0;
+    color: inherit;
+    background-color: inherit;
+    cursor: pointer;
+}
+
+.button-code {
+    background-color: #282a36;
+    border: 1px solid #080808;
+    border-radius: 4px;
+    color: white;
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 8px;
+    margin-left: 0px;
+    cursor: pointer;
+}
+
+.button-header:hover {
+    font-weight: bold;
+}
+
+#line {
+    height: 1px;
+    width: 100%;
+    background: #282a36;
+    margin: 4px 0;
+}
+
+.panel {
+    position: relative;
+    display: none;
+    padding: 10px 20px;
+    background: #141518;
+}
+
+.close-button {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    background-color: #282a36;
+    border: 1px solid #080808;
+    border-radius: 4px;
+    color: white;
+    position: absolute;
+    cursor: pointer;
+    right: 10px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+}
+
+.close-button:hover {
+    background: #080808;
+    color: #FCBA04;
+}
+
+.menu {
+    justify-content: center;
+    padding-left: 0;
+}
+
+.item {
+    display: block;
+    width: auto;
+}
+
+.logo {
+    flex: 1;
+    order: 0;
+}
+
+.logo-image {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: 0px;
+    width: 100%;
+    max-width: 371px;
+}
+
+button.kofi {
+	position: relative;
+	border-radius: 50px;
+	display: flex;
+	cursor: pointer;
+	height: 60px;
+	width: 100%;
+	max-width: 360px;
+	margin: 16px 0;
+	background: #29abe0;
+}
+
+button.kofi:hover {
+	animation: rotate 0.7s ease-in-out both;
+}
+
+button.kofi:hover span {
+	animation: shake 0.7s ease-in-out both;
+	animation-delay: 0.06s;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0deg) translate3d(0, 0, 0);
+	}
+	25% {
+		transform: rotate(4deg) translate3d(0, 0, 0);
+	}
+	50% {
+		transform: rotate(-4deg) translate3d(0, 0, 0);
+	}
+	75% {
+		transform: rotate(2deg) translate3d(0, 0, 0);
+	}
+	100% {
+		transform: rotate(0deg) translate3d(0, 0, 0);
+	}
+}
+
+@keyframes shake {
+	0% {
+		transform: translate3d(0, 0, 0) translateZ(0);
+	}
+	25% {
+		transform: translate3d(5px, 0, 0) translateZ(0);
+	}
+	50% {
+		transform: translate3d(-4px, 0, 0) translateZ(0);
+	}
+	75% {
+		transform: translate3d(3px, 0, 0) translateZ(0);
+	}
+	100% {
+		transform: translate3d(0, 0, 0) translateZ(0);
+	}
+}
