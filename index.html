@@ -70,7 +70,8 @@
                 
                 <div class="column-right">
                     <div class="iframe-container">
-                        <iframe id="app-frame" src="app/index.html"></iframe>
+                        <iframe id="app-frame" src='about:blank'></iframe>
+                        <!-- <iframe id="app-frame" src="app/index.html"></iframe> -->
                     </div>
                 </div>
             
@@ -88,6 +89,16 @@
                     function resizeEditor(){
                         editor.setSize(null,getHeight());
                     }
+                    
+                    $(function(){
+                        $('app-frame').on('load', function() {
+                            appModule = document.getElementById("app-frame").contentWindow.Module;
+                            getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                            editor.setSize(null,getHeight());
+                            window.addEventListener("resize", resizeEditor);
+                        });
+                        $('app-frame').attr('src','app/index.html');
+                    });
                     // Wait until the Iframe has loaded for the app to create Module.
                     function iframeLoaded() {
                         appModule = document.getElementById("app-frame").contentWindow.Module;
