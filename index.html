@@ -76,14 +76,25 @@
                 </div>
             
                 <script>
-                    var appModule = document.getElementById("app-frame").contentWindow.Module;
-                    var getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                     var sampleProject;
+                    var appModule;
+                    var getHeight;
                         
                     if (window.mobileCheck()) {
                         document.getElementById("mobile-disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly or at all on your device.";
                         document.getElementById("mobile-disclaimer").style.padding = "20px";
                         document.getElementById("mobile-disclaimer").style.margin = "0px";
+                    }
+                    // Match the code editor's height with the app's height.
+                    function resizeEditor(){
+                        editor.setSize(null,getHeight());
+                    }
+                    // Wait until the Iframe has loaded for the app to create Module.
+                    function iframeLoaded() {
+                        appModule = document.getElementById("app-frame").contentWindow.Module;
+                        getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                        editor.setSize(null,getHeight());
+                        window.addEventListener("resize", resizeEditor);
                     }
                     
                     var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -117,12 +128,6 @@
                             });
                         }
                     });
-                    // Match the code editor's height with the app's height.
-                    function resizeEditor(){
-                        editor.setSize(null,getHeight());
-                    }
-                    editor.setSize(null,getHeight());
-                    window.addEventListener("resize", resizeEditor);
                 </script>
             </div>    
         </main>
