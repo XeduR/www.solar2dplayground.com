@@ -89,8 +89,11 @@
                         editor.setSize(null,getHeight());
                     }
                     // Wait until the Iframe has loaded for the app to create Module.
-                    function iframeLoaded() {
+                    function iframeLoaded( mod ) {
                         appModule = document.getElementById("app-frame").contentWindow.Module;
+                        console.log( appModule );
+                        appModule = mod;
+                        console.log( appModule );
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
                         window.addEventListener("resize", resizeEditor);
