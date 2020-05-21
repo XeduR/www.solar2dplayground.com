@@ -1,48 +1,38 @@
 -- Change the background to grey
 display.setDefault( "background", 0.1 )
 
-local x, y = display.contentCenterX, display.contentCenterY -- source of the letters
+local x, y = display.contentCenterX, display.contentCenterY -- source of flame
 local rnd = math.random
 
--- Help text
-display.newText( {text = "Start typing...", x = x, y = y/4, fontSize = 32 } )
+-- Run every frame
+local function enterFrame()
+  local flame = display.newCircle(x,y, math.random(32,64))
+  flame:setFillColor(rnd() + 0.5, rnd() + 0.2, 0)
+  flame.blendMode = "add"
+  flame.alpha = 0.5
 
--- Require and start the physics engine
-local physics = require("physics")
-physics.start()
-physics.setGravity( 0, 64 ) -- set gravity
-
-local ground = display.newRect(x,display.contentHeight, display.contentWidth * 2, 16)
-ground.alpha = 0.25
-physics.addBody(ground, "static")
-
--- Text options
-local options = { x = x, y = y, fontSize = 128, font = native.systemFontBold }
-
--- Called when a key event has been received.
-local function key( event )
-  if event.phase == "up" then
-    -- create the key you pressed
-    options.text = event.keyName:len() == 1 and event.keyName or "?" -- one letter keys only
-    local letter = display.newText( options )
-    -- render the text to a display object
-    local object = display.capture(letter)
-    -- add a premade shader
-    object.fill.effect = "filter.colorChannelOffset"
-    object.fill.effect.xTexels = 4
-    object.fill.effect.yTexels = 4
-    object:translate(x,y) -- move from 0,0
-    -- remove the letter
-    display.remove(letter)
-    -- let's give it a quick physics body
-    physics.addBody(object, { radius = 32, bounce = 0.5, friction = 0 } )
-    object.linearDamping = 1
-    object.angularDamping= 1
-    -- gie it a push
-    object:applyLinearImpulse(rnd()-rnd(),-rnd()-rnd(),rnd(),rnd())
-    object.angularVelocity = object.angularVelocity * 0.025 -- cap spin speed
+  -- kill the particle when done
+  local function die()
+    display.remove(flame)
   end
+
+  -- start a transition
+  transition.to(flame, {
+      delta = true, -- move from current location
+      time = 1000, -- in 1.0 seconds
+      x = rnd(-16,16), -- wiggle
+      y = rnd(-384, -256), -- go up
+      xScale = -0.9, -- shrink
+      yScale = -0.9,
+      onComplete = die, -- and die
+      })
 end
 
--- Add the key event
-Runtime:addEventListener( "key", key )
+-- Called when a mouse event has been received.
+local function mouse( event )
+  x, y = event.x or x, event.y or y -- take a new x,y or keep the old x,y
+end
+
+-- Add the mouse and enterFrame events
+Runtime:addEventListener( "mouse", mouse )
+Runtime:addEventListener( "enterFrame", enterFrame )

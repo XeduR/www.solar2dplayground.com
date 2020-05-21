@@ -40,6 +40,14 @@ else
     local _persistingAsset = {}
     _printToDisplay._keep = _persistingAsset
     
+    local function myUnhandledErrorListener( event )
+        _controlsEnabled = true
+        print( event.errorMessage )
+        return iHandledTheError
+    end
+
+    Runtime:addEventListener("unhandledError", myUnhandledErrorListener)
+    
     -- Insert "physics state" to physics library calls.
     local physics = require("physics")
     local _pState = "stop"
