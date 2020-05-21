@@ -1,7 +1,7 @@
 function closePanel(target) {
     document.getElementById(target).className = "button-header";
     document.getElementById("panel-"+target).style.display = "none";
-    resizeEditor();
+    if (hasLoaded) { resizeEditor() };
 }
 
 function togglePanel(target){
@@ -14,5 +14,5 @@ function togglePanel(target){
         document.getElementById(target).className += " active";
         document.getElementById("panel-"+target).style.display = "block";
     }
-    resizeEditor();
+    if (hasLoaded) { resizeEditor() };
 }
