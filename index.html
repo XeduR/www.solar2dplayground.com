@@ -89,16 +89,6 @@
                     function resizeEditor(){
                         editor.setSize(null,getHeight());
                     }
-                    // Wait until the Iframe has loaded for the app to create Module.
-                    function iframeLoaded( mod ) {
-                        appModule = document.getElementById("app-frame").contentWindow.Module;
-                        console.log( appModule );
-                        appModule = mod;
-                        console.log( appModule );
-                        getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
-                        editor.setSize(null,getHeight());
-                        window.addEventListener("resize", resizeEditor);
-                    }
                     
                     var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
                         mode: "lua",
@@ -131,6 +121,22 @@
                             });
                         }
                     });
+                    // It's unclear as to when the app has finished loading and all require Module functions
+                    // are available, so check if it has been loaded every half a second until it is true.
+                    function hasLoaded() {
+                        hasLoaded = true;
+                        appModule = document.getElementById("app-frame").contentWindow.Module;
+                        getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                        editor.setSize(null,getHeight());
+                        window.addEventListener("resize", resizeEditor);
+                    }
+                    function checkLoaded() {
+                        if (document.getElementById("app-frame").contentWindow.Module.cwrap) {
+                            clearInterval(loader);
+                            hasLoaded();
+                        }
+                    }
+                    var loader = setInterval(checkLoaded, 500);
                 </script>
             </div>    
         </main>
