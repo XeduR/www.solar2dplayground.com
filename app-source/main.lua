@@ -10,8 +10,7 @@ if system.getInfo( "platform" ) ~= "html5" then
         align = "center",
     })
 else
-    -- Using "newTimer" temporarily until PR is committed to Solar2D core.
-    timer = nil
+    timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
     timer = require( "newTimer" )
     local _lfs = require( "lfs" )
     local _inputCode = require( "inputCode" )
