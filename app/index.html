@@ -93,7 +93,6 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         },
         canvas: (function() {
           var canvas = document.getElementById('canvas');
-          console.log( Module );
           
           // As a default initial behavior, pop up an alert when webgl context is lost. To make your
           // application robust, you may want to override this behavior before shipping!
@@ -134,6 +133,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             this.totalDependencies-left, this.totalDependencies);
         }
       };
+      console.log( Module );
       Module.setStatus('Downloading...', 0, 0);
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
