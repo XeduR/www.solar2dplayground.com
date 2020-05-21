@@ -6,7 +6,9 @@
 -- inside the wrong function will result in an infinite loop.
 --==============================================================================
 
--- NB! This is version of printToDisplay is slightly modified for the Playground.
+-- NB!  This version of printToDisplay is modified for use with Solar2D Playground
+--      it should not be used for other projects. If you wish to use printToDisplay
+--      in your projects, then simply download the standard plugin (TODO: add link).
 local M = {}
 
 -- Localised functions.
@@ -83,7 +85,7 @@ local function controls( event )
             M.autoscroll = not M.autoscroll
             if M.autoscroll then output.y = -maxY end
         else -- Clear all text.
-            M.ui.bg:removeEventListener( "touch", scroll )
+            maxY = 0
             canScroll = false
             M.autoscroll = true
             output.y = 0
@@ -137,7 +139,6 @@ local function printToDisplay( ... )
     end
 
     if not canScroll and output.row[#output.row].y + output.row[#output.row].height >= scrollThreshold then
-        M.ui.bg:addEventListener( "touch", scroll )
         canScroll = true
     end
 
@@ -212,53 +213,35 @@ function M.start()
         local HW = buttonSize*0.4 -- (Approximate) half width.
         local buttonOffsetX = (1-anchorX)*width
         local buttonOffsetY = anchorY*height
-
-        M.controls.scroll = display.newRect( M.controls, x+buttonOffsetX+buttonSize*0.5, y-buttonOffsetY+buttonSize*0.5, buttonSize, buttonSize )
-        M.controls.scroll:setFillColor( _unpack( buttonBaseColor ) )
+        
+        M.controls.scroll = display.newImageRect( M.controls, "ui/buttonRunPause.png", buttonSize, buttonSize )
+        M.controls.scroll.x, M.controls.scroll.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize*0.5
         M.controls.scroll:addEventListener( "touch", controls )
         M.controls.scroll.id = "autoscroll"
         M._keep[_tostring(M.controls.scroll)] = true
-
-        local play = {
-            -HW+SEG,-HW+SEG*0.5,
-            HW,0,
-            -HW+SEG,HW-SEG*0.5
-        }
-
-        M.controls.scrollSymbol = display.newPolygon( M.controls, M.controls.scroll.x, M.controls.scroll.y, play )
-        M.controls.scrollSymbol:setFillColor( _unpack( buttonImageColor ) )
-        M._keep[_tostring(M.controls.scrollSymbol)] = true
         
-        M.controls.clear = display.newRect( M.controls, x+buttonOffsetX+buttonSize*0.5, y-buttonOffsetY+buttonSize*1.5 + 10, buttonSize, buttonSize )
-        M.controls.clear:setFillColor( _unpack( buttonBaseColor ) )
+        M.controls.clear = display.newImageRect( M.controls, "ui/buttonClear.png", buttonSize, buttonSize )
+        M.controls.clear.x, M.controls.clear.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize+ 5455
         M.controls.clear:addEventListener( "touch", controls )
         M.controls.clear.id = "clear"
         M._keep[_tostring(M.controls.clear)] = true
-
-        local cross = {
-            -HW,-HW+SEG,
-            -HW+SEG,-HW,
-            0,-SEG,
-            HW-SEG,-HW,
-            HW,-HW+SEG,
-            SEG,0,
-            HW,HW-SEG,
-            HW-SEG,HW,
-            0,SEG,
-            -HW+SEG,HW,
-            -HW,HW-SEG,
-            -SEG,0
-        }
-
-        M.controls.clearSymbol = display.newPolygon( M.controls, M.controls.clear.x, M.controls.clear.y, cross )
-        M.controls.clearSymbol:setFillColor( _unpack( buttonImageColor ) )
-        M._keep[_tostring(M.controls.clearSymbol)] = true
 
         -- Finally, "hijack" the global print function and add the printToDisplay functionality.
         function print( ... )
             printToDisplay( ... )
             _print( ... )
         end
+        
+        print( "print() will output text here.\n " )
+        
+        maxY = 0
+        local stage = display.getCurrentStage()
+        for i = stage.numChildren, 1, -1 do
+            if M._keep[_tostring(stage[i])] then
+                stage[i]:toFront()
+            end
+        end
+        M.ui.bg:addEventListener( "touch", scroll )
     end
 end
 
@@ -267,6 +250,7 @@ function M.stop()
     if started then
         started = false
         canScroll = false
+        M.ui.bg:removeEventListener( "touch", scroll )
         -- Remove the display objects and groups 
         -- from the list of persisting assets.
         for i = 1, #output.row do
@@ -277,9 +261,7 @@ function M.stop()
         M._keep[_tostring(M.ui.bg)] = nil
         M._keep[_tostring(M.controls)] = nil
         M._keep[_tostring(M.controls.scroll)] = nil
-        M._keep[_tostring(M.controls.scrollSymbol)] = nil
         M._keep[_tostring(M.controls.clear)] = nil
-        M._keep[_tostring(M.controls.clearSymbol)] = nil
         
         display.remove( output )
         output = nil

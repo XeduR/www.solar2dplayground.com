@@ -10,6 +10,10 @@ if system.getInfo( "platform" ) ~= "html5" then
         align = "center",
     })
 else
+    -- Using "newTimer" temporarily until PR is committed to Solar2D core.
+    timer = nil
+    timer = require( "newTimer" )
+    local _lfs = require( "lfs" )
     local _inputCode = require( "inputCode" )
     local _printToDisplay = require( "printToDisplay" )
     _printToDisplay.setStyle({
@@ -22,18 +26,15 @@ else
         paddingRow = 10,
     })
     
-    -- TODO: add updated timer framework and overwrite the default until the default timer is updated to the new one.
-    -- TODO: add the UI elements to a group that is in front of everything.
-    -- TODO: see about introducing pcall for loadstring events.
-    -- TODO: add custom runtimer error handler.
-    -- TODO: add the image selection window.
-    
-    local _btn = {}
+    local _instructions
+    local _imageListGroup = display.newGroup()
+    local _btn, _imageList = {}, {}
     local _tostring = tostring
+    local _min = math.min
     local _btnX = display.screenOriginX+4
+    local _controlsEnabled = true
     local _consoleOpen = false
     local _imagesOpen = false
-    local _started = true
     
     -- Persisting assets aren't cleared when the code is run.
     local _persistingAsset = {}
@@ -94,7 +95,7 @@ else
             physics.stop()
         end
         transition.cancel()
-        -- timer.cancelAll() -- TODO: uncomment after my timer framework update has been added to Solar2D core.
+        timer.cancelAll()
         -- Start by removing Runtime listeners.
         for i = #_runtimeListeners, 1, -1 do
             Runtime:removeEventListener( _runtimeListeners[i][1], _runtimeListeners[i][2] )
@@ -130,8 +131,34 @@ else
         end
     end
     
+    local function _removeInstructions()
+        if _instructions then
+            _instructions:removeSelf()
+            _instructions = nil
+        end
+    end
+    
+    local function _showImages( event )
+        if event.phase == "began" then
+            _removeInstructions()
+            if _consoleOpen then
+                for i = 1, 3 do
+                    _btn[i].x = _btnX
+                end
+                _printToDisplay.stop()
+                _consoleOpen = false
+            end
+            _imageListGroup.isVisible = not _imageListGroup.isVisible
+            _imageListGroup:toFront()
+            _imagesOpen = not _imagesOpen
+        end
+        return true
+    end
+    
     local function _toggleConsole( event )
-        if _started and event.phase == "began" then
+        if event.phase == "began" then
+            _removeInstructions()
+            if _imagesOpen then _showImages( {phase="began"}) end
             if _consoleOpen then
                 for i = 1, 3 do
                     _btn[i].x = _btnX
@@ -142,27 +169,18 @@ else
                 for i = 1, 3 do
                     _btn[i].x = _btn[i].x + 300
                 end
-                _printToDisplay.controls.scroll.y = _btn[3].y + 70
-                _printToDisplay.controls.scrollSymbol.y = _printToDisplay.controls.scroll.y
-                _printToDisplay.controls.clear.y = _printToDisplay.controls.scroll.y + _printToDisplay.controls.scroll.height + 10
-                _printToDisplay.controls.clearSymbol.y = _printToDisplay.controls.clear.y
+                _printToDisplay.controls.scroll.y = _btn[3].y + 72
+                _printToDisplay.controls.clear.y = _printToDisplay.controls.scroll.y + _printToDisplay.controls.scroll.height+3
             end
             _consoleOpen = not _consoleOpen
         end
         return true
     end
     
-    local function _showImages( event )
-        if _started and event.phase == "began" then
-            print( "This doesn't work yet." )
-            _imagesOpen = not _imagesOpen
-        end
-        return true
-    end
-    
     local function _runCode( event )
-        if event.phase == "began" then
-            _started = true
+        if _controlsEnabled and event.phase == "began" then
+            _controlsEnabled = false
+            _removeInstructions()
             -- Reset default display values.
             display.setDefault( "anchorX", 0.5 )
             display.setDefault( "anchorY", 0.5 )
@@ -178,24 +196,83 @@ else
             display.setDefault( "textureWrapX", "clampToEdge" )
             display.setDefault( "textureWrapY", "clampToEdge" )
             
-            -- if _imagesOpen then _showImages( {phase="began"}) end
+            if _imagesOpen then _showImages( {phase="began"}) end
             _clearEverything()            
             local code = _inputCode.getCode()
-            -- No code will be returned if the app is run directly and not via an Iframe.
-            if code then
+            if code then -- No code will be returned if the app is run directly and not via an Iframe.
                 assert(loadstring( code ))()
-                for i = 1, 3 do
-                    _btn[i]:toFront() 
-                end           
+                -- Return the UI to the front
+                local stage = display.getCurrentStage()
+                for i = stage.numChildren, 1, -1 do
+                    if _persistingAsset[_tostring(stage[i])] then
+                        stage[i]:toFront()
+                    end
+                end
             end
+            -- Add a small delay to prevent possible issues from spamming _runCode()
+            timer.performWithDelay( 50, function() _controlsEnabled = true end )
         end
         return true
     end
     
+    local function _scrollImages( event )
+        if event.phase == "began" then
+            
+        elseif event.phase == "moved" then
+            
+        end
+        return true
+    end
+    
+    -- Traverse image folders (apart from the ui) and list them as usable images
+    local _container = display.newContainer( 780, 600 )
+    _persistingAsset[_tostring(_imageListGroup)] = true
+    _persistingAsset[_tostring(_container)] = true
+    _imageList[1] = display.newImageRect( _imageListGroup, "ui/window.png", 800, 600 )
+    _imageList[1]:addEventListener( "touch", _scrollImages )
+    _imageList[1].x, _imageList[1].y = 480, 320
+    _imageList[2] = display.newImageRect( _imageListGroup, "ui/buttonsGreen.png", 48, 48 )
+    _imageList[2]:addEventListener( "touch", _showImages )
+    _imageList[2].x, _imageList[2].y = _imageList[1].x+_imageList[1].width*0.5-32, _imageList[1].y-_imageList[1].height*0.5+32
+    _imageList[3] = display.newText( _imageListGroup, "Scroll to view all useable images (not yet scrollable)", 480, 52, nil, 28 )
+    
+    -- TODO: add container and scroll through events using this
+    for i = 1, 3 do
+        _persistingAsset[_tostring(_imageList[i])] = true
+    end
+    
+    local _column, _row = 0, 1
+    local _imageFolder = system.pathForFile( "img/", system.ResourceDirectory )
+    for file in lfs.dir( _imageFolder ) do
+        if file ~= "." and file ~= ".." then
+            local filename = "img/" .. file
+            local x, y = 240+_column*240, _row*200
+            _imageList[#_imageList+1] = display.newImage( _imageListGroup, filename, x, y )
+            if _imageList[#_imageList].width > 180 or _imageList[#_imageList].height > 120 then
+                local xScale = 160 / _imageList[#_imageList].width
+                local yScale = 120 / _imageList[#_imageList].height
+                local scale = _min( xScale, yScale )
+                _imageList[#_imageList].xScale, _imageList[#_imageList].yScale = scale, scale
+            end
+            _imageList[#_imageList].anchorY = 1
+            _imageList[#_imageList].name = display.newText( _imageListGroup, "\"" .. filename .. "\"", x, y+12, nil, 16 )
+            _imageList[#_imageList].name.anchorY = 0
+            _imageList[#_imageList].size = display.newText( _imageListGroup, "width: ".. _imageList[#_imageList].width .. ", height: " .. _imageList[#_imageList].height, x, y+40, nil, 16 )
+            _imageList[#_imageList].size.anchorY = 0
+            _persistingAsset[_tostring(_imageList[#_imageList])] = true
+            _column = _column+1
+            if _column == 3 then
+                _row = _row+1
+                _column = 0
+            end
+        end
+    end
+    _imageListGroup.isVisible = false
+    
     local _btnData = {
-        {"images/buttonRun.png", _runCode },
-        {"images/buttonConsole.png", _toggleConsole },
-        {"images/buttonImages.png", _showImages }
+        {"ui/buttonRun.png", _runCode },
+        {"ui/buttonImages.png", _showImages },
+        {"ui/buttonConsole.png", _toggleConsole }
     }
     for i = 1, 3 do
         _btn[i] = display.newImageRect( _btnData[i][1], 48, 48 )
@@ -205,7 +282,7 @@ else
         _persistingAsset[_tostring(_btn[i])] = true
     end
     
-    local _instructions = display.newImageRect( "images/instructions.png", 428, 128 )
+    _instructions = display.newImageRect( "ui/instructions.png", 428, 128 )
     _instructions.anchorX, _instructions.anchorY = 0, 0
     _instructions.x = _btn[1].x + _btn[1].width + 4
     _instructions.y = _btn[1].y + 12
