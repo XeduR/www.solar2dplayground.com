@@ -133,7 +133,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             this.totalDependencies-left, this.totalDependencies);
         }
       };
-      console.log( Module );
+      if (parent) { parent.iframeLoaded() };
       Module.setStatus('Downloading...', 0, 0);
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
