@@ -39,19 +39,18 @@
 .cm-s-dracula .CodeMirror-activeline-background { background: rgba(255,255,255,0.1); }
 .cm-s-dracula .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
 
+/* Add simple scroll plugin styling */
 .CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div {
     position: absolute;
     background: #141518;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-
 .CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
     position: absolute;
     z-index: 6;
     background: #fff;
 }
-
 .CodeMirror-simplescroll-horizontal {
     bottom: 0; left: 0;
     height: 16px;
@@ -60,7 +59,6 @@
     bottom: 0;
     height: 100%;
 }
-
 .CodeMirror-simplescroll-vertical {
     right: 0; top: 0;
     width: 16px;

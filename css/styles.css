@@ -252,6 +252,7 @@ ul {
 button.kofi {
 	position: relative;
 	border-radius: 50px;
+    border: none;
 	display: flex;
 	cursor: pointer;
 	height: 60px;

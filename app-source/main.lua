@@ -1,22 +1,22 @@
 display.setStatusBar( display.HiddenStatusBar )
--- if system.getInfo( "platform" ) ~= "html5" then
---     local disclaimer = display.newText({
---         text = "In order to run this project, you need to create an HTML5 build and deploy it via Iframe.",
---         width = 800,
---         x = display.contentCenterX,
---         y = 400,
---         font = native.systemFontBold,
---         fontSize = 36,
---         align = "center",
---     })
---     local logo = display.newImageRect( "ui/logo.png", 640, 110 )
---     logo.x, logo.y = 480, 220
--- else
+if system.getInfo( "platform" ) ~= "html5" then
+    local disclaimer = display.newText({
+        text = "In order to run this project, you need to create an HTML5 build and deploy it via Iframe.",
+        width = 800,
+        x = display.contentCenterX,
+        y = 400,
+        font = native.systemFontBold,
+        fontSize = 36,
+        align = "center",
+    })
+    local logo = display.newImageRect( "ui/logo.png", 640, 110 )
+    logo.x, logo.y = 480, 220
+else
     timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
     timer = require( "newTimer" )
     local lfs = require( "lfs" )
-    -- local inputCode = require( "inputCode" )
-    -- local newDisplay = require( "newDisplay" )
+    local inputCode = require( "inputCode" )
+    local newDisplay = require( "newDisplay" )
     local printToDisplay = require( "printToDisplay" )
     printToDisplay.setStyle({
         y = 0,
@@ -38,15 +38,16 @@ display.setStatusBar( display.HiddenStatusBar )
     local imagesOpen = false
     local font = "fonts/OpenSansRegular.ttf"
     
-    -- globalGroup contains all 
-    local globalGroup = display.newGroup()
+    -- groupGlobal contains all user generated display objects/groups
+    local groupGlobal = display.newGroup()
     local groupButtons = display.newGroup()
     local groupWindow = display.newGroup()
     local groupList = display.newGroup()
     local container = display.newContainer( 780, 500 )
     container:insert(groupList)
     container:translate( 480, 350 )
-    -- newDisplay:initGroup( globalGroup )
+    newDisplay._group = groupGlobal
+    newDisplay:init()
     
     -- Persisting assets aren't cleared when the code is run.
     local persistingAsset = {}
@@ -131,6 +132,10 @@ display.setStatusBar( display.HiddenStatusBar )
     end
     
     local scrollRate = 30
+    -- Scroll direction seems to be reversed with browsers or for HTML5 builds.
+    if system.getInfo( "environment" ) ~= "simulator" then
+        scrollRate = -scrollRate
+    end
     local function mouseScroll( event )
         if event.type == "scroll" then
             if imagesOpen then
@@ -377,4 +382,4 @@ display.setStatusBar( display.HiddenStatusBar )
     
     logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
     logo.x, logo.y = 480, 320
--- end
+end
