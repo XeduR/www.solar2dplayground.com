@@ -27,8 +27,8 @@ local _group
 function M.initGroup( group )
     _group = group
     
-    function display.newGroup(...)
-        local t = _newGroup(...)
+    function display.newGroup()
+        local t = _newGroup()
         if t then _group:insert(t) end
         return t
     end

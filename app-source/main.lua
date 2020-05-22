@@ -1,20 +1,22 @@
 display.setStatusBar( display.HiddenStatusBar )
-if system.getInfo( "platform" ) ~= "html5" then
-    local disclaimer = display.newText({
-        text = "In order to run this project, you need to create an HTML5 build and deploy it.",
-        width = 800,
-        x = display.contentCenterX,
-        y = display.contentCenterY,
-        font = native.systemFontBold,
-        fontSize = 36,
-        align = "center",
-    })
-else
+-- if system.getInfo( "platform" ) ~= "html5" then
+--     local disclaimer = display.newText({
+--         text = "In order to run this project, you need to create an HTML5 build and deploy it via Iframe.",
+--         width = 800,
+--         x = display.contentCenterX,
+--         y = 400,
+--         font = native.systemFontBold,
+--         fontSize = 36,
+--         align = "center",
+--     })
+--     local logo = display.newImageRect( "ui/logo.png", 640, 110 )
+--     logo.x, logo.y = 480, 220
+-- else
     timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
     timer = require( "newTimer" )
     local lfs = require( "lfs" )
     -- local inputCode = require( "inputCode" )
-    local newDisplay = require( "newDisplay" )
+    -- local newDisplay = require( "newDisplay" )
     local printToDisplay = require( "printToDisplay" )
     printToDisplay.setStyle({
         y = 0,
@@ -27,7 +29,7 @@ else
         paddingRow = 10,
     })
     
-    local instructions
+    local instructions, logo
     local btn, imageList = {}, {}
     local _tostring = tostring
     local _min = math.min
@@ -231,6 +233,8 @@ else
         if instructions then
             instructions:removeSelf()
             instructions = nil
+            logo:removeSelf()
+            logo = nil
         end
     end
     
@@ -370,4 +374,7 @@ else
     instructions.anchorX, instructions.anchorY = 0, 0
     instructions.x = btn[1].x + btn[1].width + 4
     instructions.y = btn[1].y + 12
-end
+    
+    logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
+    logo.x, logo.y = 480, 320
+-- end
