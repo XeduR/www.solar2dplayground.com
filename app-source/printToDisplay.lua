@@ -123,7 +123,6 @@ local function printToDisplay( ... )
         font = font,
         fontSize = fontSize
     } )
-    M._keep[_tostring(output.row[#output.row])] = true
     output.row[#output.row].anchorX, output.row[#output.row].anchorY = 0, 0
 
     if useHighlighting then
@@ -190,23 +189,23 @@ function M.start()
         started = true
         -- Create container where the background and text are added.
         M.ui = display.newContainer( width, height )
-        M._keep[_tostring(M.ui)] = true
+        M._persist[_tostring(M.ui)] = true
         if parent then parent:insert( M.ui ) end
         M.ui.anchorX, M.ui.anchorY = anchorX, anchorY
         M.ui.x, M.ui.y = x, y
         M.ui.alpha = alpha
         -- Create the background.
         M.ui.bg = display.newRect( M.ui, 0, 0, width, height )
-        M._keep[_tostring(M.ui.bg)] = true
+        M._persist[_tostring(M.ui.bg)] = true
         M.ui.bg:setFillColor( _unpack( bgColor ) )
         -- All rows of text are added to output group.
         output = display.newGroup()
-        M._keep[_tostring(output)] = true
+        M._persist[_tostring(output)] = true
         M.ui:insert( output, true )
         output.row = {}
         -- Create external control buttons
         M.controls = display.newGroup()
-        M._keep[_tostring(M.controls)] = true
+        M._persist[_tostring(M.controls)] = true
         if parent then parent:insert( M.controls ) end
 
         local SEG = buttonSize*0.2 -- Segment.
@@ -218,13 +217,13 @@ function M.start()
         M.controls.scroll.x, M.controls.scroll.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize*0.5
         M.controls.scroll:addEventListener( "touch", controls )
         M.controls.scroll.id = "autoscroll"
-        M._keep[_tostring(M.controls.scroll)] = true
+        M._persist[_tostring(M.controls.scroll)] = true
         
         M.controls.clear = display.newImageRect( M.controls, "ui/buttonClear.png", buttonSize, buttonSize )
         M.controls.clear.x, M.controls.clear.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize+ 5455
         M.controls.clear:addEventListener( "touch", controls )
         M.controls.clear.id = "clear"
-        M._keep[_tostring(M.controls.clear)] = true
+        M._persist[_tostring(M.controls.clear)] = true
 
         -- Finally, "hijack" the global print function and add the printToDisplay functionality.
         function print( ... )
@@ -237,7 +236,7 @@ function M.start()
         maxY = 0
         local stage = display.getCurrentStage()
         for i = stage.numChildren, 1, -1 do
-            if M._keep[_tostring(stage[i])] then
+            if M._persist[_tostring(stage[i])] then
                 stage[i]:toFront()
             end
         end
@@ -253,15 +252,10 @@ function M.stop()
         M.ui.bg:removeEventListener( "touch", scroll )
         -- Remove the display objects and groups 
         -- from the list of persisting assets.
-        for i = 1, #output.row do
-            M._keep[_tostring(output.row[i])] = nil
-        end
-        M._keep[_tostring(output)] = nil
-        M._keep[_tostring(M.ui)] = nil
-        M._keep[_tostring(M.ui.bg)] = nil
-        M._keep[_tostring(M.controls)] = nil
-        M._keep[_tostring(M.controls.scroll)] = nil
-        M._keep[_tostring(M.controls.clear)] = nil
+        M._persist[_tostring(output)] = nil
+        M._persist[_tostring(M.ui)] = nil
+        M._persist[_tostring(M.ui.bg)] = nil
+        M._persist[_tostring(M.controls)] = nil
         
         display.remove( output )
         output = nil
