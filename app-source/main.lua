@@ -1,21 +1,21 @@
 display.setStatusBar( display.HiddenStatusBar )
-if system.getInfo( "platform" ) ~= "html5" then
-    local disclaimer = display.newText({
-        text = "In order to run this project, you need to create an HTML5 build and deploy it.",
-        width = 800,
-        x = display.contentCenterX,
-        y = display.contentCenterY,
-        font = native.systemFontBold,
-        fontSize = 36,
-        align = "center",
-    })
-else
+-- if system.getInfo( "platform" ) ~= "html5" then
+--     local disclaimer = display.newText({
+--         text = "In order to run this project, you need to create an HTML5 build and deploy it.",
+--         width = 800,
+--         x = display.contentCenterX,
+--         y = display.contentCenterY,
+--         font = native.systemFontBold,
+--         fontSize = 36,
+--         align = "center",
+--     })
+-- else
     timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
     timer = require( "newTimer" )
-    local _lfs = require( "lfs" )
-    local _inputCode = require( "inputCode" )
-    local _printToDisplay = require( "printToDisplay" )
-    _printToDisplay.setStyle({
+    local lfs = require( "lfs" )
+    -- local _inputCode = require( "inputCode" )
+    local printToDisplay = require( "printToDisplay" )
+    printToDisplay.setStyle({
         y = 0,
         bgColor = {0,0,0,0.8},
         width = 300,
@@ -25,22 +25,22 @@ else
         paddingRow = 10,
     })
     
-    local _instructions
-    local _imageListGroup = display.newGroup()
-    local _btn, _imageList = {}, {}
+    local instructions
+    local imageListGroup = display.newGroup()
+    local btn, imageList = {}, {}
     local _tostring = tostring
     local _min = math.min
-    local _btnX = display.screenOriginX+4
-    local _controlsEnabled = true
-    local _consoleOpen = false
-    local _imagesOpen = false
+    local btnX = display.screenOriginX+4
+    local controlsEnabled = true
+    local consoleOpen = false
+    local imagesOpen = false
     
     -- Persisting assets aren't cleared when the code is run.
-    local _persistingAsset = {}
-    _printToDisplay._keep = _persistingAsset
+    local persistingAsset = {}
+    printToDisplay._keep = persistingAsset
     
     local function myUnhandledErrorListener( event )
-        _controlsEnabled = true
+        controlsEnabled = true
         print( event.errorMessage )
         return iHandledTheError
     end
@@ -65,7 +65,7 @@ else
         _pState = "stop"
         _pStop()
     end
-
+    
     -- To prevent Runtime listeners from hanging around, we insert any newly created
     -- Runtime listeners to a table so that we can automatically remove them later.
     local _addEventListener = Runtime.addEventListener
@@ -74,7 +74,10 @@ else
 
     function Runtime.addEventListener( ... )
         local t = {...}
-        _runtimeListeners[#_runtimeListeners+1] = { t[2], t[3] }
+        -- Check that the new Runtime element isn't a table, i.e. a timer or a transition. 
+        if type( t[3] ) ~= "table" then
+            _runtimeListeners[#_runtimeListeners+1] = { t[2], t[3] }
+        end
         _addEventListener( ... )
     end
 
@@ -97,11 +100,11 @@ else
     end
 
     -- Clear all display objects, stop all timers, transitions and runtime event listeners, i.e. perform a complete reset.
-    local function _clearEverything()
+    local function clearEverything()
         if _pState ~= "stop" then
             physics.stop()
         end
-        transition.cancel()
+        transition.pause()
         timer.cancelAll()
         -- Start by removing Runtime listeners.
         for i = #_runtimeListeners, 1, -1 do
@@ -131,63 +134,63 @@ else
         -- And remove any remaining display objects/groups.
         local stage = display.getCurrentStage()
         for i = stage.numChildren, 1, -1 do
-            if not _persistingAsset[_tostring(stage[i])] then
+            if not persistingAsset[_tostring(stage[i])] then
                 stage[i]:removeSelf()
                 stage[i] = nil
             end
         end
     end
     
-    local function _removeInstructions()
-        if _instructions then
-            _instructions:removeSelf()
-            _instructions = nil
+    local function removeInstructions()
+        if instructions then
+            instructions:removeSelf()
+            instructions = nil
         end
     end
     
-    local function _showImages( event )
+    local function showImages( event )
         if event.phase == "began" then
-            _removeInstructions()
-            if _consoleOpen then
+            removeInstructions()
+            if consoleOpen then
                 for i = 1, 3 do
-                    _btn[i].x = _btnX
+                    btn[i].x = btnX
                 end
-                _printToDisplay.stop()
-                _consoleOpen = false
+                printToDisplay.stop()
+                consoleOpen = false
             end
-            _imageListGroup.isVisible = not _imageListGroup.isVisible
-            _imageListGroup:toFront()
-            _imagesOpen = not _imagesOpen
+            imageListGroup.isVisible = not imageListGroup.isVisible
+            imageListGroup:toFront()
+            imagesOpen = not imagesOpen
         end
         return true
     end
     
     local function _toggleConsole( event )
         if event.phase == "began" then
-            _removeInstructions()
-            if _imagesOpen then _showImages( {phase="began"}) end
-            if _consoleOpen then
+            removeInstructions()
+            if imagesOpen then showImages( {phase="began"}) end
+            if consoleOpen then
                 for i = 1, 3 do
-                    _btn[i].x = _btnX
+                    btn[i].x = btnX
                 end
-                _printToDisplay.stop()
+                printToDisplay.stop()
             else
-                _printToDisplay.start()
+                printToDisplay.start()
                 for i = 1, 3 do
-                    _btn[i].x = _btn[i].x + 300
+                    btn[i].x = btn[i].x + 300
                 end
-                _printToDisplay.controls.scroll.y = _btn[3].y + 72
-                _printToDisplay.controls.clear.y = _printToDisplay.controls.scroll.y + _printToDisplay.controls.scroll.height+3
+                printToDisplay.controls.scroll.y = btn[3].y + 72
+                printToDisplay.controls.clear.y = printToDisplay.controls.scroll.y + printToDisplay.controls.scroll.height+3
             end
-            _consoleOpen = not _consoleOpen
+            consoleOpen = not consoleOpen
         end
         return true
     end
     
     local function _runCode( event )
-        if _controlsEnabled and event.phase == "began" then
-            _controlsEnabled = false
-            _removeInstructions()
+        if controlsEnabled and event.phase == "began" then
+            controlsEnabled = false
+            removeInstructions()
             -- Reset default display values.
             display.setDefault( "anchorX", 0.5 )
             display.setDefault( "anchorY", 0.5 )
@@ -203,21 +206,23 @@ else
             display.setDefault( "textureWrapX", "clampToEdge" )
             display.setDefault( "textureWrapY", "clampToEdge" )
             
-            if _imagesOpen then _showImages( {phase="began"}) end
-            _clearEverything()            
-            local code = _inputCode.getCode()
+            if imagesOpen then showImages( {phase="began"}) end
+            clearEverything()
+            -- local code = _inputCode.getCode()
+            
+            local code = "--sample code by Michael Wilson\n-- Change the background to grey\ndisplay.setDefault( \"background\", 0.1 )\n\nlocal x, y = display.contentCenterX, display.contentCenterY -- source of flame\nlocal rnd = math.random\n\n-- Run every frame\nlocal function enterFrame()\n  local flame = display.newCircle(x,y, math.random(32,64))\n  flame:setFillColor(rnd() + 0.5, rnd() + 0.2, 0)\n  flame.blendMode = \"add\"\n  flame.alpha = 0.5\n\n  -- kill the particle when done\n  local function die()\n    display.remove(flame)\n  end\n\n  -- start a transition\n  transition.to(flame, {\n      delta = true, -- move from current location\n      time = 1000, -- in 1.0 seconds\n      x = rnd(-16,16), -- wiggle\n      y = rnd(-384, -256), -- go up\n      xScale = -0.9, -- shrink\n      yScale = -0.9,\n      onComplete = die, -- and die\n      })\nend\n\n-- Called when a mouse event has been received.\nlocal function mouse( event )\n  x, y = event.x or x, event.y or y -- take a new x,y or keep the old x,y\nend\n\n-- Add the mouse and enterFrame events\nRuntime:addEventListener( \"mouse\", mouse )\nRuntime:addEventListener( \"enterFrame\", enterFrame )"
             if code then -- No code will be returned if the app is run directly and not via an Iframe.
                 assert(loadstring( code ))()
                 -- Return the UI to the front
                 local stage = display.getCurrentStage()
                 for i = stage.numChildren, 1, -1 do
-                    if _persistingAsset[_tostring(stage[i])] then
+                    if persistingAsset[_tostring(stage[i])] then
                         stage[i]:toFront()
                     end
                 end
             end
             -- Add a small delay to prevent possible issues from spamming _runCode()
-            timer.performWithDelay( 50, function() _controlsEnabled = true end )
+            timer.performWithDelay( 50, function() controlsEnabled = true end )
         end
         return true
     end
@@ -232,65 +237,65 @@ else
     end
     
     -- Traverse image folders (apart from the ui) and list them as usable images
-    local _container = display.newContainer( 780, 600 )
-    _persistingAsset[_tostring(_imageListGroup)] = true
-    _persistingAsset[_tostring(_container)] = true
-    _imageList[1] = display.newImageRect( _imageListGroup, "ui/window.png", 800, 600 )
-    _imageList[1]:addEventListener( "touch", _scrollImages )
-    _imageList[1].x, _imageList[1].y = 480, 320
-    _imageList[2] = display.newImageRect( _imageListGroup, "ui/buttonsGreen.png", 48, 48 )
-    _imageList[2]:addEventListener( "touch", _showImages )
-    _imageList[2].x, _imageList[2].y = _imageList[1].x+_imageList[1].width*0.5-32, _imageList[1].y-_imageList[1].height*0.5+32
-    _imageList[3] = display.newText( _imageListGroup, "Scroll to view all useable images (not yet scrollable)", 480, 52, nil, 28 )
+    local container = display.newContainer( 780, 600 )
+    persistingAsset[_tostring(imageListGroup)] = true
+    persistingAsset[_tostring(container)] = true
+    imageList[1] = display.newImageRect( imageListGroup, "ui/window.png", 800, 600 )
+    imageList[1]:addEventListener( "touch", _scrollImages )
+    imageList[1].x, imageList[1].y = 480, 320
+    imageList[2] = display.newImageRect( imageListGroup, "ui/buttonsGreen.png", 48, 48 )
+    imageList[2]:addEventListener( "touch", showImages )
+    imageList[2].x, imageList[2].y = imageList[1].x+imageList[1].width*0.5-32, imageList[1].y-imageList[1].height*0.5+32
+    imageList[3] = display.newText( imageListGroup, "Scroll to view all useable images (not yet scrollable)", 480, 52, nil, 28 )
     
     -- TODO: add container and scroll through events using this
     for i = 1, 3 do
-        _persistingAsset[_tostring(_imageList[i])] = true
+        persistingAsset[_tostring(imageList[i])] = true
     end
     
-    local _column, _row = 0, 1
-    local _imageFolder = system.pathForFile( "img/", system.ResourceDirectory )
-    for file in lfs.dir( _imageFolder ) do
+    local imageColumn, imageRow = 0, 1
+    local imageFolder = system.pathForFile( "img/", system.ResourceDirectory )
+    for file in lfs.dir( imageFolder ) do
         if file ~= "." and file ~= ".." then
             local filename = "img/" .. file
-            local x, y = 240+_column*240, _row*200
-            _imageList[#_imageList+1] = display.newImage( _imageListGroup, filename, x, y )
-            if _imageList[#_imageList].width > 180 or _imageList[#_imageList].height > 120 then
-                local xScale = 160 / _imageList[#_imageList].width
-                local yScale = 120 / _imageList[#_imageList].height
+            local x, y = 240+imageColumn*240, imageRow*200
+            imageList[#imageList+1] = display.newImage( imageListGroup, filename, x, y )
+            if imageList[#imageList].width > 180 or imageList[#imageList].height > 120 then
+                local xScale = 160 / imageList[#imageList].width
+                local yScale = 120 / imageList[#imageList].height
                 local scale = _min( xScale, yScale )
-                _imageList[#_imageList].xScale, _imageList[#_imageList].yScale = scale, scale
+                imageList[#imageList].xScale, imageList[#imageList].yScale = scale, scale
             end
-            _imageList[#_imageList].anchorY = 1
-            _imageList[#_imageList].name = display.newText( _imageListGroup, "\"" .. filename .. "\"", x, y+12, nil, 16 )
-            _imageList[#_imageList].name.anchorY = 0
-            _imageList[#_imageList].size = display.newText( _imageListGroup, "width: ".. _imageList[#_imageList].width .. ", height: " .. _imageList[#_imageList].height, x, y+40, nil, 16 )
-            _imageList[#_imageList].size.anchorY = 0
-            _persistingAsset[_tostring(_imageList[#_imageList])] = true
-            _column = _column+1
-            if _column == 3 then
-                _row = _row+1
-                _column = 0
+            imageList[#imageList].anchorY = 1
+            imageList[#imageList].name = display.newText( imageListGroup, "\"" .. filename .. "\"", x, y+12, nil, 16 )
+            imageList[#imageList].name.anchorY = 0
+            imageList[#imageList].size = display.newText( imageListGroup, "width: ".. imageList[#imageList].width .. ", height: " .. imageList[#imageList].height, x, y+40, nil, 16 )
+            imageList[#imageList].size.anchorY = 0
+            persistingAsset[_tostring(imageList[#imageList])] = true
+            imageColumn = imageColumn+1
+            if imageColumn == 3 then
+                imageRow = imageRow+1
+                imageColumn = 0
             end
         end
     end
-    _imageListGroup.isVisible = false
+    imageListGroup.isVisible = false
     
-    local _btnData = {
+    local btnData = {
         {"ui/buttonRun.png", _runCode },
-        {"ui/buttonImages.png", _showImages },
+        {"ui/buttonImages.png", showImages },
         {"ui/buttonConsole.png", _toggleConsole }
     }
     for i = 1, 3 do
-        _btn[i] = display.newImageRect( _btnData[i][1], 48, 48 )
-        _btn[i].anchorX, _btn[i].anchorY = 0, 0
-        _btn[i].x, _btn[i].y = _btnX, (i == 1 and display.screenOriginY+4 or _btn[i-1].y+_btn[i].height+4)
-        _btn[i]:addEventListener( "touch", _btnData[i][2] )
-        _persistingAsset[_tostring(_btn[i])] = true
+        btn[i] = display.newImageRect( btnData[i][1], 48, 48 )
+        btn[i].anchorX, btn[i].anchorY = 0, 0
+        btn[i].x, btn[i].y = btnX, (i == 1 and display.screenOriginY+4 or btn[i-1].y+btn[i].height+4)
+        btn[i]:addEventListener( "touch", btnData[i][2] )
+        persistingAsset[_tostring(btn[i])] = true
     end
     
-    _instructions = display.newImageRect( "ui/instructions.png", 428, 128 )
-    _instructions.anchorX, _instructions.anchorY = 0, 0
-    _instructions.x = _btn[1].x + _btn[1].width + 4
-    _instructions.y = _btn[1].y + 12
-end
+    instructions = display.newImageRect( "ui/instructions.png", 428, 128 )
+    instructions.anchorX, instructions.anchorY = 0, 0
+    instructions.x = btn[1].x + btn[1].width + 4
+    instructions.y = btn[1].y + 12
+-- end
