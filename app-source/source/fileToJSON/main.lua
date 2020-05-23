@@ -20,6 +20,7 @@ else
     local contents = contents:gsub( "\n", "\\n" )
     local contents = contents:gsub( "\v", "\\v" )
     local contents = contents:gsub( "\r", "\\r" )
+    local contents = contents:gsub( "    ", "\\t" )
     -- local contents = contents:gsub( "\'", "\\'" )
     local contents = contents:gsub( "\"", "\\\"" )
     contents = "\"" .. contents .. "\""

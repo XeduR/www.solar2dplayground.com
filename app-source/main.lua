@@ -21,6 +21,7 @@ local consoleOpen = false
 local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
 
+-- TODO: add newDisplay functions for capture and other non-native elements too.
 -- TODO: add custom fonts, audio effects/bg music
 -- TODO: add fontloader plugin and preload all fonts.
 

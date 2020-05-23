@@ -16,6 +16,9 @@ local _newSprite = display.newSprite
 local _newImage = display.newImage
 local _newImageRect = display.newImageRect
 local _newMesh = display.newMesh
+local _capture = display.capture
+local _captureBounds = display.captureBounds
+local _captureScreen = display.captureScreen
 
 local function _notGroup(t)
     return not (_type(t) == "table" and t[1]._proxy)
@@ -148,10 +151,36 @@ function M.init()
         end
         return object
     end
-    
-    function display.loadRemoteImage()
-        print( "display.loadRemoteImage() has been disabled." )
+
+    function display.capture(...)
+        local t = {...}
+        if #t > 1 then
+            local typeParam = _type(t[2])
+            if typeParam == "boolean" then
+                t[2] = false
+            elseif typeParam == "table" then
+                t[2].saveToPhotoLibrary = false
+            end 
+        end
+        local object = _capture(...)
+        M._group:insert(object)
+        return object
     end
+    
+    function display.captureBounds(...)
+        local t = {...}
+        t[2] = false
+        local object = _captureBounds(...)
+        M._group:insert(object)
+        return object
+    end
+    
+    function display.captureScreen()
+        local object = _captureScreen(false)
+        M._group:insert(object)
+        return object
+    end
+    
 end
 
 return M
