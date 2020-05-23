@@ -28,7 +28,7 @@ local groupList = display.newGroup()
 local container = display.newContainer( 780, 500 )
 container:insert(groupList)
 container:translate( 480, 350 )
-newDisplay._group = groupButtons
+newDisplay._group = groupGlobal
 newDisplay:init()
 printToDisplay.setStyle({
     parent = groupButtons,
@@ -41,14 +41,6 @@ printToDisplay.setStyle({
     font = "fonts/OpenSansRegular.ttf",
     paddingRow = 10,
 })
-
--- Persisting assets aren't cleared when the code is run.
-local persistingAsset = {}
-printToDisplay._persist = persistingAsset
-persistingAsset[_tostring(groupButtons)] = true
-persistingAsset[_tostring(groupWindow)] = true
-persistingAsset[_tostring(groupList)] = true
-persistingAsset[_tostring(container)] = true
 
 -- Insert "physics state" to physics library calls.
 local physics = require("physics")
@@ -217,13 +209,9 @@ local function clearEverything()
     for name = 1, #functions do
         _G[functions[name]] = nil
     end
-    -- And remove any remaining display objects/groups.
-    local stage = display.getCurrentStage()
-    for i = stage.numChildren, 1, -1 do
-        if not persistingAsset[_tostring(stage[i])] then
-            stage[i]:removeSelf()
-            stage[i] = nil
-        end
+    for i = groupGlobal.numChildren, 1, -1 do
+        groupGlobal[i]:removeSelf()
+        groupGlobal[i] = nil
     end
 end
 
@@ -309,7 +297,7 @@ local function runCode( event )
 end
 
 imageList[1] = display.newRoundedRect( groupWindow, 480, 320, 800, 600, 8 )
-imageList[1]:setFillColor(0,0,0,0.8)
+imageList[1]:setFillColor(0,0.9)
 imageList[1]:addEventListener( "touch", scrollImagesWindow )
 imageList[2] = display.newImageRect( groupWindow, "ui/buttonsGreen.png", 48, 48 )
 imageList[2]:addEventListener( "touch", showImages )
@@ -340,7 +328,6 @@ for file in lfs.dir( imageFolder ) do
         imageList[#imageList].name.anchorY = 0
         imageList[#imageList].size = display.newText( groupList, "width: ".. imageList[#imageList].width .. ", height: " .. imageList[#imageList].height, x, y+40, font, imageFontSize )
         imageList[#imageList].size.anchorY = 0
-        persistingAsset[_tostring(imageList[#imageList])] = true
         imageColumn = imageColumn+1
         if imageColumn == 3 then
             imageRow = imageRow+1

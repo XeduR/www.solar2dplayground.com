@@ -53,7 +53,6 @@ function M.init()
     function display.newContainer(...)
         local t = {...}
         local object = _newContainer(...)
-        _print( t )
         if _notGroup(t[1]) then
             M._group:insert(object)
         end
