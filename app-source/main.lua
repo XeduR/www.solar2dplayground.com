@@ -2,6 +2,7 @@ display.setStatusBar( display.HiddenStatusBar )
 timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
 timer = require( "newTimer" )
 
+require("disabledAPI")
 local lfs = require( "lfs" )
 local inputCode
 local environment = system.getInfo( "environment" )
@@ -19,6 +20,20 @@ local btnX = display.screenOriginX+4
 local consoleOpen = false
 local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
+
+-- TODO: add custom fonts, audio effects/bg music
+-- TODO: add fontloader plugin and preload all fonts.
+
+-- Temporarily preload the currently used fonts before adding fontloader.
+local temp = display.newText( "", 0, 0, font, 20 )
+temp:removeSelf()
+temp = nil
+temp = display.newText( "", 0, 0, native.systemFont, 20 )
+temp:removeSelf()
+temp = nil
+temp = display.newText( "", 0, 0, native.systemFontBold, 20 )
+temp:removeSelf()
+temp = nil
 
 -- groupGlobal contains all user generated display objects/groups
 local groupGlobal = display.newGroup()
@@ -43,7 +58,7 @@ printToDisplay.setStyle({
 })
 
 -- Insert "physics state" to physics library calls.
-local physics = require("physics")
+physics = require("physics")
 local _pState = "stop"
 local _pStart = physics.start 
 local _pPause = physics.pause 
@@ -172,9 +187,11 @@ end
 
 -- This sandbox project relies on loadstring(), so we'll need to keep a list of all original _G
 -- table entries so that we don't accidentally remove them along with whatever the user creates.
-local _globals = {}
-for i, j in pairs( _G ) do
-    _globals[i] = true
+-- Furthermore, all original global entries are checked and restored after every reset.
+local _globals, _origGlobals = {}, {}
+for index, value in pairs( _G ) do
+    _origGlobals[index] = value
+    _globals[index] = true
 end
 
 -- Clear all display objects, stop all timers, transitions and runtime event listeners, i.e. perform a complete reset.
@@ -190,28 +207,44 @@ local function clearEverything()
     end
     -- Then remove all display objects and variables.
     local functions = {}
-    for name, entry in pairs( _G ) do
-        if not _globals[name] then
-            local t = type( entry )
+    for index, value in pairs( _G ) do
+        if not _globals[index] then
+            local t = type( value )
             if t == "function" then
-                functions[#functions+1] = name
+                functions[#functions+1] = index
             else
                 if t == "table" then
-                    if _G[name].removeSelf then
-                        _G[name]:removeSelf()
+                    if _G[index].removeSelf then
+                        _G[index]:removeSelf()
                     end
                 end
-                _G[name] = nil
+                _G[index] = nil
             end
         end
     end
-    -- And finally remove all functions.
+    -- Reset any possible changes to the global tables/libraries.
+    for index, value in pairs( _origGlobals ) do
+        -- "print" will be may be altered due to printToDisplay plugin, so ignore it.
+        if index ~= "print" and value ~= _G[index] then
+            _G[index] = value
+        end
+    end
+    -- Remove all functions.
     for name = 1, #functions do
         _G[functions[name]] = nil
     end
+    -- And finally clear all non-UI display objects/groups.
     for i = groupGlobal.numChildren, 1, -1 do
         groupGlobal[i]:removeSelf()
         groupGlobal[i] = nil
+    end
+    local stage = display.getCurrentStage()
+    for i = stage.numChildren, 1, -1 do
+        local t = stage[i]        
+        if t ~= groupGlobal and t ~= groupButtons and t ~= groupWindow and t ~= container then
+            stage[i]:removeSelf()
+            stage[i] = nil
+        end
     end
 end
 

@@ -149,6 +149,9 @@ function M.init()
         return object
     end
     
+    function display.loadRemoteImage()
+        print( "display.loadRemoteImage() has been disabled." )
+    end
 end
 
 return M
