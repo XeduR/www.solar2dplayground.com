@@ -1,40 +1,54 @@
--- Sample code by Michael Wilson
+-- Sample code by Eetu Rantanen
 
--- Change the background to grey.
-display.setDefault( "background", 0.1 )
+display.setDefault( "background", 0.3 ) -- Change the background to grey.
+local physics = require("physics")
+physics.start()
+physics.pause() -- Physics are paused until the game starts.
+local shiftTimer, started
 
-local x, y = display.contentCenterX, display.contentCenterY -- Source of flame.
-local rnd = math.random
+local platformTop = display.newImage( "img/platformBase3.png", display.contentCenterX, display.contentCenterY - 150 )
+physics.addBody( platformTop, "static" )
+platformTop.xScale, platformTop.yScale = -1, -1 -- Flip the top platform over its x and y-axes.
 
--- Run every frame.
-local function enterFrame()
-    local flame = display.newCircle(x,y, math.random(32,64))
-    flame:setFillColor(rnd() + 0.5, rnd() + 0.2, 0)
-    flame.blendMode = "add"
-    flame.alpha = 0.5
+local platformBottom = display.newImage( "img/platformBase3.png", display.contentCenterX, display.contentCenterY + 150 )
+physics.addBody( platformBottom, "static" )
 
-    -- Kill the particle when done.
-    local function die()
-        display.remove(flame)
-    end
+local bomb = display.newImage( "img/bombStroked.png", display.contentCenterX, display.contentCenterY )
+physics.addBody( bomb, { shape={ -20,-10, 28,-10, 28,40, -20,40 } } )
+bomb.isFixedRotation = true -- Prevent the bomb from spinning around its axis.
 
-    -- Start a transition.
-    transition.to(flame, {
-        delta = true, -- Move from current location.
-        time = 1000, -- In 1.0 seconds.
-        x = rnd(-16,16), -- Wiggle.
-        y = rnd(-384, -256), -- Go up.
-        xScale = -0.9, -- Shrink.
-        yScale = -0.9,
-        onComplete = die, -- And die.
-    })
+local instructions = display.newText( "Tap to Jump. Don't let the bomb get hit!", display.contentCenterX, 40, "fonts/OpenSansRegular.ttf", 28 )
+instructions:setFillColor( 1 )
+
+local function shift() -- Shift the platforms up or down at random.
+	local yTo = math.random( -150, 150 )
+	transition.to( platformTop, { time=1000, y=display.contentCenterY-150+yTo } )
+	transition.to( platformBottom, { time=1000, y=display.contentCenterY+150+yTo } )
 end
 
--- Called when a mouse event has been received.
-local function mouse( event )
-    x, y = event.x or x, event.y or y -- Take a new x,y or keep the old x,y.
+local function jump( event )
+	if event.phase == "began" then
+		if not started then -- Starts the game if it hasn't started yet.
+			started = true
+			physics.start()
+			shiftTimer = timer.performWithDelay( 750, shift, 0 )
+		end
+		bomb:setLinearVelocity( 0, 0 )
+		bomb:applyLinearImpulse( 0, -0.1 )
+	end
 end
 
--- Add the mouse and enterFrame events.
-Runtime:addEventListener( "mouse", mouse )
-Runtime:addEventListener( "enterFrame", enterFrame )
+local function collision( event ) -- If a collision begins, it means the game is over.
+	if event.phase == "began" then
+		timer.cancel( shiftTimer )
+		transition.cancel()
+		physics.pause()
+		timer.performWithDelay( 50, function()
+			platformTop.y, platformBottom.y, bomb.y = display.contentCenterY-150, display.contentCenterY+150, display.contentCenterY
+			started = false
+		end )
+	end
+end
+
+Runtime:addEventListener( "touch", jump )
+Runtime:addEventListener( "collision", collision )
