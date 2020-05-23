@@ -1,52 +1,70 @@
 -- Sample code by Eetu Rantanen
 
--- Change the background to blue.
-display.setDefault( "background", 0, 0.3, 0.8 )
+display.setDefault( "background", 0.55, 0, 0.2 )
 
--- Require and start the physics engine.
-local physics = require("physics")
-physics.start()
-physics.setGravity( 0, 98.1 ) -- Setting a very high gravity.
+local transitionTime = 150
+local images = { "img/spaceWrench.png", "img/spaceGun.png", "img/spaceGrenade.png", "img/spaceKey.png", "img/spaceExtinguisher.png", "img/spaceCup.png" }
 
--- Create a sword altar, the ground and a crate, and give them all physics bodies.
-local swordShape = { -2, -62, 9, -62, 49, 10, 49, 95, -40, 95, -40, 10 }
-local sword = display.newImage( "img/alter.png", 510, 490 )
-physics.addBody( sword, "static", { density=12, friction=0.9, bounce=0.1, shape=swordShape } )
-
-local block = display.newImage( "img/pushBlock3.png", 480, 100 )
-physics.addBody( block, "dynamic", { density=10, friction=2, bounce=0.2 } )
-block.angularDamping = 3
--- block:setFillColor( 1, 0, 0 ) -- Uncomment this line to apply red tint to the block.
-
-for i = 1, 4 do
-	local ground = display.newImage( "img/platformBase2.png", i*250-160, 630 )
-	physics.addBody( ground, "static", { density=1, friction=0.9, bounce=0.2 } )
+-- Save time by creating one function to handle flipping all tokens.
+local function flip( target, time, listener )
+    local offset = 64
+    if target.path.x1 == 64 then offset = 0 end
+    transition.to( target.path, { time=time, x1=offset, x2=offset, x3=-offset, x4=-offset, onComplete=listener } )
 end
 
-local text = display.newText( "Drag the block with your mouse", 640, 40, native.systemFontBold, 40 )
-
-local function dragBlock( event, params )
-	local body = event.target
-	local phase = event.phase
-	local stage = display.getCurrentStage()
-
-	if "began" == phase then
-		stage:setFocus( body )
-		body.isFocus = true
-		body.tempJoint = physics.newJoint( "touch", body, event.x, event.y )
-
-	elseif body.isFocus then
-		if "moved" == phase then
-			body.tempJoint:setTarget( event.x, event.y )
-
-		elseif "ended" == phase or "cancelled" == phase then
-			stage:setFocus( nil )
-			body.isFocus = false	
-			body.tempJoint:removeSelf()
-
-		end
-	end
-
-	return true
+local canTouch, previous = true
+local function checkResult( target )
+    if not previous then
+        previous = target
+        canTouch = true
+    else
+        if target.id == previous.id then
+            -- In this sample code, nothing actually gets removed, they are just hidden.
+            transition.to( target.front, { time=450, alpha=0 } )
+            transition.to( previous.front, { time=450, alpha=0, onComplete=function()
+                previous = nil
+                canTouch = true
+            end } )
+        else
+            timer.performWithDelay( 300, function() -- Wait before flipping the tokens.
+                 -- First hide the front, then reveal the back.
+                flip( target.front, 250, function() flip( target, 250 ) end )
+                flip( previous.front, 250, function() flip( previous, 250, function()
+                        previous = nil
+                        canTouch = true
+                    end )
+                end )
+            end )
+        end
+    end
 end
-block:addEventListener( "touch", dragBlock )
+
+local function touchListener( event )
+    if canTouch and event.phase == "began" then
+        canTouch = false -- Prevent further touches until the transitions have finished.
+        flip( event.target, 200, function() -- First hide the back, then reveal the front.
+            flip( event.target.front, 200, function() checkResult( event.target ) end )
+        end )
+    end
+end
+
+local token, n = {}, 1
+for i = 1, 12 do
+    token[i] = display.newImage( images[n], 270+math.floor((i-1)/3)*140, 180+math.fmod((i-1),3)*140 )
+    flip( token[#token], 0 )
+    token[i].back = display.newImage( "img/spaceMonster.png", token[i].x, token[i].y )
+    token[i].back.front = token[i] -- Add a refence to the front side of the token.
+    token[i].back.id = n -- This id will be used to identify correct pairs.
+    token[i].back:addEventListener( "touch", touchListener )
+    n = n+1
+    if n > 6 then
+        n = 1
+    end
+end
+
+for i = 1, 12 do -- Shuffle the tokens around.
+    local target = math.random(12)
+    local xNew, yNew = token[target].x, token[target].y
+    token[target].x, token[target].y, token[target].back.x, token[target].back.y = token[i].x, token[i].y, token[i].x, token[i].y
+    token[i].x, token[i].y, token[i].back.x, token[i].back.y = xNew, yNew, xNew, yNew
+end

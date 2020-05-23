@@ -12,7 +12,8 @@
 local M = {}
 
 -- Localised functions.
-local _print = print
+-- local _print = print
+_print = print
 local _type = type
 local _unpack = unpack
 local _tostring = tostring
@@ -208,8 +209,6 @@ function M.start()
         M._persist[_tostring(M.controls)] = true
         if parent then parent:insert( M.controls ) end
 
-        local SEG = buttonSize*0.2 -- Segment.
-        local HW = buttonSize*0.4 -- (Approximate) half width.
         local buttonOffsetX = (1-anchorX)*width
         local buttonOffsetY = anchorY*height
         
@@ -220,7 +219,7 @@ function M.start()
         M._persist[_tostring(M.controls.scroll)] = true
         
         M.controls.clear = display.newImageRect( M.controls, "ui/buttonClear.png", buttonSize, buttonSize )
-        M.controls.clear.x, M.controls.clear.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize+ 5455
+        M.controls.clear.x, M.controls.clear.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize
         M.controls.clear:addEventListener( "touch", controls )
         M.controls.clear.id = "clear"
         M._persist[_tostring(M.controls.clear)] = true
@@ -234,12 +233,6 @@ function M.start()
         print( "print() will output text here.\n " )
         
         maxY = 0
-        local stage = display.getCurrentStage()
-        for i = stage.numChildren, 1, -1 do
-            if M._persist[_tostring(stage[i])] then
-                stage[i]:toFront()
-            end
-        end
         M.ui.bg:addEventListener( "touch", scroll )
     end
 end
