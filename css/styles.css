@@ -18,9 +18,8 @@ main {
 }
 
 footer {
-    height: 50px;
+    height: 90px;
     flex-shrink: 0;
-    color: #FCBA04;
     background: #080808;
     text-align: center;
     padding: 4px 0px;
@@ -29,6 +28,7 @@ footer {
 
 p {
     font-family: 'Roboto', sans-serif;
+    line-height: 1.4;
     font-size: 15px;
 }
 
@@ -48,6 +48,12 @@ h4 {
 	padding: 20px 20px;
 	margin: 0;
 	text-align: center;
+}
+
+.segment {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .container {
@@ -258,7 +264,7 @@ button.kofi {
 	height: 60px;
 	width: 100%;
 	max-width: 360px;
-	margin: 16px 0;
+	margin: 16px auto;
 	background: #29abe0;
 }
 

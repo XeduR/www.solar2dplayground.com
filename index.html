@@ -55,12 +55,12 @@
                 </nav>
                 
         		<noscript><h4>JavaScript disabled. You must enable JavaScript to use the Playground.</h4></noscript>
-                <div class="mobile"><p class="hidden" id="mobile-disclaimer"></p></div>
+                <div class="mobile"><p class="hidden" id="disclaimer"></p></div>
                 
                 <div id="panel-code" class="panel">
                     <span onclick="closePanel('code')" class="close-button">x</span>
                     
-                    <div>
+                    <div class="segment">
                         <div id="line"></div>
                         <h2>Select Sample Project:</h2>
                         <div id="sample-buttons"></div>
@@ -71,19 +71,22 @@
                 <div id="panel-info" class="panel">
                     <span onclick="closePanel('info')" class="close-button">x</span>
                     
-                    <div>
+                    <div class="segment">
                         <div id="line"></div>
                         <h2>Information:</h2>
-                        <p>Solar2D Playground is developed by <a href="https://www.erantanen.com">Eetu Rantanen</a>. Solar2D Playground is my personal project. The logo is courtesy of the Solar2D project. The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.</p>
-                        <p>You can find more of my personal projects over at <a href="https://www.xedur.com">www.xedur.com</a>. I create all sorts of cool projects and plugins on my spare time, so if you are enjoying Solar2D Playground, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
+                        <p>Solar2D Playground is developed and maintained by <a href="https://www.erantanen.com">Eetu Rantanen</a>.</p>
+                        <p>You can find more of my personal projects over at my code portfolio site: <a href="https://www.xedur.com">www.xedur.com</a>.
+                            I work on all sorts of interesting projects, as well as plugins for Solar2D, in my free time.
+                            If you like what I'm doing and wish to support me, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
                         <button class="kofi"><span><a href="https://ko-fi.com/xedur"><img src="./img/support-me.svg" max-width="306" width="100%"></a></span></button>
                         <div id="line"></div>
+                        <h2>Playground limitations & Solar2D:</h2>
+                        <p>For convenience sake, and due to issues like CORS, Solar2D Playground does not support network requests or sockets.
+                            This means that you are limited to using the assets that are included in Solar2D Playground. Solar2D's HTML5 builds are also still in beta.</p>
+                        <p>If you wish to develop games and apps without any such limitations, then <a href="https://solar2d.com/" target="_blank">download Solar2D</a>, a free and open source game engine.</p>
                         <p>Solar2D development is sponsored by its users. Support the project on <a href="https://github.com/sponsors/shchvova">GitHub Sponsors</a> or <a href="https://www.patreon.com/shchvova">Patreon</a>.</p>
                         <div id="line"></div>
-                        <p><span style="text-decoration:line-through">Source available under the MIT License</span> (TomorrowTM)</p>
-                        <div id="line"></div>
-                        <h2>Limitations:</h2>
-                        <p>Solar2D Playground does not support network requests, uploading or using your personal images or requiring external plugins. You can start developing without any limits by <a href="https://solar2d.com/" target="_blank">downloading Solar2D</a>, a free and open source game engine.</p>
+                        <p><a href="https://github.com/XeduR/solar2dplayground.com">Solar2D Playground source</a> is available under the MIT License.</p>
                         <div id="line"></div>
                     </div>
                 </div>
@@ -105,9 +108,11 @@
                     var hasLoaded = false;
                         
                     if (window.mobileCheck()) {
-                        document.getElementById("mobile-disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly or at all on your device.";
-                        document.getElementById("mobile-disclaimer").style.padding = "20px";
-                        document.getElementById("mobile-disclaimer").style.margin = "0px";
+                        document.getElementById("disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly or at all on your device.";
+                        document.getElementById("disclaimer").style.padding = "24px";
+                        document.getElementById("disclaimer").style.margin = "0px";
+                        document.getElementById("disclaimer").style.background = "#d10000";
+                        document.getElementById("disclaimer").style.color = "white";
                     }
                     // Match the code editor's height with the app's height.
                     function resizeEditor(){
@@ -125,10 +130,10 @@
                         url: "./demos/demos.json",
                         type: "HEAD",
                         error: function() {
-                            document.getElementById("mobile-disclaimer").innerHTML = "There was a problem with loading the sample projects. Try again later.";
-                            document.getElementById("mobile-disclaimer").style.padding = "20px";
-                            document.getElementById("mobile-disclaimer").style.margin = "0px";
-                            document.getElementById("sample-buttons").innerHTML = "<p>Sample projects are missing.</p>";
+                            document.getElementById("disclaimer").innerHTML = "There was a problem with loading the sample projects. Try again later.";
+                            document.getElementById("disclaimer").style.padding = "20px";
+                            document.getElementById("disclaimer").style.margin = "0px";
+                            document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
                         },
                         success: function() {
                             $.getJSON( "./demos/demos.json", function(json) {
@@ -165,7 +170,13 @@
             </div>    
         </main>
             
-        <footer><p><a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu Rantanen</a></p></footer>
+        <footer>
+            <p style="line-height: 2">
+                <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu Rantanen</a><br>
+                Solar2D logo is property of the <a href="https://ponywolf.com/">Solar2D project</a>.
+                The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
+            </p>
+        </footer>
     </div>
 </body>
 </html>
