@@ -255,6 +255,18 @@ ul {
     max-width: 371px;
 }
 
+body::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #fcba04;
+}
+
 button.kofi {
 	position: relative;
 	border-radius: 50px;

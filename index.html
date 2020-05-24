@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="XeduR, Eetu Rantanen, Solar2D, Solar, 2D, HTML5, Lua, gamedev, game, game development, sandbox, playground">
-    <meta name="description" content="Create and run your Solar2D projects online">
+    <meta name="keywords" content="Solar2D, HTML5, Lua, gamedev, game development, open source, sandbox, playground, XeduR, Eetu Rantanen">
+    <meta name="description" content="Solar2D Playground is an interactive website that allows you to create and run Solar2D projects instantly online.">
     <meta name="author" content="Eetu Rantanen">
     
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
@@ -73,8 +73,8 @@
                     
                     <div class="segment">
                         <div id="line"></div>
-                        <h2>Information:</h2>
-                        <p>Solar2D Playground is developed and maintained by <a href="https://www.erantanen.com">Eetu Rantanen</a>.</p>
+                        <h2>Solar2D Playground:</h2>
+                        <p>Solar2D Playground is an interactive website, developed and maintained by <a href="https://www.erantanen.com">Eetu Rantanen</a>, that allows you to create and run Solar2D projects instantly online.</p>
                         <p>You can find more of my personal projects over at my code portfolio site: <a href="https://www.xedur.com">www.xedur.com</a>.
                             I work on all sorts of interesting projects, as well as plugins for Solar2D, in my free time.
                             If you like what I'm doing and wish to support me, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
@@ -86,7 +86,7 @@
                         <p>If you wish to develop games and apps without any such limitations, then <a href="https://solar2d.com/" target="_blank">download Solar2D</a>, a free and open source game engine.</p>
                         <p>Solar2D development is sponsored by its users. Support the project on <a href="https://github.com/sponsors/shchvova">GitHub Sponsors</a> or <a href="https://www.patreon.com/shchvova">Patreon</a>.</p>
                         <div id="line"></div>
-                        <p><a href="https://github.com/XeduR/solar2dplayground.com">Solar2D Playground source</a> is available under the MIT License.</p>
+                        <p>In true open source spirit, the entire <a href="https://github.com/XeduR/solar2dplayground.com">Solar2D Playground source</a> is available under the MIT License.</p>
                         <div id="line"></div>
                     </div>
                 </div>
@@ -125,6 +125,11 @@
                         lineNumbers: true,
                         scrollbarStyle: "simple"
                     });
+                    // Give the editor an initial height based on the height of the window and aspect ratio of the app.
+                    // The more accurate height will be later assigned via resizeEditor when the app has loaded.
+                    var widthInitial = document.documentElement.clientWidth;
+                    widthInitial = widthInitial*0.5*0.6666;
+                    editor.setSize(null, Math.min(widthInitial,960));
 
                     $.ajax({
                         url: "./demos/demos.json",
@@ -150,8 +155,8 @@
                             });
                         }
                     });
-                    // It's unclear as to when the app has finished loading and all require Module functions
-                    // are available, so check if it has been loaded every half a second until it is true.
+                    // It's unclear as to when the app has finished loading and when Module and its functions are
+                    // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
                         hasLoaded = true;
                         appModule = document.getElementById("app-frame").contentWindow.Module;
@@ -173,7 +178,7 @@
         <footer>
             <p style="line-height: 2">
                 <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu Rantanen</a><br>
-                Solar2D logo is property of the <a href="https://ponywolf.com/">Solar2D project</a>.
+                Solar2D logo is property of the <a href="https://solar2d.com/">Solar2D project</a>.
                 The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
             </p>
         </footer>
