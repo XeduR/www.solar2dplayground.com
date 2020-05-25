@@ -21,7 +21,6 @@ local consoleOpen = false
 local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
 
--- TODO: add newDisplay functions for capture and other non-native elements too.
 -- TODO: add custom fonts, audio effects/bg music
 -- TODO: add fontloader plugin and preload all fonts.
 
@@ -343,11 +342,12 @@ imageList[4].yStart = imageList[4].y
 imageList[4]:setFillColor(1,0.8)
 
 -- Traverse image folder and list them as usable images
-local imageColumn, imageRow = 0, 1
+local imageColumn, imageRow, imageCount = 0, 1, 0
 local imageFontSize = 18
 local imageFolder = system.pathForFile( "img/", system.ResourceDirectory )
 for file in lfs.dir( imageFolder ) do
     if file ~= "." and file ~= ".." then
+        imageCount = imageCount+1
         local filename = "img/" .. file
         local x, y = -240+imageColumn*240, -350+imageRow*220
         imageList[#imageList+1] = display.newImage( groupList, filename, x, y )
@@ -371,6 +371,9 @@ for file in lfs.dir( imageFolder ) do
 end
 groupWindow.isVisible = false
 groupList.isVisible = false
+-- The first 6 images are always shown, even without scrolling. For
+-- every additional starting line, increase the max scrolling area.
+maxY = math.ceil((imageCount-6)/3)*216
 
 local btnData = {
     {"ui/buttonRun.png", runCode },
