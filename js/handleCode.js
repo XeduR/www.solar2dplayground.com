@@ -12,5 +12,6 @@ function loadCode(target){
         editor.replaceRange( sampleProject[target].code, {line: 1} );
         // Dispact a custom event to the app to get the new code automatically.
         document.dispatchEvent( new CustomEvent( 'projectSelected' ) )
+		console.log( "loadCode called" );
     }
 }
