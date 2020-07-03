@@ -334,9 +334,6 @@ end
 local function projectListener()
     runCode({phase="began"}) 
 end
-if environment ~= "simulator" then
-    inputCode.addEventListener( projectListener )
-end
 
 imageList[1] = display.newRoundedRect( groupWindow, 480, 320, 800, 600, 8 )
 imageList[1]:setFillColor(0,0.9)
@@ -403,3 +400,7 @@ instructions.y = btn[1].y + 12
 
 logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
 logo.x, logo.y = 480, 320
+
+if environment ~= "simulator" then
+    inputCode.addEventListener( projectListener )
+end

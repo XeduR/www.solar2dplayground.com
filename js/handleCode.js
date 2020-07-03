@@ -15,12 +15,10 @@ function loadCode(target){
         // loadCode() is called when the site finishes loading
         // and the custom event won't be fired at this time.
         if (hasFinalised) {
-            console.log("loadCode - finalised")
             // Dispact a custom event to the app to get the new code automatically.
             document.dispatchEvent( new CustomEvent( 'projectSelected' ) )
         } else {
             hasFinalised = true;
-            console.log("loadCode - not finalised")
         }
     }
 }

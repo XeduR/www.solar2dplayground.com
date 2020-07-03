@@ -3290,7 +3290,7 @@ e1‡€kÀ	à¼Î·ò‰ ®À±%°ÈàpZ¹\n:ÿM g8§mY^ÖP:“IÚ–zN '€³m¨ÓQr®¾N	à8LƒQ¶SY 
 	},
 	addEventListener: function( listenerReference ) {
         let f = LuaCreateFunction( listenerReference )
-        document.addEventListener( "projectSelected", function() { f() })
+        document.addEventListener( "projectSelected", function() { f() } )
     }
 }
 rac   ğ         ü      source.fileToJSON.main.lu      P     source.fileToJSON.input.lu     È     printToDisplay.lu      *     newTimer.lu    ?     newDisplay.lu      ÔN     main.lu    p     disabledAPI.lu     ¤Š  	   config.lu      L  F  LuaQ                D      @@ A€  € C     €€ÅÀ  Æ Á   AA ÜÀ€€  @ €Z@  @€Å€ Á š   @ €[A   €A AÜ@ À	€Ë@Â A Ü€€ÁÂ ÁA  KÁBÁ Â \ ‹ÁÂ AB œ ËÁBA‚ Â Ü ÂÂ ÁB ‚ KÂBÁB ƒ \‚ B À€C U…‚ Á  €ÕƒœB …Â  †ÂEÀ€ œB C €  €       system    pathForFile 
@@ -3350,7 +3350,7 @@ AÅ  …€KEH
      €        €   	   
 ¤I   €   ä‰         €  €      	  €	   
   €$Ê      €  €     €  €   d
-      €  €  €  € ¤J   €WÀB€ €ÆŠÏ   ÜJ Å
+      €  €  €  € ¤J   €Å
   ÆJÑ  	AË ‹ ÁË  AL ÜŠ€	Â
 ¢Æ
 QËŠÒAË Ë ÜJ Æ
@@ -3362,7 +3362,7 @@ QËŠÏA € ÜJ Å
 ‹¬ÆÊDËŠÒA Ë
  ÜJ ÁÊ  AË Ë Å Æ‹ÖÌ E F×Ü‹€LW @€@€W€×À€WÀ×@€LÑÍ @€MNØLM°XŒ±Ô ÌÑ  Y@€	€ À€  €	Ô ÆÍÆËXÀ² €Ô ÆÍÆËÀ³€€Ô ÆÍÆËÏÍ³ K³@ €€À \€” †Ô ÆÎ €ÉN´‰´Ô ÆÍÉQµÔ ÆÍ  NE@€	 À  •À€O[@ € €ÉµÔ ÆÍÆÍÚÉÍEµÔ ÆÍ  NE@€	Î Ô ÆÎÆË T FOFË•NÀ€OL@ € €É·Ô ÆÍÆÛÉÍEµÌ
 Ñ Õ@ €QÁÊ !L  Àå‰„Ü¸É„Ü¸ Ì\MİOÕŒ NF]
-€J Œ À€bL Š ÁÌ  €¢L Ê  @ âL "L€A  Á `Œ	€E  FÓ€€ÆÆÑ A \€ÉAF†ÁÍ ‰ÍEµIÍ¼F†À€ Q €  ^ÎDN  €€QNJFFËNÎD‰”IÍ¨FKÏÁ NS\M _ÌõE  FŒÓ€€ÁÌ  AM \Œ€@€AÌ IÁEµIAŒ¼FÑFLÔ†Ñ†KLŒŒLÌÄIAŒ¨FÑFLÊLLÛIAŒ”E  FŒÓ€€ÁŒ Í AÍ \Œ€€€AÌ ‰Ñ”‰AŒ¨ € €      display    setStatusBar    HiddenStatusBar    timer    require 	   newTimer    disabledAPI    lfs    system    getInfo    environment 
+€J Œ À€bL Š ÁÌ  €¢L Ê  @ âL "L€A  Á `Œ	€E  FÓ€€ÆÆÑ A \€ÉAF†ÁÍ ‰ÍEµIÍ¼F†À€ Q €  ^ÎDN  €€QNJFFËNÎD‰”IÍ¨FKÏÁ NS\M _ÌõE  FŒÓ€€ÁÌ  AM \Œ€@€AÌ IÁEµIAŒ¼FÑFLÔ†Ñ†KLŒŒLÌÄIAŒ¨FÑFLÊLLÛIAŒ”E  FŒÓ€€ÁŒ Í AÍ \Œ€€€AÌ ‰Ñ”‰AŒ¨WÀB€ €FŒÏ € \L  € €      display    setStatusBar    HiddenStatusBar    timer    require 	   newTimer    disabledAPI    lfs    system    getInfo    environment 
    simulator 
    inputCode    newDisplay    printToDisplay 	   tostring    math    min    screenOriginX       @   fonts/OpenSansRegular.ttf    newText                   4@   removeSelf    native    systemFont    systemFontBold 	   newGroup    newContainer      `ˆ@     @@   insert 
    translate       ~@     àu@   _group    init 	   setStyle    parent    y    bgColor š™™™™™é?   width      Àr@   height       „@   buttonSize       D@	   fontSize       2@   font    paddingRow       $@   physics    stop    start    pause      ¸ @      >@   Runtime    addEventListener    mouse    removeEventListener    pairs    _G       ğ?   newRoundedRect       t@      ‰@     À‚@       @   setFillColor ÍÌÌÌÌÌì?   touch        @   newImageRect    ui/buttonsGreen.png       H@   x       à?      @@      @"   Scroll to view all useable images       I@      <@      0@   yStart    pathForFile    img/    ResourceDirectory    dir    .    ..       n@      nÀ     €k@     àuÀ	   newImage      €f@      ^@      d@   xScale    yScale    anchorY    name    "       (@   size    width:     , height:  
