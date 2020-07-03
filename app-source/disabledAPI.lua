@@ -2,6 +2,12 @@
 local prefix = "WARNING: "
 local msg = "has been disabled in Solar2D Playground. To use it, you need to download and install Solar2D from https://solar2d.com/."
 
+-- physics --------------------------------------------------------
+local physics = physics or require("physics")
+function physics.setDrawMode()
+    print( prefix .. "physics.setDrawMode() " .. msg )
+end
+
 -- display --------------------------------------------------------
 function display.loadRemoteImage()
     print( prefix .. "display.loadRemoteImage() " .. msg )

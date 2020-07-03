@@ -23,6 +23,7 @@ local font = "fonts/OpenSansRegular.ttf"
 
 -- TODO: add custom fonts, audio effects/bg music
 -- TODO: add fontloader plugin and preload all fonts.
+-- TODO: add extra instructions to "CODE" tab, e.g. "what to do with error messages", and add link to docs.
 
 -- Temporarily preload the currently used fonts before adding fontloader.
 local temp = display.newText( "", 0, 0, font, 20 )
