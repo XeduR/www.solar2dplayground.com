@@ -330,6 +330,14 @@ local function runCode( event )
     return true
 end
 
+-- Listen for sample project button presses from the website.
+local function projectListener()
+    runCode({phase="began"}) 
+end
+if environment ~= "simulator" then
+    inputCode.addEventListener( projectListener )
+end
+
 imageList[1] = display.newRoundedRect( groupWindow, 480, 320, 800, 600, 8 )
 imageList[1]:setFillColor(0,0.9)
 imageList[1]:addEventListener( "touch", scrollImagesWindow )
