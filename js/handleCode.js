@@ -16,7 +16,7 @@ function loadCode(target){
         // and the custom event won't be fired at this time.
         if (hasFinalised) {
             // Dispact a custom event to the app to get the new code automatically.
-            document.dispatchEvent( new CustomEvent( 'projectSelected' ) )
+            frames[0].playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
         } else {
             hasFinalised = true;
         }
