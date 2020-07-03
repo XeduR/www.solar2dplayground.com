@@ -10,6 +10,7 @@ window.inputCode = {
 	},
 	addEventListener: function( listenerReference ) {
         let f = LuaCreateFunction( listenerReference )
-        document.addEventListener( "projectSelected", function() { f() })
+        document.addEventListener( "projectSelected", function() { f() } )
     }
+	console.log( "event listener added" );
 }
