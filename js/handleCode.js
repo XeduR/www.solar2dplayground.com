@@ -4,14 +4,21 @@ function getCode() {
     return code;
 }
 
+var hasFinalised = false;
+
 // Clearing the editor and loading a new sample project.
 function loadCode(target){
     if (typeof sampleProject === 'object' && typeof sampleProject[target] === 'object') {
         editor.setValue("");
         editor.clearHistory();
         editor.replaceRange( sampleProject[target].code, {line: 1} );
-        // Dispact a custom event to the app to get the new code automatically.
-        document.dispatchEvent( new CustomEvent( 'projectSelected' ) )
-		console.log( "loadCode called" );
+        // loadCode() is called when the site finishes loading
+        // and the custom event won't be fired at this time.
+        if (hasFinalised) {
+            // Dispact a custom event to the app to get the new code automatically.
+            document.dispatchEvent( new CustomEvent( 'projectSelected' ) )
+        } else {
+            hasFinalised = true;
+        }
     }
 }

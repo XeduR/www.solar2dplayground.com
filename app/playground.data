@@ -3291,7 +3291,6 @@ e1‡€kÀ	à¼Î·ò‰ ®À±%°ÈàpZ¹\n:ÿM g8§mY^ÖP:“IÚ–zN '€³m¨ÓQr®¾N	à8LƒQ¶SY 
 	addEventListener: function( listenerReference ) {
         let f = LuaCreateFunction( listenerReference )
         document.addEventListener( "projectSelected", function() { f() })
-		console.log( "listener initialized" );
     }
 }
 rac   ğ         ü      source.fileToJSON.main.lu      P     source.fileToJSON.input.lu     È     printToDisplay.lu      *     newTimer.lu    ?     newDisplay.lu      ÔN     main.lu    p     disabledAPI.lu     ¤Š  	   config.lu      L  F  LuaQ                D      @@ A€  € C     €€ÅÀ  Æ Á   AA ÜÀ€€  @ €Z@  @€Å€ Á š   @ €[A   €A AÜ@ À	€Ë@Â A Ü€€ÁÂ ÁA  KÁBÁ Â \ ‹ÁÂ AB œ ËÁBA‚ Â Ü ÂÂ ÁB ‚ KÂBÁB ƒ \‚ B À€C U…‚ Á  €ÕƒœB …Â  †ÂEÀ€ œB C €  €       system    pathForFile 
