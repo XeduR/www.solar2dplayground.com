@@ -332,6 +332,7 @@ end
 
 -- Listen for sample project button presses from the website.
 local function projectListener()
+    print( "- testing listener -" )
     runCode({phase="began"}) 
 end
 
