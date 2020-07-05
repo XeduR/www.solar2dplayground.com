@@ -4,10 +4,11 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode
+local inputCode, errorToBrowser
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
+    errorToBrowser = require( "errorToBrowser" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -322,7 +323,15 @@ local function runCode( event )
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
-            assert(loadstring( code ))()
+            local isValid, errorMessage = pcall(code)
+            if isValid then
+                assert(loadstring(code))()
+            else
+                local _, loc = string.find(errorMessage, '"]:%S')
+                if loc then message = "Error on line " .. errorMessage:sub(loc) end
+                errorToBrowser.push(errorMessage)
+                print(errorMessage)
+            end
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
         end
@@ -401,6 +410,4 @@ instructions.y = btn[1].y + 12
 logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
 logo.x, logo.y = 480, 320
 
-if environment ~= "simulator" then
-    inputCode.addEventListener( projectListener )
-end
+if environment ~= "simulator" then inputCode.addEventListener( projectListener ) end
