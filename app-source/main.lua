@@ -323,13 +323,10 @@ local function runCode( event )
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
-            local func = loadstring(code)
-            local isValid, errorMessage = pcall(func)
-            if isValid then
-                -- assert(loadstring(code))()
-            else
+            local valid, errorMessage = pcall(loadstring(code))
+            if not valid then
                 local _, loc = string.find(errorMessage, '"]:%S')
-                if loc then message = "Error on line " .. errorMessage:sub(loc) end
+                if loc then errorMessage = "Error on line " .. errorMessage:sub(loc) end
                 errorToBrowser.push(errorMessage)
                 print(errorMessage)
             end
