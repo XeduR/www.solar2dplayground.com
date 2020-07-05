@@ -4,11 +4,11 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode, showError
+local inputCode, errorToBrowser
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
-    showError = require( "showError" )
+    errorToBrowser = require( "errorToBrowser" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -330,7 +330,7 @@ local function runCode( event )
             else
                 local _, loc = string.find(errorMessage, '"]:%S')
                 if loc then message = "Error on line " .. errorMessage:sub(loc) end
-                showError.postError(errorMessage)
+                errorToBrowser.push(errorMessage)
                 print(errorMessage)
             end
             assert(loadstring( code ))()

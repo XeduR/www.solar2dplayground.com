@@ -18,7 +18,9 @@ function loadCode(target){
             // Dispact a custom event to the app to get the new code automatically.
             frames[0].playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
         } else {
-            hasFinalised = true;
+            if( typeof frames[0].playgroundApp !== "undefined") {
+                hasFinalised = true;
+            }
         }
     }
 }
