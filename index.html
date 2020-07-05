@@ -37,6 +37,11 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     
+    <script>
+        // Accessing "https://www.solar2dplayground.com/?beta" will load the beta version of the playground app.
+        var isBeta = (window.location.search == "?beta") ? true : false;
+        var whichPlayground = isBeta ? "app-beta/index.html" : "app/index.html";
+    </script>
     <title>Solar2D Playground</title>
 </head>
 
@@ -97,7 +102,7 @@
                 
                 <div class="column-right">
                     <div class="iframe-container">
-                        <iframe id="app-frame" src="app/index.html"></iframe>
+                        <iframe id="app-frame"></iframe>
                     </div>
                 </div>
             
@@ -106,6 +111,7 @@
                     var appModule;
                     var getHeight;
                     var hasLoaded = false;
+                    document.getElementById('app-frame').src = whichPlayground;
                         
                     if (window.mobileCheck()) {
                         document.getElementById("disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
