@@ -333,7 +333,6 @@ local function runCode( event )
                 errorToBrowser.push(errorMessage)
                 print(errorMessage)
             end
-            assert(loadstring( code ))()
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
         end
