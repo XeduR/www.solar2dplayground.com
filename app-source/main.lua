@@ -4,10 +4,11 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode
+local inputCode, showError
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
+    showError = require( "showError" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -23,7 +24,6 @@ local font = "fonts/OpenSansRegular.ttf"
 
 -- TODO: add custom fonts, audio effects/bg music
 -- TODO: add fontloader plugin and preload all fonts.
--- TODO: add extra instructions to "CODE" tab, e.g. "what to do with error messages", and add link to docs.
 
 -- Temporarily preload the currently used fonts before adding fontloader.
 local temp = display.newText( "", 0, 0, font, 20 )
@@ -322,7 +322,17 @@ local function runCode( event )
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
-            assert(loadstring( code ))()
+            -- Check the code for immediate errors.
+            local func = loadstring(code)
+            local isValid, errorMessage = pcall(func)
+            if isValid then
+                assert(func)()
+            else
+                local _, loc = string.find(errorMessage, '"]:%S')
+                if loc then message = "Error on line " .. errorMessage:sub(loc) end
+                showError.postError(errorMessage)
+                print(errorMessage)
+            end
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
         end
@@ -332,7 +342,6 @@ end
 
 -- Listen for sample project button presses from the website.
 local function projectListener()
-    print( "- testing listener -" )
     runCode({phase="began"}) 
 end
 
