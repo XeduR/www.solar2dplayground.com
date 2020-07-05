@@ -73,6 +73,9 @@
 			</div>
 		</div>
     </noscript>
-    <script>window.location.replace(window.location.hostname)</script>
+    <script>
+        var url = "https://" + window.location.hostname;
+        window.location.replace(url);
+    </script>
 </body>
 </html>
