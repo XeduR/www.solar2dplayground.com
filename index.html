@@ -42,6 +42,24 @@
         // Accessing "https://www.solar2dplayground.com/?beta" will load the beta version of the playground app.
         var isBeta = (window.location.search == "?beta") ? true : false;
         var whichPlayground = isBeta ? "app-beta/index.html" : "app/index.html";
+        
+        function isMobile() {
+            var gotTouchEvent = false;
+            try {
+                document.createEvent("TouchEvent");
+                gotTouchEvent = true;
+            } catch(e) {
+                return false;
+            }
+            // Try to check that the device isn't a touch screen enabled Windows.
+            if (gotTouchEvent) {
+                var windowsVersions = ['Win32', 'Win64', 'Windows', 'WinCE'];
+                if (windowsVersions.indexOf(window.navigator.platform) !== -1) {
+                    return false;
+                }
+            }
+            return true;
+        }
     </script>
     <title>Solar2D Playground</title>
 </head>
@@ -132,13 +150,14 @@
                     var getHeight;
                     var filename;
                     
-                    if (window.mobileCheck()) {
+                    if (!isMobile()) {
                         var disclaimer = document.getElementById("disclaimer");
                         disclaimer.innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
-                        disclaimer.style.padding = "24px";
+                        disclaimer.style.padding = "20px";
                         disclaimer.style.margin = "0px";
                         disclaimer.style.background = "#d10000";
                         disclaimer.style.color = "white";
+                        disclaimer.classList.remove("hidden");
                     }
                     // Match the code editor's height with the app's height.
                     function resizeEditor() {
@@ -201,14 +220,8 @@
                             disclaimer.innerHTML = "There was a problem with loading the sample projects. Try again later.";
                             disclaimer.style.padding = "20px";
                             disclaimer.style.margin = "0px";
+                            disclaimer.classList.remove("hidden");
                             document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
-                            
-                            var buttonsSample = "";
-                            for (var i = 0; i < 5; i++) {
-                                buttonsSample += '<button id="project-'+i+'" class="button-code" onclick="loadCode(\''+i+'\',\''+"sample"+'\')">'+(i+1)+'</button>';
-                                projectFilename[i] = "Demo #"+(i+1)
-                            }
-                            document.getElementById("sample-buttons").innerHTML = buttonsSample;
                             
                             addCustomProjects();
                         },
