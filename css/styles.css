@@ -81,7 +81,7 @@ a, a:visited {
 }
 
 a:hover {
-    font-weight: bold;
+    text-decoration: underline;
 }
 
 .column-left {
@@ -177,7 +177,12 @@ ul {
     outline: 0;
     color: inherit;
     background-color: inherit;
+    text-decoration: none;
     cursor: pointer;
+}
+
+.button-header:hover {
+    text-decoration: underline;
 }
 
 .button-code {
@@ -195,8 +200,8 @@ ul {
     cursor: pointer;
 }
 
-.button-header:hover {
-    font-weight: bold;
+.disabled {
+    opacity: 0.3;
 }
 
 #line {
@@ -204,6 +209,10 @@ ul {
     width: 100%;
     background: #282a36;
     margin: 4px 0;
+}
+
+.hidden {
+    display: none;
 }
 
 .panel {

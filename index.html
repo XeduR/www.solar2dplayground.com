@@ -30,6 +30,7 @@
     <script src="./js/codemirror/lua.js"></script>
     <script src="./js/codemirror/simplescrollbars.js"></script>
     <script src="./js/detectMobile.js"></script>
+    <script src="./js/fileHandler.js"></script>
     <script src="./js/handleCode.js"></script>
     <script src="./js/panel.js"></script>
     <link href="./js/codemirror/dracula.css" rel="stylesheet"/>
@@ -55,6 +56,7 @@
                         <div id="break"></div>
                         <li class="item"><button id="code" class="button-header" onclick="togglePanel('code')">Code</button></li>
                         <li class="item"><button id="info" class="button-header" onclick="togglePanel('info')">Info</button></li>
+                        <li class="item"><a href="https://docs.coronalabs.com/" target="_blank">Solar2D Docs</a></li>
                         <li class="item last"><a href="https://solar2d.com/" target="_blank">Get Solar2D</a></li>
                     </ul>
                 </nav>
@@ -70,6 +72,15 @@
                         <h2>Select Sample Project:</h2>
                         <div id="sample-buttons"></div>
                         <div id="line"></div>
+                        <h2>Download & Upload Projects:</h2>
+                        <p>You can create your own custom projects and save them, or any of the sample projects, to your computer at any time.<br>In order to upload your projects to the Playground, you must first select one of the projects below to assign your project to.</p>
+                        <div id="line"></div>
+                        <div id="custom-buttons"></div>
+                        <input type="file" id="import" class="hidden" accept=".lua" disabled>
+                        <label for="import" id="button-import" class="button-code disabled" >Upload project</label>
+                        <input type="button" id="export" class="button-code" value="Download active project"/>
+                        <input type="text" id="projectName" value="solar2dplayground" oninput="filenameOnInput()" onchange="filenameOnChange()" disabled>
+                        <div id="line"></div>
                     </div>
                 </div>
                 
@@ -79,7 +90,7 @@
                     <div class="segment">
                         <div id="line"></div>
                         <h2>Solar2D Playground:</h2>
-                        <p>Solar2D Playground is an interactive website, developed and maintained by <a href="https://www.erantanen.com">Eetu Rantanen</a>, that allows you to create and run Solar2D projects instantly online.</p>
+                        <p>Solar2D Playground is an interactive website, developed and maintained by <a href="https://www.erantanen.com">Eetu "XeduR" Rantanen</a>, that allows you to create and run Solar2D projects instantly online.</p>
                         <p>You can find more of my personal projects over at my code portfolio site: <a href="https://www.xedur.com">www.xedur.com</a>.
                             I work on all sorts of interesting projects, as well as plugins for Solar2D, in my free time.
                             If you like what I'm doing and wish to support me, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
@@ -104,25 +115,46 @@
                     <div class="iframe-container">
                         <iframe id="app-frame"></iframe>
                     </div>
-                </div>
-            
+                </div>     
+                
                 <script>
+                    document.getElementById('app-frame').src = whichPlayground;
+                    var filenameField = document.getElementById( "projectName" );
+                    var customProjectCount = 5;
+                    var projectFilename = [];
+                    var customProject = [];
+                    var isCustomProject = false;
+                    var hasLoaded = false;
+                    var activeCustomProject;
+                    var activeProject;
                     var sampleProject;
                     var appModule;
                     var getHeight;
-                    var hasLoaded = false;
-                    document.getElementById('app-frame').src = whichPlayground;
-                        
+                    var filename;
+                    
                     if (window.mobileCheck()) {
-                        document.getElementById("disclaimer").innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
-                        document.getElementById("disclaimer").style.padding = "24px";
-                        document.getElementById("disclaimer").style.margin = "0px";
-                        document.getElementById("disclaimer").style.background = "#d10000";
-                        document.getElementById("disclaimer").style.color = "white";
+                        var disclaimer = document.getElementById("disclaimer");
+                        disclaimer.innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
+                        disclaimer.style.padding = "24px";
+                        disclaimer.style.margin = "0px";
+                        disclaimer.style.background = "#d10000";
+                        disclaimer.style.color = "white";
                     }
                     // Match the code editor's height with the app's height.
-                    function resizeEditor(){
+                    function resizeEditor() {
                         editor.setSize(null,getHeight());
+                    }
+                    
+                    function addCustomProjects() {
+                        var buttonsCustom = "";
+                        var sampleCount = sampleProject ? sampleProject.length : 0;
+                        for (var i = 0; i < customProjectCount; i++) {
+                            var num = sampleCount+i;
+                            buttonsCustom += '<button id="project-'+num+'" class="button-code" onclick="loadCode(\''+num+'\',\''+"custom"+'\',\''+i+'\')">Project #'+(i+1)+'</button>';
+                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-- (Your changes to this project are saved automatically for the duration of this session.)\n";
+                            projectFilename[num] = "Project #"+(i+1);
+                        }
+                        document.getElementById("custom-buttons").innerHTML = buttonsCustom;
                     }
                     
                     var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -131,6 +163,30 @@
                         lineNumbers: true,
                         scrollbarStyle: "simple"
                     });
+                    
+                    // Allow user to rename their custom projects.
+                    function filenameOnInput() {
+                        document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
+                        projectFilename[activeProject] = filenameField.value;
+                    }
+                    
+                    // If the user added ".lua" extension to the project name, then remove it.
+                    function filenameOnChange() {
+                        if (filenameField.value.substring(filenameField.value.length-4).toLowerCase() == ".lua") {
+                            filenameField.value = filename.substring(0,filenameField.value.length-4);
+                            document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
+                            projectFilename[activeProject] = filenameField.value;
+                        }
+                        filename = filenameField.value;
+                    }
+                     
+                    // Listen to changes in the editor in order to constantly save changes on all custom projects.
+                    editor.on("change", function() {
+                        if (isCustomProject) {
+                            customProject[activeCustomProject] = editor.getValue();
+                        }
+                    });
+                    
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via resizeEditor when the app has loaded.
                     var widthInitial = document.documentElement.clientWidth;
@@ -141,23 +197,35 @@
                         url: "./demos/demos.json",
                         type: "HEAD",
                         error: function() {
-                            document.getElementById("disclaimer").innerHTML = "There was a problem with loading the sample projects. Try again later.";
-                            document.getElementById("disclaimer").style.padding = "20px";
-                            document.getElementById("disclaimer").style.margin = "0px";
+                            var disclaimer = document.getElementById("disclaimer");
+                            disclaimer.innerHTML = "There was a problem with loading the sample projects. Try again later.";
+                            disclaimer.style.padding = "20px";
+                            disclaimer.style.margin = "0px";
                             document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
+                            
+                            var buttonsSample = "";
+                            for (var i = 0; i < 5; i++) {
+                                buttonsSample += '<button id="project-'+i+'" class="button-code" onclick="loadCode(\''+i+'\',\''+"sample"+'\')">'+(i+1)+'</button>';
+                                projectFilename[i] = "Demo #"+(i+1)
+                            }
+                            document.getElementById("sample-buttons").innerHTML = buttonsSample;
+                            
+                            addCustomProjects();
                         },
                         success: function() {
                             $.getJSON( "./demos/demos.json", function(json) {
                                 sampleProject = json;
                                 
-                                var buttons = "";
+                                var buttonsSample = "";
                                 for (var i = 0; i < sampleProject.length; i++) {
-                                    buttons += '<button id="project-'+i+'" class="button-code" onclick="loadCode('+i+')">'+sampleProject[i].title+'</button>'
+                                    buttonsSample += '<button id="project-'+i+'" class="button-code" onclick="loadCode(\''+i+'\',\''+"sample"+'\')">'+sampleProject[i].title+'</button>';
+                                    projectFilename[i] = sampleProject[i].title;
                                 }
-                                document.getElementById("sample-buttons").innerHTML = buttons;
+                                document.getElementById("sample-buttons").innerHTML = buttonsSample;
+                                addCustomProjects();
                                 // Open the code panel and crate project by default.
                                 document.getElementById("code").click();
-                                document.getElementById("project-1").click();
+                                document.getElementById("project-0").click();
                             });
                         }
                     });
@@ -171,19 +239,28 @@
                         window.addEventListener("resize", resizeEditor);
                     }
                     function checkLoaded() {
-                        if (document.getElementById("app-frame").contentWindow.Module && document.getElementById("app-frame").contentWindow.Module.cwrap) {
-                            clearInterval(loader);
-                            finalise();
+                        try {
+                            if (document.getElementById("app-frame").contentWindow.Module && document.getElementById("app-frame").contentWindow.Module.cwrap) {
+                                clearInterval(loader);
+                                finalise();
+                            }
+                        } catch (err) {
+                            clearInterval(loader); // Stop the loader from running if there's an error.
+                            // console.log(err);
                         }
                     }
                     var loader = setInterval(checkLoaded, 100);
+                    
+                    // Add listeners for file import/export functions.
+                    document.getElementById("export").addEventListener("click", downloadFile)
+                    document.getElementById('import').addEventListener('change', uploadFile)
                 </script>
             </div>    
         </main>
             
         <footer>
             <p style="line-height: 2">
-                <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu Rantanen</a><br>
+                <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu "XeduR" Rantanen</a><br>
                 Solar2D logo is property of the <a href="https://solar2d.com/">Solar2D project</a>.
                 The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
             </p>

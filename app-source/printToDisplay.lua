@@ -6,9 +6,10 @@
 -- inside the wrong function will result in an infinite loop.
 --==============================================================================
 
--- NB!  This version of printToDisplay is modified for use with Solar2D Playground
---      it should not be used for other projects. If you wish to use printToDisplay
---      in your projects, then simply download the standard plugin (TODO: add link).
+-- NB!  This version of printToDisplay is heavily modified for use with Solar2D Playground and as such
+--      it shouldn't be used in other projects. If you wish to use printToDisplay in your projects, then
+--      you can download the unmodified source from https://github.com/SpyricGames/Print-to-Display.
+
 local M = {}
 
 -- Localised functions.
@@ -17,8 +18,10 @@ local _type = type
 local _unpack = unpack
 local _tostring = tostring
 local _concat = table.concat
+local printToBrowser = system.getInfo( "environment" ) ~= "simulator" and require( "printToBrowser" )
 
 M.autoscroll = true
+local isConsoleOpen = false
 local canScroll = false
 local started = false
 local output
@@ -149,6 +152,13 @@ local function printToDisplay( ... )
     end
 end
 
+-- Modify the original print function to also print to browser and display consoles (if available).
+function print( ... )
+    if isConsoleOpen then printToDisplay( ... ) end
+    if printToBrowser then printToBrowser.log( ... ) end
+    _print( ... )
+end
+
 -- Optional function that will customise any or all visual features of the module.
 function M.setStyle( s )
     if type( s ) ~= "table" then
@@ -216,14 +226,9 @@ function M.start()
         M.controls.clear.x, M.controls.clear.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize
         M.controls.clear:addEventListener( "touch", controls )
         M.controls.clear.id = "clear"
-
-        -- Finally, "hijack" the global print function and add the printToDisplay functionality.
-        function print( ... )
-            printToDisplay( ... )
-            _print( ... )
-        end
         
-        print( "print() will output text here.\n " )
+        isConsoleOpen = true
+        printToDisplay( "print() will output text here.\n " )
         
         maxY = 0
         M.ui.bg:addEventListener( "touch", scroll )
@@ -235,6 +240,7 @@ function M.stop()
     if started then
         started = false
         canScroll = false
+        isConsoleOpen = false
         M.ui.bg:removeEventListener( "touch", scroll )        
         display.remove( output )
         output = nil
@@ -242,7 +248,6 @@ function M.stop()
         M.controls = nil
         display.remove( M.ui )
         M.ui = nil
-        print = _print -- Restore the normal global print function.
     end
 end
 

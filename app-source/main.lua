@@ -4,14 +4,16 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode, errorToBrowser
+local inputCode, printToBrowser
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
-    errorToBrowser = require( "errorToBrowser" )
+    printToBrowser = require( "printToBrowser" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
+local fontLoader = require( "spyricFontLoader" )
+fontLoader.preload( "fonts" ) 
 
 local instructions, logo
 local btn, imageList = {}, {}
@@ -22,20 +24,7 @@ local consoleOpen = false
 local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
 
--- TODO: add custom fonts, audio effects/bg music
--- TODO: add fontloader plugin and preload all fonts.
--- TODO: add extra instructions to "CODE" tab, e.g. "what to do with error messages", and add link to docs.
-
--- Temporarily preload the currently used fonts before adding fontloader.
-local temp = display.newText( "", 0, 0, font, 20 )
-temp:removeSelf()
-temp = nil
-temp = display.newText( "", 0, 0, native.systemFont, 20 )
-temp:removeSelf()
-temp = nil
-temp = display.newText( "", 0, 0, native.systemFontBold, 20 )
-temp:removeSelf()
-temp = nil
+-- TODO: add more custom fonts, audio effects/bg music
 
 -- groupGlobal contains all user generated display objects/groups
 local groupGlobal = display.newGroup()
@@ -327,7 +316,7 @@ local function runCode( event )
             if not valid then
                 local _, loc = string.find(errorMessage, '"]:%S')
                 if loc then errorMessage = "Error on line " .. errorMessage:sub(loc) end
-                errorToBrowser.push(errorMessage)
+                printToBrowser.alert(errorMessage)
                 print(errorMessage)
             end
         else
