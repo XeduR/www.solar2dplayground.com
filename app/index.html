@@ -211,11 +211,16 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         window.focus();
       }, true);
       window.addEventListener("keydown", function(event) {
-          if ([37, 38, 39, 40].indexOf(event.key) > -1 || [37, 38, 39, 40].indexOf(event.keyCode) > -1) {
-              event.preventDefault();
-          }
+        if ([37, 38, 39, 40].indexOf(event.key) > -1 || [37, 38, 39, 40].indexOf(event.keyCode) > -1) {
+          event.preventDefault();
+        }
       }, false);
       var playgroundApp = document;
+      // If the app isn't run within Iframe, then return to the main page.
+      if ( window.location === window.parent.location ) {
+        var url = "https://" + window.location.hostname;
+        window.location.replace(url);
+      }
     </script>
   </body>
 </html>
