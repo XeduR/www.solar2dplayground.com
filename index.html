@@ -87,11 +87,12 @@
                     
                     <div class="segment">
                         <div id="line"></div>
-                        <h2>Select Sample Project:</h2>
+                        <h2>Sample Projects:</h2>
+                        <p>Any changes you make to a sample project will be overwritten if you open another project. If you don't want to accidentally lose your progress, then consider using the custom projects below.</p>
                         <div id="sample-buttons"></div>
                         <div id="line"></div>
-                        <h2>Download & Upload Projects:</h2>
-                        <p>You can create your own custom projects and save them, or any of the sample projects, to your computer at any time.<br>In order to upload your projects to the Playground, you must first select one of the projects below to assign your project to.</p>
+                        <h2>Custom Projects:</h2>
+                        <p>You can create your own custom projects and save them, or any of the sample projects, to your computer at any time. In order to upload your projects to the Playground, you must first select one of the projects below to assign your project to.</p>
                         <div id="line"></div>
                         <div id="custom-buttons"></div>
                         <input type="file" id="import" class="hidden" accept=".lua" disabled>
@@ -189,13 +190,15 @@
                         projectFilename[activeProject] = filenameField.value;
                     }
                     
-                    // If the user added ".lua" extension to the project name, then remove it.
-                    function filenameOnChange() {
+                    // Check what changes the user ultimately made to the project name.
+                    function filenameOnChange() { // If the user added ".lua" extension to the project name, then remove it.
                         if (filenameField.value.substring(filenameField.value.length-4).toLowerCase() == ".lua") {
                             filenameField.value = filename.substring(0,filenameField.value.length-4);
-                            document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
-                            projectFilename[activeProject] = filenameField.value;
+                        } else if (filenameField.value.length === 0) { // Also, ensure that the field isn't empty either.
+                            filenameField.value = "Project #"+(Number(activeCustomProject)+1);
                         }
+                        document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
+                        projectFilename[activeProject] = filenameField.value;
                         filename = filenameField.value;
                     }
                      
@@ -224,6 +227,7 @@
                             disclaimer.style.color = "white";
                             disclaimer.classList.remove("hidden");
                             document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
+                            document.getElementById("sample-buttons").style.fontWeight = "bold";
                             
                             addCustomProjects();
                         },
