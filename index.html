@@ -150,7 +150,7 @@
                     var getHeight;
                     var filename;
                     
-                    if (!isMobile()) {
+                    if (isMobile()) {
                         var disclaimer = document.getElementById("disclaimer");
                         disclaimer.innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
                         disclaimer.style.padding = "20px";
