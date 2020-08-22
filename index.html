@@ -155,7 +155,7 @@
                     // Match the code editor's height with the app's height.
                     function resizeEditor() { editor.setSize(null,getHeight()); }
                     // Check if the user is on a mobile device or not.
-                    if (!isMobileDevice) {
+                    if (isMobileDevice) {
                         document.getElementById("startButton").classList.remove("hidden");
                         showDisclaimer("mobile")
                     }
