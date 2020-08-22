@@ -296,7 +296,8 @@ end
 
 local function errorListener()
     clearEverything()
-    return false
+    os.exit()
+    return true
 end
 Runtime:addEventListener( "unhandledError", errorListener )
 
