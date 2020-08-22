@@ -130,10 +130,16 @@
                     var filename;
                     var loader;
                     
-                    function playgroundCrash() {
+                    function restartPlayground() {
+                        hasLoaded = false;
+                        // appModule = document.getElementById("app-frame").contentWindow.Module;
+                        // getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                        // editor.setSize(null,getHeight());
+                        // window.addEventListener("resize", resizeEditor);
+                        
                         var app = document.getElementById('app');
                         app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
-                        frames[0].startLoading();
+                        // frames[0].startLoading();
                         loader = setInterval(checkLoaded, 100);
                     }
                     

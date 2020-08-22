@@ -4,12 +4,11 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode, printToBrowser, playgroundCrashed
+local inputCode, printToBrowser
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
     printToBrowser = require( "printToBrowser" )
-    playgroundCrashed = require( "playgroundCrashed" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -26,10 +25,6 @@ local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
 
 -- TODO: add more custom fonts, audio effects/bg music
--- TODO: investigate having the Playground shut down the project on error.
---          - This take a screenshot of the app, give it a red tint (or red borders), wipe everything
---            and then let the user resume. There is currently an issue if an error occurs inside event
---            listeners, like touch event in "Crate" as it can trigger hundreds of error messages.
 
 -- groupGlobal contains all user generated display objects/groups
 local groupGlobal = display.newGroup()
@@ -294,15 +289,6 @@ local function toggleConsole( event )
     end
     return true
 end
-
-function errorListener( event )
-    printToBrowser.log( "errorListener activated" )
-    if playgroundCrashed then
-        playgroundCrashed.reportCrash()
-    end
-    return false
-end
-Runtime:addEventListener( "unhandledError", errorListener )
 
 local function runCode( event )
     if event.phase == "began" then
