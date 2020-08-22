@@ -322,6 +322,7 @@ local function runCode( event )
                 if loc then errorMessage = "Error on line " .. errorMessage:sub(loc) end
                 printToBrowser.alert(errorMessage)
                 print(errorMessage)
+                clearEverything()
             end
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
