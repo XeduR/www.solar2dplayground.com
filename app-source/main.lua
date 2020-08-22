@@ -294,6 +294,12 @@ local function toggleConsole( event )
     return true
 end
 
+local function errorListener()
+    clearEverything()
+    return false
+end
+Runtime:addEventListener( "unhandledError", errorListener )
+
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
@@ -322,7 +328,6 @@ local function runCode( event )
                 if loc then errorMessage = "Error on line " .. errorMessage:sub(loc) end
                 printToBrowser.alert(errorMessage)
                 print(errorMessage)
-                clearEverything()
             end
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
@@ -333,7 +338,7 @@ end
 
 -- Listen for sample project button presses from the website.
 local function projectListener()
-    runCode({phase="began"}) 
+    runCode({phase="began"})
 end
 
 imageList[1] = display.newRoundedRect( groupWindow, 480, 320, 800, 600, 8 )
