@@ -206,7 +206,7 @@
                     
                     // Since the Playground isn't fully supported on mobile devices, user has to opt to start it manually.
                     function mobileStartManually() {
-                        document.getElementById("startButton").classList.add("hidden");
+                        document.getElementById("startButton").remove();
                         frames[0].startLoading();
                         loader = setInterval(checkLoaded, 100);
                     }
