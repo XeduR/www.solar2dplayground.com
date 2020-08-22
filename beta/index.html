@@ -133,6 +133,8 @@
                     function playgroundCrash() {
                         var app = document.getElementById('app');
                         app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
+                        frames[0].startLoading();
+                        loader = setInterval(checkLoaded, 100);
                     }
                     
                     function showDisclaimer(which) {
