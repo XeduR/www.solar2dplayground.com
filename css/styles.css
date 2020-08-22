@@ -279,9 +279,7 @@ button.load:hover {
 }
 
 @media only screen and (max-width: 960px) {
-    body {
-        background-color: lightblue;
-    }
+    
 }
 
 .logo-image {
