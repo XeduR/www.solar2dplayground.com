@@ -115,6 +115,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         postRun: [],
         print: function() {},
         printErr: function(text) {
+            console.log("- test - test - test -")
             if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
             if (0) { // XXX disabled for safety typeof dump == 'function') {
                 dump(text + '\n'); // fast, straight to the real console

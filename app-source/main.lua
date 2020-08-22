@@ -295,7 +295,7 @@ local function toggleConsole( event )
     return true
 end
 
-local function errorListener( event )
+function errorListener( event )
     printToBrowser.log( "errorListener activated" )
     printToBrowser.log( printToBrowser )
     if playgroundCrashed then
@@ -311,6 +311,7 @@ Runtime:addEventListener( "unhandledError", errorListener )
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
+        display.newRect(x)
         -- Reset default display values.
         display.setDefault( "anchorX", 0.5 )
         display.setDefault( "anchorY", 0.5 )
