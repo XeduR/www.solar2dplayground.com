@@ -108,7 +108,7 @@
                 </div>
                 
                 <div class="column-right">
-                    <div class="iframe-container">
+                    <div id="app" class="iframe-container">
                         <iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>
                         <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
                     </div>
@@ -129,6 +129,11 @@
                     var getHeight;
                     var filename;
                     var loader;
+                    
+                    function playgroundCrash() {
+                        var app = document.getElementById('app');
+                        app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
+                    }
                     
                     function showDisclaimer(which) {
                         var disclaimer = document.getElementById("disclaimer");

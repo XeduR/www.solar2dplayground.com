@@ -4,11 +4,12 @@ timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode, printToBrowser
+local inputCode, printToBrowser, playgroundCrashed
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
     printToBrowser = require( "printToBrowser" )
+    playgroundCrashed = require( "playgroundCrashed" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -295,8 +296,9 @@ local function toggleConsole( event )
 end
 
 local function errorListener()
-    clearEverything()
-    os.exit()
+    if playgroundCrashed then
+        playgroundCrashed.reportCrash()
+    end
     return true
 end
 Runtime:addEventListener( "unhandledError", errorListener )
@@ -304,6 +306,7 @@ Runtime:addEventListener( "unhandledError", errorListener )
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
+        display.newRect(123,x)
         -- Reset default display values.
         display.setDefault( "anchorX", 0.5 )
         display.setDefault( "anchorY", 0.5 )
