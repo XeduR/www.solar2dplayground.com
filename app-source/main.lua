@@ -296,11 +296,15 @@ local function toggleConsole( event )
 end
 
 local function errorListener( event )
+    printToBrowser.log( "errorListener activated" )
+    printToBrowser.log( printToBrowser )
     if playgroundCrashed then
+        printToBrowser.log( "playgroundCrashed" )
         playgroundCrashed.reportCrash()
         printToBrowser.alert( event.errorMessage )
     end
-    return true
+    printToBrowser.log( "errorListener ended" )
+    return false
 end
 Runtime:addEventListener( "unhandledError", errorListener )
 
