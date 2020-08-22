@@ -297,13 +297,9 @@ end
 
 function errorListener( event )
     printToBrowser.log( "errorListener activated" )
-    printToBrowser.log( printToBrowser )
     if playgroundCrashed then
-        printToBrowser.log( "playgroundCrashed" )
         playgroundCrashed.reportCrash()
-        printToBrowser.alert( event.errorMessage )
     end
-    printToBrowser.log( "errorListener ended" )
     return false
 end
 Runtime:addEventListener( "unhandledError", errorListener )
@@ -311,7 +307,6 @@ Runtime:addEventListener( "unhandledError", errorListener )
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
-        display.newRect(x)
         -- Reset default display values.
         display.setDefault( "anchorX", 0.5 )
         display.setDefault( "anchorY", 0.5 )
