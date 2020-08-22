@@ -25,6 +25,10 @@ local imagesOpen = false
 local font = "fonts/OpenSansRegular.ttf"
 
 -- TODO: add more custom fonts, audio effects/bg music
+-- TODO: investigate having the Playground shut down the project on error.
+--          - This take a screenshot of the app, give it a red tint (or red borders), wipe everything
+--            and then let the user resume. There is currently an issue if an error occurs inside event
+--            listeners, like touch event in "Crate" as it can trigger hundreds of error messages.
 
 -- groupGlobal contains all user generated display objects/groups
 local groupGlobal = display.newGroup()

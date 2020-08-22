@@ -42,24 +42,6 @@
         // Accessing "https://www.solar2dplayground.com/?beta" will load the beta version of the playground app.
         var isBeta = (window.location.search == "?beta") ? true : false;
         var whichPlayground = isBeta ? "app-beta/index.html" : "app/index.html";
-        
-        function isMobile() {
-            var gotTouchEvent = false;
-            try {
-                document.createEvent("TouchEvent");
-                gotTouchEvent = true;
-            } catch(e) {
-                return false;
-            }
-            // Try to check that the device isn't a touch screen enabled Windows.
-            if (gotTouchEvent) {
-                var windowsVersions = ['Win32', 'Win64', 'Windows', 'WinCE'];
-                if (windowsVersions.indexOf(window.navigator.platform) !== -1) {
-                    return false;
-                }
-            }
-            return true;
-        }
     </script>
     <title>Solar2D Playground</title>
 </head>
@@ -132,13 +114,15 @@
                 
                 <div class="column-right">
                     <div class="iframe-container">
-                        <iframe id="app-frame"></iframe>
+                        <iframe scrolling="no" id="app-frame" src="about:blank"></iframe>
+                        <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
                     </div>
                 </div>     
                 
                 <script>
                     document.getElementById('app-frame').src = whichPlayground;
                     var filenameField = document.getElementById( "projectName" );
+                    var isMobileDevice = isMobile();
                     var customProjectCount = 5;
                     var projectFilename = [];
                     var customProject = [];
@@ -150,19 +134,30 @@
                     var appModule;
                     var getHeight;
                     var filename;
+                    var loader;
                     
-                    if (isMobile()) {
+                    function showDisclaimer(which) {
                         var disclaimer = document.getElementById("disclaimer");
-                        disclaimer.innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
+                        if (which == "mobile") {
+                            disclaimer.innerHTML = "You seem to be on a mobile device. This website is not designed for mobile devices and it may not run correctly, or at all, on your device.";
+                        } else {
+                            disclaimer.innerHTML = "There was a problem with loading the sample projects. Try again later.";
+                            document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
+                            document.getElementById("sample-buttons").style.fontWeight = "bold";
+                        }
                         disclaimer.style.padding = "20px";
                         disclaimer.style.margin = "0px";
                         disclaimer.style.background = "#d10000";
                         disclaimer.style.color = "white";
                         disclaimer.classList.remove("hidden");
                     }
+                    
                     // Match the code editor's height with the app's height.
-                    function resizeEditor() {
-                        editor.setSize(null,getHeight());
+                    function resizeEditor() { editor.setSize(null,getHeight()); }
+                    // Check if the user is on a mobile device or not.
+                    if (!isMobileDevice) {
+                        document.getElementById("startButton").classList.remove("hidden");
+                        showDisclaimer("mobile")
                     }
                     
                     function addCustomProjects() {
@@ -209,6 +204,12 @@
                         }
                     });
                     
+                    // Since the Playground isn't fully supported on mobile devices, user has to opt to start it manually.
+                    function mobileStartManually() {
+                        frames[0].startLoading();
+                        loader = setInterval(checkLoaded, 100);
+                    }
+                    
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via resizeEditor when the app has loaded.
                     var widthInitial = document.documentElement.clientWidth;
@@ -219,16 +220,7 @@
                         url: "./demos/demos.json",
                         type: "HEAD",
                         error: function() {
-                            var disclaimer = document.getElementById("disclaimer");
-                            disclaimer.innerHTML = "There was a problem with loading the sample projects. Try again later.";
-                            disclaimer.style.padding = "20px";
-                            disclaimer.style.margin = "0px";
-                            disclaimer.style.background = "#d10000";
-                            disclaimer.style.color = "white";
-                            disclaimer.classList.remove("hidden");
-                            document.getElementById("sample-buttons").innerHTML = "<p>Failed to load sample projects.</p>";
-                            document.getElementById("sample-buttons").style.fontWeight = "bold";
-                            
+                            showDisclaimer("error")
                             addCustomProjects();
                         },
                         success: function() {
@@ -252,6 +244,7 @@
                     // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
                         hasLoaded = true;
+                        if (isMobileDevice) { document.getElementById("startButton").classList.remove("hidden"); }
                         appModule = document.getElementById("app-frame").contentWindow.Module;
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
@@ -268,7 +261,7 @@
                             // console.log(err);
                         }
                     }
-                    var loader = setInterval(checkLoaded, 100);
+                    if (!isMobileDevice) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)

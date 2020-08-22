@@ -90,6 +90,7 @@ a:hover {
 }
 
 .column-right {
+    overflow: hidden;
     float: left;
     width: 50%;
     max-width: 960px;
@@ -200,6 +201,25 @@ ul {
     cursor: pointer;
 }
 
+button.load {
+    background: #FCBA04;
+    border: 2px solid black;
+    border-radius: 12px;
+    color: #141518;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    position: absolute;
+    font-weight: bold;
+    padding: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+button.load:hover {
+    text-decoration: underline;
+}
+
 .disabled {
     opacity: 0.3;
 }
@@ -256,6 +276,12 @@ ul {
 .logo {
     flex: 1;
     order: 0;
+}
+
+@media only screen and (max-width: 960px) {
+    body {
+        background-color: lightblue;
+    }
 }
 
 .logo-image {
