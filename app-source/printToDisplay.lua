@@ -153,10 +153,13 @@ local function printToDisplay( ... )
 end
 
 -- Modify the original print function to also print to browser and display consoles (if available).
-function print( ... )
-    if isConsoleOpen then printToDisplay( ... ) end
-    if printToBrowser then printToBrowser.log( ... ) end
-    _print( ... )
+-- print() is set inside resetPrint() so that it can be restored if the user accidentally messes with it.
+function M.resetPrint()
+    function print( ... )
+        if isConsoleOpen then printToDisplay( ... ) end
+        if printToBrowser then printToBrowser.log( ... ) end
+        _print( ... )
+    end
 end
 
 -- Optional function that will customise any or all visual features of the module.
@@ -251,4 +254,5 @@ function M.stop()
     end
 end
 
+M.resetPrint()
 return M

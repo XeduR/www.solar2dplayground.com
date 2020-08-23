@@ -213,8 +213,11 @@ local function clearEverything()
     end
     -- Reset any possible changes to the global tables/libraries.
     for index, value in pairs( _origGlobals ) do
-        -- "print" will be may be altered due to printToDisplay plugin, so ignore it.
-        if index ~= "print" and value ~= _G[index] then
+        -- "print" is already customised via printToDisplay plugin,
+        -- so it will be reset via the plugin unlike other globals.
+        if index == "print" then
+            printToDisplay.resetPrint()
+        elseif value ~= _G[index] then
             _G[index] = value
         end
     end
@@ -288,15 +291,6 @@ local function toggleConsole( event )
     return true
 end
 
-local function errorHandler(msg)
-    local traceback = debug.traceback()
-    local _, start = traceback:find("xpcall")
-    start = traceback:find("%S+",start+2)
-    print( traceback )
-    traceback = traceback:sub(start)
-    print( "Error: " .. msg .."\n" .. traceback )
-end
-
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
@@ -319,7 +313,13 @@ local function runCode( event )
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
-            xpcall(loadstring(code),errorHandler)
+            ---------------------------------------------------------------------------------------------------------------------------------
+            -- NB!  "pcall" and "xpcall" aren't used here by design. While we could avoid crashes caused due to errors in the initial code,
+            --      we won't be able to obtain a useful stack trace by using the aforementioned functions. Instead, by letting the app crash,
+            --      Solar2D will send a more descriptive stack trace to the browser (one that is of actual use to the user). This will also
+            --      make the crashes behave similarly, which improves the predictability of the Playground's behaviour.
+            loadstring(code)()
+            ---------------------------------------------------------------------------------------------------------------------------------
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
         end

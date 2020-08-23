@@ -285,7 +285,7 @@ button.load:hover {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     visibility: hidden;
     opacity: 0;
 }
@@ -301,6 +301,7 @@ button.load:hover {
 	position: absolute;
     color: #fcba04;
     font-size: 1.2em;
+    font-weight: bold;
     text-align: center;
     width: 96%;
 	top: 50%;

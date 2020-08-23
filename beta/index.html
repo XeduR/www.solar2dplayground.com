@@ -109,7 +109,7 @@
                 
                 <div class="column-right">
                     <div id="app" class="iframe-container">
-                        <iframe id="app-frame" src="app/index.html"></iframe>
+                        <iframe id="app-frame" scrolling="no" src="app/index.html"></iframe>
                         <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
                     </div>
                 </div>
@@ -137,13 +137,35 @@
                     var filename;
                     var loader;
                     
-                    // TODO: Playground crashes if it tries to start with a window size equal to or less than 640px.
+                    function cleanErrorString() {
+                        
+                    }
                     
                     function restartPlayground(text) {
                         window.removeEventListener("resize", windowResize);
                         hasLoaded = false;
                         
-                        let msg = text + "\nPlayground will now restart."
+                        // Clean up the error message by removing references to Lua's loadstring().
+                        let start = 0, end = 0;
+                        do {
+                            start = text.indexOf("[string",start);
+                            if (start != -1) {
+                                end = text.indexOf("]:",end);
+                                if (end != -1) {
+                                    let pre = text.substring(0,start);
+                                    text = pre + "line: " + text.substring(end+2-start);
+                                }
+                            }
+                        }
+                        while (start != -1);
+                        // Solar2D seems to add a reference to a function on line 189 by default.
+                        // If it is there, then just remove it as it doesn't add value to anyone.
+                        let f189 = text.indexOf("?: in function <?:189>");
+                        if (f189 != -1) {
+                            text = text.substring(0,f189);
+                        }
+                        
+                        let msg = text + "\n\nPlayground will now restart."
                         var app = document.getElementById('app');
                         if (confirm(msg)) {
                             app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
@@ -178,9 +200,9 @@
                     }
                     
                     // Check if the user is on a mobile device or not.
-                    if (isMobileDevice) {
+                    if (isMobileDevice || document.documentElement.clientWidth <= 640) {
                         startButton.classList.remove("hidden");
-                        showDisclaimer("mobile")
+                        if (isMobileDevice) { showDisclaimer("mobile") }
                     }
                     
                     function addCustomProjects() {
@@ -286,7 +308,8 @@
                             // console.log(err);
                         }
                     }
-                    if (!isMobileDevice) { loader = setInterval(checkLoaded, 100); }
+                    // Playground seems to crash if it starts when the width of the window is less than or equal to 640.
+                    if (!isMobileDevice && document.documentElement.clientWidth > 640) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
