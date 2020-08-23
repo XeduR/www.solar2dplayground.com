@@ -139,22 +139,18 @@
                     
                     function restartPlayground(text) {
                         window.removeEventListener("resize", windowResize);
+                        hasPlaygroundCrashed = true; 
                         hasLoaded = false;
                         
                         // Clean up the error message by removing references to Lua's loadstring().
-                        let start = 0, end = 0;
+                        let start, end;
                         do {
-                            console.log( "looping" )
-                            start = text.indexOf("[string",start);
+                            start = text.indexOf("[string");
                             if (start != -1) {
-                                console.log( "start = " + start );
-                                end = text.indexOf("]:",end);
+                                end = text.indexOf("]:");
                                 if (end != -1) {
-                                    end += 2;
-                                    console.log( "end = " + end );
                                     let pre = text.substring(0,start);
-                                    text = pre + "line " + text.substring(end);
-                                    start = end;
+                                    text = pre + "line " + text.substring(end+2);
                                 }
                             }
                         }
@@ -289,6 +285,7 @@
                     // It's unclear as to when the app has finished loading and when Module and its functions are
                     // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
+                        hasPlaygroundCrashed = false;
                         hasLoaded = true;
                         if (isMobileDevice) { startButton.classList.remove("hidden"); }
                         appModule = document.getElementById("app-frame").contentWindow.Module;

@@ -229,7 +229,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         // Don't start the Playground if it's not running on a server.
         if (window.location.href.substring(0,7) != "file://") {
             // If non-mobile device, then start the Playground automatically.
-            if (!isMobile()) { startLoading() }
+            if (!isMobile() && !parent.hasPlaygroundCrashed) { startLoading() }
         }
     </script>
 </body>
