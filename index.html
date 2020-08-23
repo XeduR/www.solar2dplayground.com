@@ -148,7 +148,7 @@
                         do {
                             start = text.indexOf("[string");
                             if (start != -1) {
-                                end = text.indexOf("]:");
+                                end = text.indexOf("]:",start);
                                 if (end != -1) {
                                     let pre = text.substring(0,start);
                                     text = pre + "line " + text.substring(end+2);
