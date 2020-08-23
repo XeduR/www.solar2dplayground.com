@@ -110,7 +110,7 @@
                 <div class="column-right">
                     <div id="app" class="iframe-container">
                         <iframe id="app-frame" scrolling="no" src="app/index.html"></iframe>
-                        <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
+                        <button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>
                     </div>
                 </div>
                 
@@ -144,12 +144,15 @@
                         // Clean up the error message by removing references to Lua's loadstring().
                         let start = 0, end = 0;
                         do {
+                            console.log( "looping" )
                             start = text.indexOf("[string",start);
                             if (start != -1) {
+                                console.log( "start = " + start );
                                 end = text.indexOf("]:",end);
                                 if (end != -1) {
                                     end += 2;
-                                    let pre = text.substring(0,start-1);
+                                    console.log( "end = " + end );
+                                    let pre = text.substring(0,start);
                                     text = pre + "line " + text.substring(end);
                                     start = end;
                                 }
@@ -160,16 +163,14 @@
                         // If it is there, then just remove it as it doesn't add value to anyone.
                         let f189 = text.indexOf("?: in function <?:189>");
                         if (f189 != -1) {
-                            text = text.substring(0,f189);
+                            text = text.substring(0,f189-1); // also remove the weird HT symbol.
                         }
                         
                         let msg = text + "\n\nPlayground will now restart."
-                        var app = document.getElementById('app');
+                        document.getElementById('app').innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe><button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>';
                         if (confirm(msg)) {
-                            app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
                             loader = setInterval(checkLoaded, 100);
                         } else {
-                            app.innerHTML = '<iframe scrolling="no" id="app-frame" src="about:blank"></iframe>';
                             startButton.classList.remove("hidden");
                         }
                     }
