@@ -168,6 +168,7 @@
                         }
                         document.getElementById('app').innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe><button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>';
                         if (hasPlaygroundCrashed) {
+                            startButton = document.getElementById("startButton");
                             startButton.classList.remove("hidden");
                         } else {
                             loader = setInterval(checkLoaded, 100);
