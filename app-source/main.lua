@@ -1,6 +1,4 @@
 display.setStatusBar( display.HiddenStatusBar )
-timer = nil -- Using "newTimer" temporarily until PR is committed to Solar2D core.
-timer = require( "newTimer" )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
@@ -190,7 +188,7 @@ local function clearEverything()
     if _pState ~= "stop" then
         physics.stop()
     end
-    transition.pause()
+    transition.cancelAll()
     timer.cancelAll()
     -- Start by removing Runtime listeners.
     for i = #_runtimeListeners, 1, -1 do
@@ -290,6 +288,15 @@ local function toggleConsole( event )
     return true
 end
 
+local function errorHandler(msg)
+    local traceback = debug.traceback()
+    local _, start = traceback:find("xpcall")
+    start = traceback:find("%S+",start+2)
+    print( traceback )
+    traceback = traceback:sub(start)
+    print( "Error: " .. msg .."\n" .. traceback )
+end
+
 local function runCode( event )
     if event.phase == "began" then
         removeInstructions()
@@ -312,13 +319,7 @@ local function runCode( event )
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
-            local valid, errorMessage = pcall(loadstring(code))
-            if not valid then
-                local _, loc = string.find(errorMessage, '"]:%S')
-                if loc then errorMessage = "Error on line " .. errorMessage:sub(loc) end
-                printToBrowser.alert(errorMessage)
-                print(errorMessage)
-            end
+            xpcall(loadstring(code),errorHandler)
         else
             print( "WARNING: In order to run this project, you need to build it for HTML5 and deploy it via Iframe." )
         end

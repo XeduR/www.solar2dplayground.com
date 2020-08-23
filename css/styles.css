@@ -29,7 +29,7 @@ footer {
 p {
     font-family: 'Roboto', sans-serif;
     line-height: 1.4;
-    font-size: 15px;
+    font-size: 1em;
 }
 
 h2 {
@@ -278,8 +278,30 @@ button.load:hover {
     order: 0;
 }
 
+.overlay {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    visibility: hidden;
+    opacity: 0;
+}
+
 @media only screen and (max-width: 960px) {
-    
+    .overlay {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+#widthPrompt {
+    color: #fcba04;
+    font-size: 1.2em;
+    text-align: center;
+    padding: 40px;
 }
 
 .logo-image {
