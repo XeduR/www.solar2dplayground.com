@@ -109,7 +109,7 @@
                 
                 <div class="column-right">
                     <div id="app" class="iframe-container">
-                        <iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>
+                        <iframe id="app-frame" src="app/index.html"></iframe>
                         <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
                     </div>
                 </div>
@@ -137,10 +137,14 @@
                     var filename;
                     var loader;
                     
+                    // TODO: Playground crashes if it tries to start with a window size equal to or less than 640px.
+                    
                     function restartPlayground(text) {
-                        let msg = text + "\n\n Playground will now restart."
-                        var app = document.getElementById('app');
+                        window.removeEventListener("resize", windowResize);
                         hasLoaded = false;
+                        
+                        let msg = text + "\nPlayground will now restart."
+                        var app = document.getElementById('app');
                         if (confirm(msg)) {
                             app.innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>';
                             loader = setInterval(checkLoaded, 100);

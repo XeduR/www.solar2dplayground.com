@@ -285,7 +285,7 @@ button.load:hover {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.7);
     visibility: hidden;
     opacity: 0;
 }
@@ -298,10 +298,15 @@ button.load:hover {
 }
 
 #widthPrompt {
+	position: absolute;
     color: #fcba04;
     font-size: 1.2em;
     text-align: center;
-    padding: 40px;
+    width: 96%;
+	top: 50%;
+	left: 50%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
 }
 
 .logo-image {
