@@ -162,7 +162,7 @@
                         if (f189 != -1) { text = text.substring(0,f189-1); } // also remove the weird HT symbol.
                         
                         let msg = text + "\nThe Playground will now restart."
-                        let restart = false;
+                        console.error(msg);
                         if (confirm(msg)) {
                             hasPlaygroundCrashed = false;
                         } else {

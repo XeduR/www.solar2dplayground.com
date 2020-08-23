@@ -164,7 +164,6 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             if (0) { // XXX disabled for safety typeof dump == 'function') {
                 dump(text + '\n'); // fast, straight to the real console
             } else {
-                console.error(text);
                 if (typeof(text) === "string" && text.toUpperCase().indexOf("ERROR") >= 0) parent.restartPlayground(text);
             }
         },
