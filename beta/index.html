@@ -137,10 +137,6 @@
                     var filename;
                     var loader;
                     
-                    function cleanErrorString() {
-                        
-                    }
-                    
                     function restartPlayground(text) {
                         window.removeEventListener("resize", windowResize);
                         hasLoaded = false;
@@ -152,8 +148,10 @@
                             if (start != -1) {
                                 end = text.indexOf("]:",end);
                                 if (end != -1) {
+                                    end += 2;
                                     let pre = text.substring(0,start);
-                                    text = pre + "line: " + text.substring(end+2-start);
+                                    text = pre + "line " + text.substring(end);
+                                    start = end;
                                 }
                             }
                         }
