@@ -47,10 +47,10 @@
             <div id="wrapper">
                 <nav>
                     <ul class="menu">
-                        <li class="logo"><a href="#"><img class="logo-image" src="/img/logo.png" alt="Solar2D Playground"></a></li>
+                        <li class="logo"><img class="logo-image" src="/img/logo.png" alt="Solar2D Playground"></li>
                         <div id="break"></div>
-                        <li class="item"><button id="code" class="button-header" onclick="togglePanel('code')">Code</button></li>
-                        <li class="item"><button id="info" class="button-header" onclick="togglePanel('info')">Info</button></li>
+                        <li class="item"><a id="code" title="Code panel" href="#" onclick="togglePanel('code');return false;">Code</a></li>
+                        <li class="item"><a id="info" title="Info panel" href="#" onclick="togglePanel('info');return false;">Info</a></li>
                         <li class="item"><a href="https://docs.coronalabs.com/" target="_blank">Solar2D Docs</a></li>
                         <li class="item last"><a href="https://solar2d.com/" target="_blank">Get Solar2D</a></li>
                     </ul>
@@ -108,18 +108,27 @@
                 </div>
                 
                 <div class="column-right">
-                    <div class="iframe-container">
-                        <iframe scrolling="no" id="app-frame" src="app/index.html"></iframe>
-                        <button id="startButton" onclick="mobileStartManually()" class="load hidden">Start Solar2D Playground</button>
+                    <div id="app" class="iframe-container">
+                        <iframe id="app-frame" scrolling="no" src="app/index.html"></iframe>
+                        <button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>
                     </div>
-                </div>     
+                </div>
+                
+                <div class="overlay">
+                    <p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.</p>
+                </div>
                 
                 <script>
                     var filenameField = document.getElementById( "projectName" );
+                    var startButton = document.getElementById("startButton");
+                    var widthPrompt = document.getElementById("widthPrompt");
+                    var widthInitial = document.documentElement.clientWidth;
                     var isMobileDevice = isMobile();
                     var customProjectCount = 5;
                     var projectFilename = [];
                     var customProject = [];
+                    var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
+                    var hasPlaygroundCrashed = (widthInitial > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
                     var isCustomProject = false;
                     var hasLoaded = false;
                     var activeCustomProject;
@@ -129,6 +138,44 @@
                     var getHeight;
                     var filename;
                     var loader;
+                    
+                    function restartPlayground(text) {
+                        window.removeEventListener("resize", windowResize);
+                        hasLoaded = false;
+                        
+                        // Clean up the error message by removing references to Lua's loadstring().
+                        let start, end;
+                        do {
+                            start = text.indexOf("[string");
+                            if (start != -1) {
+                                end = text.indexOf("]:");
+                                if (end != -1) {
+                                    let pre = text.substring(0,start);
+                                    text = pre + "line " + text.substring(end+2);
+                                }
+                            }
+                        }
+                        while (start != -1);
+                        // Solar2D seems to add a reference to a function on line 189 by default.
+                        // If it is there, then just remove it as it doesn't add value to anyone.
+                        let f189 = text.indexOf("?: in function <?:189>");
+                        if (f189 != -1) { text = text.substring(0,f189-1); } // also remove the weird HT symbol.
+                        
+                        let msg = text + "\nThe Playground will now restart."
+                        console.error(msg);
+                        if (confirm(msg)) {
+                            hasPlaygroundCrashed = false;
+                        } else {
+                            hasPlaygroundCrashed = true;
+                        }
+                        document.getElementById('app').innerHTML = '<iframe scrolling="no" id="app-frame" src="app/index.html"></iframe><button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>';
+                        if (hasPlaygroundCrashed) {
+                            startButton = document.getElementById("startButton");
+                            startButton.classList.remove("hidden");
+                        } else {
+                            loader = setInterval(checkLoaded, 100);
+                        }
+                    }
                     
                     function showDisclaimer(which) {
                         var disclaimer = document.getElementById("disclaimer");
@@ -146,12 +193,17 @@
                         disclaimer.classList.remove("hidden");
                     }
                     
-                    // Match the code editor's height with the app's height.
-                    function resizeEditor() { editor.setSize(null,getHeight()); }
-                    // Check if the user is on a mobile device or not.
-                    if (isMobileDevice) {
-                        document.getElementById("startButton").classList.remove("hidden");
-                        showDisclaimer("mobile")
+                    // Update the widthPrompt text and catch the code editor's height with the app's height.
+                    function windowResize() {
+                        let width = document.documentElement.clientWidth;
+                        widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + width + 'pixels.</p></div>'
+                        editor.setSize(null,getHeight());
+                    }
+                    
+                    // Check if the user is on a mobile device or not, or if the widthCrashThreshold has been triggered.
+                    if (isMobileDevice || hasPlaygroundCrashed) {
+                        startButton.classList.remove("hidden");
+                        if (isMobileDevice) { showDisclaimer("mobile") }
                     }
                     
                     function addCustomProjects() {
@@ -199,17 +251,18 @@
                     });
                     
                     // Since the Playground isn't fully supported on mobile devices, user has to opt to start it manually.
-                    function mobileStartManually() {
-                        document.getElementById("startButton").remove();
+                    // The Playground may also need to be restarted manually if the user doesn't let it restart it automatically.
+                    function manualStart() {
+                        startButton.classList.add("hidden");
                         frames[0].startLoading();
                         loader = setInterval(checkLoaded, 100);
                     }
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
-                    // The more accurate height will be later assigned via resizeEditor when the app has loaded.
-                    var widthInitial = document.documentElement.clientWidth;
+                    // The more accurate height will be later assigned via windowResize when the app has loaded.
                     widthInitial = widthInitial*0.5*0.6666;
                     editor.setSize(null, Math.min(widthInitial,960));
+                    widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + widthInitial + 'pixels.</p></div>'
 
                     $.ajax({
                         url: "/demos/demos.json",
@@ -238,12 +291,12 @@
                     // It's unclear as to when the app has finished loading and when Module and its functions are
                     // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
+                        hasPlaygroundCrashed = false;
                         hasLoaded = true;
-                        if (isMobileDevice) { document.getElementById("startButton").classList.remove("hidden"); }
                         appModule = document.getElementById("app-frame").contentWindow.Module;
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
-                        window.addEventListener("resize", resizeEditor);
+                        window.addEventListener("resize", windowResize);
                     }
                     function checkLoaded() {
                         try {
@@ -256,7 +309,7 @@
                             // console.log(err);
                         }
                     }
-                    if (!isMobileDevice) { loader = setInterval(checkLoaded, 100); }
+                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)

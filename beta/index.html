@@ -293,7 +293,6 @@
                     function finalise() {
                         hasPlaygroundCrashed = false;
                         hasLoaded = true;
-                        if (isMobileDevice) { startButton.classList.remove("hidden"); }
                         appModule = document.getElementById("app-frame").contentWindow.Module;
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
