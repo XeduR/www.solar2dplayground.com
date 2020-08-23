@@ -260,8 +260,7 @@
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via windowResize when the app has loaded.
-                    widthInitial = widthInitial*0.5*0.6666;
-                    editor.setSize(null, Math.min(widthInitial,960));
+                    editor.setSize(null, Math.min(widthInitial*0.5*0.6666,960));
                     widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + widthInitial + 'pixels.</p></div>'
 
                     $.ajax({
