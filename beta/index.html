@@ -122,11 +122,13 @@
                     var filenameField = document.getElementById( "projectName" );
                     var startButton = document.getElementById("startButton");
                     var widthPrompt = document.getElementById("widthPrompt");
+                    var widthInitial = document.documentElement.clientWidth;
                     var isMobileDevice = isMobile();
                     var customProjectCount = 5;
                     var projectFilename = [];
                     var customProject = [];
-                    var hasPlaygroundCrashed = false;
+                    var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
+                    var hasPlaygroundCrashed = (widthInitial > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
                     var isCustomProject = false;
                     var hasLoaded = false;
                     var activeCustomProject;
@@ -198,8 +200,8 @@
                         editor.setSize(null,getHeight());
                     }
                     
-                    // Check if the user is on a mobile device or not.
-                    if (isMobileDevice || document.documentElement.clientWidth <= 640) {
+                    // Check if the user is on a mobile device or not, or if the widthCrashThreshold has been triggered.
+                    if (isMobileDevice || hasPlaygroundCrashed) {
                         startButton.classList.remove("hidden");
                         if (isMobileDevice) { showDisclaimer("mobile") }
                     }
@@ -258,9 +260,9 @@
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via windowResize when the app has loaded.
-                    var widthInitial = document.documentElement.clientWidth;
                     widthInitial = widthInitial*0.5*0.6666;
                     editor.setSize(null, Math.min(widthInitial,960));
+                    widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + widthInitial + 'pixels.</p></div>'
 
                     $.ajax({
                         url: "/demos/demos.json",
@@ -308,8 +310,7 @@
                             // console.log(err);
                         }
                     }
-                    // Playground seems to crash if it starts when the width of the window is less than or equal to 640.
-                    if (!isMobileDevice && document.documentElement.clientWidth > 640) { loader = setInterval(checkLoaded, 100); }
+                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
