@@ -114,21 +114,20 @@
                     </div>
                 </div>
                 
-                <div class="overlay">
-                    <p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.</p>
-                </div>
+                <div class="overlay"><p id="widthPrompt"></p></div>
                 
                 <script>
                     var filenameField = document.getElementById( "projectName" );
                     var startButton = document.getElementById("startButton");
                     var widthPrompt = document.getElementById("widthPrompt");
-                    var widthInitial = document.documentElement.clientWidth;
+                    var widthInitial = document.documentElement.innerWidth;
                     var isMobileDevice = isMobile();
                     var customProjectCount = 5;
                     var projectFilename = [];
                     var customProject = [];
                     var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
                     var hasPlaygroundCrashed = (widthInitial > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
+                    var relaunchOnMobile = false;
                     var isCustomProject = false;
                     var hasLoaded = false;
                     var activeCustomProject;
@@ -144,27 +143,36 @@
                         hasLoaded = false;
                         
                         // Clean up the error message by removing references to Lua's loadstring().
+                        let firstChange = true;
                         let start, end;
                         do {
                             start = text.indexOf("[string");
                             if (start != -1) {
                                 end = text.indexOf("]:",start);
                                 if (end != -1) {
+                                    start = firstChange ? start : start-1;
                                     let pre = text.substring(0,start);
-                                    text = pre + "line " + text.substring(end+2);
+                                    text = pre + "  line " + text.substring(end+2);
+                                    firstChange = false;
                                 }
                             }
                         }
                         while (start != -1);
+                        // Add an empty line between the initial error message and stack trace.
+                        start = text.indexOf("stack traceback:");
+                        if (start != -1) {
+                            text = text.substring(0,start) + "\n" + text.substring(start);
+                        }
                         // Solar2D seems to add a reference to a function on line 189 by default.
                         // If it is there, then just remove it as it doesn't add value to anyone.
                         let f189 = text.indexOf("?: in function <?:189>");
-                        if (f189 != -1) { text = text.substring(0,f189-1); } // also remove the weird HT symbol.
+                        if (f189 != -1) { text = text.substring(0,f189-1); } // also remove the weird horizontal tabulation symbol.
                         
                         let msg = text + "\nThe Playground will now restart."
                         console.error(msg);
                         if (confirm(msg)) {
                             hasPlaygroundCrashed = false;
+                            if (isMobileDevice) { relaunchOnMobile = true; }
                         } else {
                             hasPlaygroundCrashed = true;
                         }
@@ -193,17 +201,25 @@
                         disclaimer.classList.remove("hidden");
                     }
                     
-                    // Update the widthPrompt text and catch the code editor's height with the app's height.
-                    function windowResize() {
-                        let width = document.documentElement.clientWidth;
+                    // Update the widthPrompt text when window is resized or if a mobile device's orientation changes.
+                    function updateWidth() {
+                        let width = document.documentElement.innerWidth;
                         widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + width + 'pixels.</p></div>'
+                    }
+                    updateWidth() // Set the initial dimensions for the widthPrompt.
+                    
+                    // Match the code editor's height with the app's height.
+                    function windowResize() {
                         editor.setSize(null,getHeight());
                     }
                     
                     // Check if the user is on a mobile device or not, or if the widthCrashThreshold has been triggered.
                     if (isMobileDevice || hasPlaygroundCrashed) {
                         startButton.classList.remove("hidden");
-                        if (isMobileDevice) { showDisclaimer("mobile") }
+                        if (isMobileDevice) {
+                            window.addEventListener("orientationchange", updateWidth );
+                            showDisclaimer("mobile")
+                        }
                     }
                     
                     function addCustomProjects() {

@@ -203,7 +203,10 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
     <!-- The code below is mainly changes made specifically for the Playground. -->
     <script src="../js/detectMobile.js"></script>
     <script>
+        var isMobileDevice = isMobile();
+        // Start loading the Playground HTML5 application.
         function startLoading() {
+            parent.relaunchOnMobile = false;
             document.getElementById("progress").classList.remove("hidden");
             document.getElementById("status").classList.remove("hidden");
             Module.setStatus('Loading Playground...', 0, 0);
@@ -271,7 +274,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         // Don't start the Playground if it's not running on a server.
         if (window.location.href.substring(0,7) != "file://") {
             // If non-mobile device, then start the Playground automatically.
-            if (!isMobile() && !parent.hasPlaygroundCrashed) { startLoading() }
+            if (!isMobileDevice && !parent.hasPlaygroundCrashed || parent.relaunchOnMobile) { startLoading() }
         }
     </script>
 </body>
