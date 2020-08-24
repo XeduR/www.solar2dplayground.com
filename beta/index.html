@@ -120,13 +120,12 @@
                     var filenameField = document.getElementById( "projectName" );
                     var startButton = document.getElementById("startButton");
                     var widthPrompt = document.getElementById("widthPrompt");
-                    var widthInitial = document.documentElement.innerWidth;
                     var isMobileDevice = isMobile();
                     var customProjectCount = 5;
                     var projectFilename = [];
                     var customProject = [];
                     var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
-                    var hasPlaygroundCrashed = (widthInitial > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
+                    var hasPlaygroundCrashed = (window.innerWidth > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
                     var relaunchOnMobile = false;
                     var isCustomProject = false;
                     var hasLoaded = false;
@@ -203,7 +202,7 @@
                     
                     // Update the widthPrompt text when window is resized or if a mobile device's orientation changes.
                     function updateWidth() {
-                        let width = document.documentElement.innerWidth;
+                        let width = window.innerWidth;
                         widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + width + 'pixels.</p></div>'
                     }
                     updateWidth() // Set the initial dimensions for the widthPrompt.
@@ -276,8 +275,7 @@
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via windowResize when the app has loaded.
-                    editor.setSize(null, Math.min(widthInitial*0.5*0.6666,960));
-                    widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + widthInitial + 'pixels.</p></div>'
+                    editor.setSize(null, Math.min(window.innerWidth*0.5*0.6666,960));
 
                     $.ajax({
                         url: "/demos/demos.json",
