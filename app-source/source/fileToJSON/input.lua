@@ -32,11 +32,14 @@ end
 
 -- Called when a mouse event has been received.
 local function mouse( event )
-    if event.type ~= "scroll" then -- Check that the user isn't scrolling.
+	if event.type ~= "scroll" then -- Check that the user isn't scrolling.
 		x, y = event.x or x, event.y or y -- Take a new x,y or keep the old x,y.
-    end
+	end
 end
 
 -- Add the mouse and enterFrame events.
 Runtime:addEventListener( "mouse", mouse )
 Runtime:addEventListener( "enterFrame", enterFrame )
+-- Since mobile devices don't have a mouse, the "mouse" listener from above 
+-- won't work with them, but we can add a "touch" listener for such devices.
+Runtime:addEventListener( "touch", mouse )
