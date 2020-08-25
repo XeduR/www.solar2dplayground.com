@@ -205,10 +205,11 @@
                         let width = window.innerWidth;
                         widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + width + 'pixels.</p></div>'
                     }
-                    updateWidth() // Set the initial dimensions for the widthPrompt.
+                    updateWidth(); // Set the initial dimensions for the widthPrompt.
                     
                     // Match the code editor's height with the app's height.
                     function windowResize() {
+                        updateWidth();
                         editor.setSize(null,getHeight());
                     }
                     
@@ -328,7 +329,7 @@
                     document.getElementById("export").addEventListener("click", downloadFile)
                     document.getElementById('import').addEventListener('change', uploadFile)
                 </script>
-            </div>    
+            </div>
         </main>
             
         <footer>
