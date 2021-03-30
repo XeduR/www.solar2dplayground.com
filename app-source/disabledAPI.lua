@@ -1,4 +1,8 @@
--- These functions are disabled due to HTML5, CORS and/or Playground limitations.
+-----------------------------------------------------------------------------------------------------------------------
+-- These functions are disabled due to (current) HTML5 build, GitHub pages/CORS and/or other Playground limitations. --
+-- NB! Some of these functions do work, like opening web views, but they've been disabled to keep the app contained. --
+-----------------------------------------------------------------------------------------------------------------------
+
 local prefix = "WARNING: "
 local msg = "has been disabled in Solar2D Playground. To use it, you need to download and install Solar2D from https://solar2d.com/."
 

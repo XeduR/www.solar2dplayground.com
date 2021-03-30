@@ -6,9 +6,10 @@
 -- inside the wrong function will result in an infinite loop.
 --==============================================================================
 
--- NB!  This version of printToDisplay is heavily modified for use with Solar2D Playground and as such
---      it shouldn't be used in other projects. If you wish to use printToDisplay in your projects, then
---      you can download the unmodified source from https://github.com/SpyricGames/Print-to-Display.
+-- NB!  This version of printToDisplay is outdated and heavily modified for use with Solar2D Playground
+--      and as such it shouldn't be used in other projects (unless you want to start modifying it yourself).
+--      If you wish to use printToDisplay in your projects, then you can download the unmodified source from
+--      Spyric Games Ltd's GitHub at https://github.com/SpyricGames/Print-to-Display.
 
 local M = {}
 
@@ -65,12 +66,14 @@ local function scroll( event )
             local toY = objectStart + d
             if toY <= 0 and toY >= -maxY then
                 M.autoscroll = false
+                M.controls.scroll.fill = M.controls.scroll.resume
                 output.y = toY
             else
                 objectStart = output.y
                 eventStart = event.y
                 if toY <= 0 then
                     M.autoscroll = true
+                    M.controls.scroll.fill = M.controls.scroll.pause
                 end
             end
         end
@@ -86,11 +89,18 @@ local function controls( event )
     if event.phase == "began" then
         if event.target.id == "autoscroll" then
             M.autoscroll = not M.autoscroll
+            if M.autoscroll then
+                M.controls.scroll.fill = M.controls.scroll.pause
+            else
+                M.controls.scroll.fill = M.controls.scroll.resume
+            end
+            
             if M.autoscroll then output.y = -maxY end
         else -- Clear all text.
             maxY = 0
             canScroll = false
             M.autoscroll = true
+            M.controls.scroll.fill = M.controls.scroll.pause
             output.y = 0
             for i = 1, #output.row do
                 display.remove( output.row[i] )
@@ -220,8 +230,16 @@ function M.start()
         local buttonOffsetX = (1-anchorX)*width
         local buttonOffsetY = anchorY*height
         
-        M.controls.scroll = display.newImageRect( M.controls, "ui/buttonRunPause.png", buttonSize, buttonSize )
-        M.controls.scroll.x, M.controls.scroll.y = x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize*0.5
+        M.controls.scroll = display.newRect( M.controls, x+buttonOffsetX+buttonSize*0.5+4, y-buttonOffsetY+buttonSize*0.5, buttonSize, buttonSize )
+        M.controls.scroll.pause = {
+            type = "image",
+            filename = "ui/buttonPause.png"
+        }
+        M.controls.scroll.resume = {
+            type = "image",
+            filename = "ui/buttonResume.png"
+        }
+        M.controls.scroll.fill = M.controls.scroll.pause
         M.controls.scroll:addEventListener( "touch", controls )
         M.controls.scroll.id = "autoscroll"
         

@@ -10,28 +10,43 @@ if environment ~= "simulator" then
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
+local createWindow = require("createWindow")
 local fontLoader = require( "spyricFontLoader" )
-fontLoader.preload( "fonts" ) 
+fontLoader.preload( "font" )
 
-local instructions, logo
-local btn, imageList = {}, {}
-local _tostring = tostring
-local _min = math.min
-local btnX = display.screenOriginX+4
+local button, imageList, logo = {}, {}
+local buttonX = display.screenOriginX+4
 local consoleOpen = false
-local imagesOpen = false
-local font = "fonts/OpenSansRegular.ttf"
+local defaultFont = "font/OpenSansRegular.ttf"
 
--- TODO: add more custom fonts, audio effects/bg music
-
--- groupGlobal contains all user generated display objects/groups
+-- Setting up all groups and the console.
+local groupList = {
+    ["Images"] = display.newGroup(),
+    ["SFX"] = display.newGroup(),
+    ["Fonts"] = display.newGroup()
+}
+-- groupGlobal contains all user generated display objects/groups.
 local groupGlobal = display.newGroup()
+-- local groupWindow = display.newGroup()
 local groupButtons = display.newGroup()
-local groupWindow = display.newGroup()
-local groupList = display.newGroup()
-local container = display.newContainer( 780, 500 )
-container:insert(groupList)
-container:translate( 480, 350 )
+local container = display.newContainer( 780, 490 )
+-- persistingGroups won't get removed during cleanup.
+local persistingGroups = {
+    groupGlobal = groupGlobal,
+    -- groupWindow = groupWindow,
+    groupButtons = groupButtons,
+    container = container,
+}
+for i, v in pairs(groupList) do
+    container:insert(v)
+    v.scroll = { y=0, maxY=0 }
+    v.isVisible = false
+    v.window = display.newGroup()
+    v.window.isVisible = false
+    persistingGroups[i] = v
+    persistingGroups[i] = v.window
+end
+container:translate( 480, 360 )
 newDisplay._group = groupGlobal
 newDisplay:init()
 printToDisplay.setStyle({
@@ -42,11 +57,11 @@ printToDisplay.setStyle({
     height = 640,
     buttonSize = 40,
     fontSize = 18,
-    font = "fonts/OpenSansRegular.ttf",
+    font = defaultFont,
     paddingRow = 10,
 })
 
--- Insert "physics state" to physics library calls.
+-- Add physics states to built-in physics calls for cleanup purposes.
 physics = require("physics")
 local _pState = "stop"
 local _pStart = physics.start 
@@ -64,89 +79,6 @@ function physics.stop()
     _pState = "stop"
     _pStop()
 end
-
-
-local maxY, objectStart, eventStart = 2140
-local function scrollImagesWindow( event )
-    if event.phase == "began" then
-        display.getCurrentStage():setFocus( event.target )
-        event.target.isTouched = true
-        objectStart, eventStart = groupList.y, event.y
-    elseif event.phase == "moved" then
-        if event.target.isTouched then
-            local d = event.y - eventStart
-            local toY = objectStart + d
-            if toY <= 0 and toY >= -maxY then
-                groupList.y = toY
-            else
-                objectStart = groupList.y
-                eventStart = event.y
-            end
-            imageList[4].y = imageList[4].yStart - (groupList.y/maxY)*430
-        end
-    else
-        display.getCurrentStage():setFocus( nil )
-        event.target.isTouched = false
-    end
-    return true
-end
-
-local function scrollImagesHandle( event )
-    if event.phase == "began" then
-        display.getCurrentStage():setFocus( event.target )
-        event.target.isTouched = true
-        objectStart, eventStart = groupList.y, event.y
-    elseif event.phase == "moved" then
-        if event.target.isTouched then
-            local d = event.y - eventStart
-            local toY = objectStart + d
-            if event.y <= 116 then
-                eventStart = event.y
-                event.target.y = 116
-                groupList.y = 0
-            elseif event.y >= 546 then
-                eventStart = event.y
-                event.target.y = 546
-                groupList.y = -maxY
-            else
-                event.target.y = event.y
-                groupList.y = -((event.y-116)/430)*maxY
-            end
-        end
-    else
-        display.getCurrentStage():setFocus( nil )
-        event.target.isTouched = false
-    end
-    return true
-end
-
-local scrollRate = 30
--- Scroll direction seems to be reversed with browsers or for HTML5 builds.
-if environment ~= "simulator" then
-    scrollRate = -scrollRate
-end
-local function mouseScroll( event )
-    if event.type == "scroll" then
-        if imagesOpen then
-            local dY
-            if event.scrollY > 0 then
-                dY = scrollRate
-            else
-                dY = -scrollRate
-            end
-            local toY = groupList.y - dY
-            if dY < 0 and toY >= 0 then
-                groupList.y = 0
-            elseif dY > 0 and toY <= -maxY then
-                groupList.y = -maxY
-            else
-                groupList.y = toY
-            end
-            imageList[4].y = imageList[4].yStart - (groupList.y/maxY)*430
-        end
-    end
-end
-Runtime:addEventListener( "mouse", mouseScroll )
 
 -- To prevent Runtime listeners from hanging around, we insert any newly created
 -- Runtime listeners to a table so that we can automatically remove them later.
@@ -232,8 +164,16 @@ local function clearEverything()
     end
     local stage = display.getCurrentStage()
     for i = stage.numChildren, 1, -1 do
-        local t = stage[i]        
-        if t ~= groupGlobal and t ~= groupButtons and t ~= groupWindow and t ~= container then
+        local t = stage[i]
+        -- Don't remove persistingGroups.
+        local isPersistingGroup = false
+        for _, v in pairs(persistingGroups) do
+            if v == t then
+                isPersistingGroup = true
+                break
+            end
+        end
+        if not isPersistingGroup then
             stage[i]:removeSelf()
             stage[i] = nil
         end
@@ -241,30 +181,45 @@ local function clearEverything()
 end
 
 local function removeInstructions()
-    if instructions then
-        instructions:removeSelf()
-        instructions = nil
+    if logo then
+        for i = 1, #button do
+            button[i].text:removeSelf()
+            button[i].text = nil
+        end
         logo:removeSelf()
         logo = nil
     end
 end
 
-local function showImages( event )
+local function toggleAssets( event )
     if event.phase == "began" then
+        -- Bring active window to front and hide all inactive windows.
+        local id = event.target and event.target.id or "_noActiveWindow"
+        for i, v in pairs( groupList ) do
+            if i == id then
+                local isVisible = not v.isVisible
+                v.isVisible = isVisible
+                v.window.isVisible = isVisible
+                createWindow.windowOpen = isVisible
+                createWindow.activeWindow = v
+                v:toFront()
+                v.window:toFront()
+            else
+                v.isVisible = false
+                v.window.isVisible = false
+                createWindow.windowOpen = false
+            end
+        end
+        container:toFront()
+        
         removeInstructions()
         if consoleOpen then
-            for i = 1, 3 do
-                btn[i].x = btnX
+            for i = 1, #button do
+                button[i].x = buttonX
             end
             printToDisplay.stop()
             consoleOpen = false
         end
-        groupWindow.isVisible = not groupWindow.isVisible
-        groupList.isVisible = not groupList.isVisible
-        groupWindow:toFront()
-        groupList:toFront()
-        container:toFront()
-        imagesOpen = not imagesOpen
     end
     return true
 end
@@ -272,18 +227,18 @@ end
 local function toggleConsole( event )
     if event.phase == "began" then
         removeInstructions()
-        if imagesOpen then showImages( {phase="began"}) end
+        if createWindow.windowOpen then toggleAssets( {phase="began"} ) end
         if consoleOpen then
-            for i = 1, 3 do
-                btn[i].x = btnX
+            for i = 1, #button do
+                button[i].x = buttonX
             end
             printToDisplay.stop()
         else
             printToDisplay.start()
-            for i = 1, 3 do
-                btn[i].x = btn[i].x + 300
+            for i = 1, #button do
+                button[i].x = button[i].x + 300
             end
-            printToDisplay.controls.scroll.y = btn[3].y + 72
+            printToDisplay.controls.scroll.y = button[#button].y + 72
             printToDisplay.controls.clear.y = printToDisplay.controls.scroll.y + printToDisplay.controls.scroll.height+3
         end
         consoleOpen = not consoleOpen
@@ -309,7 +264,7 @@ local function runCode( event )
         display.setDefault( "textureWrapX", "clampToEdge" )
         display.setDefault( "textureWrapY", "clampToEdge" )
         
-        if imagesOpen then showImages( {phase="began"}) end
+        if createWindow.windowOpen then toggleAssets( {phase="began"}) end
         clearEverything()
         local code = inputCode and inputCode.getCode()
         if code then -- No code will be returned if the app is run directly and not via an Iframe.
@@ -332,68 +287,28 @@ local function projectListener()
     runCode({phase="began"})
 end
 
-imageList[1] = display.newRoundedRect( groupWindow, 480, 320, 800, 600, 8 )
-imageList[1]:setFillColor(0,0.9)
-imageList[1]:addEventListener( "touch", scrollImagesWindow )
-imageList[2] = display.newImageRect( groupWindow, "ui/buttonsGreen.png", 48, 48 )
-imageList[2]:addEventListener( "touch", showImages )
-imageList[2].x, imageList[2].y = imageList[1].x+imageList[1].width*0.5-32, imageList[1].y-imageList[1].height*0.5+32
-imageList[3] = display.newText( groupWindow, "Scroll to view all useable images", 480, 50, font, 28 )
-imageList[4] = display.newRoundedRect( groupWindow, imageList[2].x, imageList[2].y+imageList[2].height+16, 16, 32, 16 )
-imageList[4]:addEventListener( "touch", scrollImagesHandle )
-imageList[4].yStart = imageList[4].y
-imageList[4]:setFillColor(1,0.8)
-
--- Traverse image folder and list them as usable images
-local imageColumn, imageRow, imageCount = 0, 1, 0
-local imageFontSize = 18
-local imageFolder = system.pathForFile( "img/", system.ResourceDirectory )
-for file in lfs.dir( imageFolder ) do
-    if file ~= "." and file ~= ".." then
-        imageCount = imageCount+1
-        local filename = "img/" .. file
-        local x, y = -240+imageColumn*240, -350+imageRow*220
-        imageList[#imageList+1] = display.newImage( groupList, filename, x, y )
-        if imageList[#imageList].width > 180 or imageList[#imageList].height > 120 then
-            local xScale = 160 / imageList[#imageList].width
-            local yScale = 120 / imageList[#imageList].height
-            local scale = _min( xScale, yScale )
-            imageList[#imageList].xScale, imageList[#imageList].yScale = scale, scale
-        end
-        imageList[#imageList].anchorY = 1
-        imageList[#imageList].name = display.newText( groupList, "\"" .. filename .. "\"", x, y+12, font, imageFontSize )
-        imageList[#imageList].name.anchorY = 0
-        imageList[#imageList].size = display.newText( groupList, "width: ".. imageList[#imageList].width .. ", height: " .. imageList[#imageList].height, x, y+40, font, imageFontSize )
-        imageList[#imageList].size.anchorY = 0
-        imageColumn = imageColumn+1
-        if imageColumn == 3 then
-            imageRow = imageRow+1
-            imageColumn = 0
-        end
-    end
+-- Create the custom asset menu windows.
+for windowName, windowGroup in pairs( groupList ) do
+    createWindow.new( windowName, windowGroup, toggleAssets )
 end
-groupWindow.isVisible = false
-groupList.isVisible = false
--- The first 6 images are always shown, even without scrolling. For
--- every additional starting line, increase the max scrolling area.
-maxY = math.ceil((imageCount-6)/3)*216
 
-local btnData = {
-    {"ui/buttonRun.png", runCode },
-    {"ui/buttonImages.png", showImages },
-    {"ui/buttonConsole.png", toggleConsole }
+-- Create the fixed UI buttons.
+local buttonData = {
+    {"ui/buttonRun.png", "← Press here to run your code", runCode },
+    {"ui/buttonImages.png", "← View a list of usable images",  toggleAssets },
+    {"ui/buttonSFX.png", "← View a list of usable audio",  toggleAssets },
+    {"ui/buttonFonts.png", "← View a list of useable fonts",  toggleAssets },
+    {"ui/buttonConsole.png", "← Press here to show console",  toggleConsole }
 }
-for i = 1, 3 do
-    btn[i] = display.newImageRect( groupButtons, btnData[i][1], 48, 48 )
-    btn[i].anchorX, btn[i].anchorY = 0, 0
-    btn[i].x, btn[i].y = btnX, (i == 1 and display.screenOriginY+4 or btn[i-1].y+btn[i].height+4)
-    btn[i]:addEventListener( "touch", btnData[i][2] )
+for i = 1, #buttonData do
+    button[i] = display.newImageRect( groupButtons, buttonData[i][1], 48, 48 )
+    button[i].anchorX, button[i].anchorY = 0, 0
+    button[i].x, button[i].y = buttonX, (i == 1 and display.screenOriginY+4 or button[i-1].y+button[i].height+4)
+    button[i].id = buttonData[i][1]:sub(10,-5)
+    button[i]:addEventListener( "touch", buttonData[i][3] )
+    button[i].text = display.newText( groupButtons, buttonData[i][2], button[i].x + button[i].width + 8, button[i].y, font, 28 )
+    button[i].text.anchorX, button[i].text.anchorY = 0, 0
 end
-
-instructions = display.newImageRect( groupButtons, "ui/instructions.png", 428, 128 )
-instructions.anchorX, instructions.anchorY = 0, 0
-instructions.x = btn[1].x + btn[1].width + 4
-instructions.y = btn[1].y + 12
 
 logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
 logo.x, logo.y = 480, 320
