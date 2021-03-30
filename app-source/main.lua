@@ -195,9 +195,10 @@ local function toggleAssets( event )
     if event.phase == "began" then
         -- Bring active window to front and hide all inactive windows.
         local id = event.target and event.target.id or "_noActiveWindow"
+        local isVisible
         for i, v in pairs( groupList ) do
             if i == id then
-                local isVisible = not v.isVisible
+                isVisible = not v.isVisible
                 v.isVisible = isVisible
                 v.window.isVisible = isVisible
                 createWindow.windowOpen = isVisible
@@ -207,8 +208,10 @@ local function toggleAssets( event )
             else
                 v.isVisible = false
                 v.window.isVisible = false
-                createWindow.windowOpen = false
             end
+        end
+        if not isVisible then
+            createWindow.windowOpen = false
         end
         container:toFront()
         
