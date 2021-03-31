@@ -18,6 +18,6 @@ settings =
 
 	excludeFiles =
 	{
-		all = { "source/*", "LICENSE", "README.md" },
+		all = { "source/*", "/*.txt", "LICENSE", "README.md" },
 	},
 }

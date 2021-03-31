@@ -12,12 +12,12 @@ local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
 local createWindow = require("createWindow")
 local fontLoader = require( "spyricFontLoader" )
-fontLoader.preload( "font" )
+fontLoader.preload( "fnt" )
 
 local button, imageList, logo = {}, {}
 local buttonX = display.screenOriginX+4
 local consoleOpen = false
-local defaultFont = "font/OpenSansRegular.ttf"
+local defaultFont = "fnt/OpenSansRegular.ttf"
 
 -- Setting up all groups and the console.
 local groupList = {
