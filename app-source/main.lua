@@ -27,13 +27,11 @@ local groupList = {
 }
 -- groupGlobal contains all user generated display objects/groups.
 local groupGlobal = display.newGroup()
--- local groupWindow = display.newGroup()
 local groupButtons = display.newGroup()
 local container = display.newContainer( 780, 490 )
 -- persistingGroups won't get removed during cleanup.
 local persistingGroups = {
     groupGlobal = groupGlobal,
-    -- groupWindow = groupWindow,
     groupButtons = groupButtons,
     container = container,
 }
@@ -214,7 +212,7 @@ local function toggleAssets( event )
             createWindow.windowOpen = false
         end
         container:toFront()
-        
+
         removeInstructions()
         if consoleOpen then
             for i = 1, #button do
@@ -266,7 +264,7 @@ local function runCode( event )
         display.setDefault( "minTextureFilter", "linear" )
         display.setDefault( "textureWrapX", "clampToEdge" )
         display.setDefault( "textureWrapY", "clampToEdge" )
-        
+
         if createWindow.windowOpen then toggleAssets( {phase="began"}) end
         clearEverything()
         local code = inputCode and inputCode.getCode()

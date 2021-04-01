@@ -155,7 +155,9 @@ function window.new( windowName, group, toggleAssets )
                 end
             end
         end
-        group.scroll.maxY = math.ceil((assetCount-6)/3)*216
+        -- NB! This may need to be adjusted if more assets are added.
+        group.scroll.maxY = row > 2 and 215*(row-2.5) or 0
+        
     elseif windowName == "SFX" then
         title.text = "Scroll to view all useable sound effects"
         copyright.text = "These audio files were created by Kenney (www.kenney.nl)"
@@ -168,7 +170,8 @@ function window.new( windowName, group, toggleAssets )
                 local filename = folder .. file
                 local x, y = -170+column*340, -300+row*120
                 
-                local asset = display.newRect( group, x, y, 320, 60 )
+                local asset = display.newImageRect( group, "ui/buttonAudio.png", 320, 60 )
+                asset.x, asset.y = x, y
                 asset.anchorY = 1
                 asset:addEventListener( "touch", playSound )
                 asset.sfx = audio.loadSound( filename )                
@@ -183,7 +186,8 @@ function window.new( windowName, group, toggleAssets )
                 end
             end
         end
-        group.scroll.maxY = math.ceil((assetCount-8)/2)*122
+        -- NB! This may need to be adjusted if more assets are added.
+        group.scroll.maxY = row > 4 and 120*(row-4.5) or 0
         
     elseif windowName == "Fonts" then
         title.text = "Scroll to view all useable fonts"
@@ -212,8 +216,14 @@ function window.new( windowName, group, toggleAssets )
                 row = row+1
             end
         end
-        group.scroll.maxY = assetCount*130
+        -- NB! This may need to be adjusted if more assets are added.
+        group.scroll.maxY = row > 3 and 140*(row-4) or 0
         
+    end
+    -- There should always be scrollable content, but just future proofing
+    -- this in case someone adds new asset windows in the future (or smth).
+    if group.scroll.maxY <= 0 then
+        group.scrollHandle.isVisible = false
     end
 end
 
