@@ -110,7 +110,7 @@
                 <div class="column-right">
                     <div id="app" class="iframe-container">
                         <iframe id="app-frame" scrolling="no" src="app/index.html"></iframe>
-                        <button id="startButton" onclick="manualStart()" class="load">Start Solar2D Playground</button>
+                        <button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>
                     </div>
                 </div>
                 
@@ -328,6 +328,7 @@
                             console.log(err);
                         }
                     }
+                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
