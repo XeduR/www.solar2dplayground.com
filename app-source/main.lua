@@ -301,8 +301,8 @@ end
 -- Create the fixed UI buttons.
 local buttonData = {
     {"ui/buttonRun.png", "← Press here to run your code", runCode },
-    {"ui/buttonImages.png", "← View a list of usable images",  toggleAssets },
-    {"ui/buttonSFX.png", "← View a list of usable audio",  toggleAssets },
+    {"ui/buttonImages.png", "← View a list of useable images",  toggleAssets },
+    {"ui/buttonSFX.png", "← View a list of useable audio",  toggleAssets },
     {"ui/buttonFonts.png", "← View a list of useable fonts",  toggleAssets },
     {"ui/buttonConsole.png", "← Press here to show console",  toggleConsole }
 }
