@@ -109,20 +109,19 @@ local function copyPathToBrowser( event )
     if event.phase == "began" then
         local tooltip = window.tooltip
         local id = event.target.id
-        -- On browser, show tooltip after hearing back from browser. On simulator, just show it.
-        local gotSent = copyToClipboard and copyToClipboard.copy( id )
-        if gotSent or not copyToClipboard then
-            if tooltip.inTransition then
-                transition.cancel( tooltip )
-            end
-            tooltip.inTransition = true
-            tooltip.x, tooltip.y = event.x, event.y - tooltip.bg.height*0.5 - 20
-            tooltip.txt.text = "Copied to clipboard: " .. id
-            tooltip.bg.height = tooltip.txt.height + 20
-            tooltip.bg.width = tooltip.txt.width + 20
-            tooltip.alpha = 1
-            transition.to( tooltip, { delay=500, time=500, alpha=0, onComplete=function() tooltip.inTransition = false end })
+        
+        copyToClipboard.copy( id )
+        if tooltip.inTransition then
+            transition.cancel( tooltip )
         end
+        tooltip.inTransition = true
+        
+        tooltip.x, tooltip.y = event.x, event.y - tooltip.bg.height*0.5 - 20
+        tooltip.txt.text = "Copied to clipboard: " .. id
+        tooltip.bg.height = tooltip.txt.height + 20
+        tooltip.bg.width = tooltip.txt.width + 20
+        tooltip.alpha = 1
+        transition.to( tooltip, { delay=500, time=500, alpha=0, onComplete=function() tooltip.inTransition = false end })
     end
     return true
 end
