@@ -3,8 +3,9 @@
 -- (Note: This file and its folder are excluded in build.settings.)
 
 -- How to use:
--- 1) Change the path/filename below.
+-- 1) Copy your sample code to the input.lua file.
 -- 2) Open main.lua with Solar2D and check console output.
+-- 3) Copy the formatted code from the console and add it to demos.json.
 
 local path = system.pathForFile( "input.lua" )
 local file, errorString
