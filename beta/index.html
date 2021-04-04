@@ -228,7 +228,7 @@
                         for (var i = 0; i < customProjectCount; i++) {
                             var num = sampleCount+i;
                             buttonsCustom += '<button id="project-'+num+'" class="button-code" onclick="loadCode(\''+num+'\',\''+"custom"+'\',\''+i+'\')">Project #'+(i+1)+'</button>';
-                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-- (You can change between projects. Your changes are saved automatically for the duration of your visit.)\n";
+                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-------------------------------------------------------------\n-- You can freely change between projects. All of your changes\n-- are automatically saved until you close the browser window.\n\n";
                             projectFilename[num] = "Project #"+(i+1);
                         }
                         document.getElementById("custom-buttons").innerHTML = buttonsCustom;
@@ -338,9 +338,7 @@
             
         <footer>
             <p style="line-height: 2">
-                <a href="https://www.erantanen.com/">Solar2D Playground © 2020-2021 Eetu Rantanen</a><br>
-                Solar2D logo is property of the <a href="https://solar2d.com/">Solar2D project</a>.
-                The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
+                <a href="https://www.erantanen.com/">Solar2D Playground © 2020-2021 Eetu Rantanen</a>
             </p>
         </footer>
     </div>

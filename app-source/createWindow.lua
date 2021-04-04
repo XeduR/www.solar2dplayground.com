@@ -11,6 +11,7 @@ end
 
 window.activeWindow = nil
 window.windowOpen = nil
+window.tooltip = nil
 
 -- Handle asset window scrolling when the window background is touched.
 local objectStart, eventStart
@@ -106,9 +107,21 @@ end
 
 local function copyPathToBrowser( event )
     if event.phase == "began" then
-        local response = copyToClipboard.copy( event.target.id )
-        if response then
-            print("path copied", event.target.id )
+        local tooltip = window.tooltip
+        local id = event.target.id
+        -- On browser, show tooltip after hearing back from browser. On simulator, just show it.
+        local gotSent = copyToClipboard and copyToClipboard.copy( id )
+        if gotSent or not copyToClipboard then
+            if tooltip.inTransition then
+                transition.cancel( tooltip )
+            end
+            tooltip.inTransition = true
+            tooltip.x, tooltip.y = event.x, event.y - tooltip.bg.height*0.5 - 20
+            tooltip.txt.text = "Copied to clipboard: " .. id
+            tooltip.bg.height = tooltip.txt.height + 20
+            tooltip.bg.width = tooltip.txt.width + 20
+            tooltip.alpha = 1
+            transition.to( tooltip, { delay=500, time=500, alpha=0, onComplete=function() tooltip.inTransition = false end })
         end
     end
     return true
@@ -116,7 +129,19 @@ end
 
 local function addCopyListener( target, id )
     target:addEventListener( "touch", copyPathToBrowser )
-    target.id = id
+    target.id = "\"" .. id .. "\""
+end
+
+
+function window.createTooltip( tooltip )
+    window.tooltip = tooltip
+    tooltip.bg = display.newRoundedRect( tooltip, 0, 0, 200, 80, 12 )
+    tooltip.bg:setFillColor(0.1)
+    tooltip.bg.strokeWidth = 2
+    tooltip.bg:setStrokeColor( 0.93, 0.67, 0.07 )
+    tooltip.txt = display.newText( tooltip, "", tooltip.bg.x, tooltip.bg.y, defaultFont, 20 )
+    tooltip.txt:setFillColor( 1 )
+    tooltip.alpha = 0
 end
 
 -- Create and automatically populate asset windows.
@@ -138,7 +163,7 @@ function window.new( windowName, group, toggleAssets )
     group.scrollHandle = display.newRoundedRect( group.window, buttonClose.x, buttonClose.y+buttonClose.height+16, 16, 32, 16 )
     group.scrollHandle:addEventListener( "touch", scrollImagesHandle )
     group.scrollHandle.yStart = group.scrollHandle.y
-    group.scrollHandle:setFillColor(1,0.8)
+    group.scrollHandle:setFillColor( 0.93, 0.67, 0.07 )
     
     -- Traverse the asset folders create scrollable lists of them to the menu window.
     local column, row, assetCount, assetFontSize = 0, 1, 0, 18

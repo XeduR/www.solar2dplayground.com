@@ -28,11 +28,13 @@ local groupList = {
 local groupGlobal = display.newGroup()
 local groupButtons = display.newGroup()
 local container = display.newContainer( 780, 490 )
+local tooltip = display.newGroup()
 -- persistingGroups won't get removed during cleanup.
 local persistingGroups = {
     groupGlobal = groupGlobal,
     groupButtons = groupButtons,
     container = container,
+    tooltip = tooltip,
 }
 for i, v in pairs(groupList) do
     container:insert(v)
@@ -43,6 +45,7 @@ for i, v in pairs(groupList) do
     persistingGroups[i] = v
     persistingGroups[i] = v.window
 end
+createWindow.createTooltip( tooltip )
 container:translate( 480, 360 )
 newDisplay._group = groupGlobal
 newDisplay:init()
@@ -211,6 +214,7 @@ local function toggleAssets( event )
             createWindow.windowOpen = false
         end
         container:toFront()
+        tooltip:toFront()
 
         removeInstructions()
         if consoleOpen then
