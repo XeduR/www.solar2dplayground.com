@@ -159,7 +159,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         print: function() {},
         printErr: function(text) {
             // If the Playground encounters an error, it's possible that due to the nature of HTML5 builds,
-            // it'll keep throwing the same error endless, so it is safer to just restart the Playground.
+            // it'll keep throwing the same error endlessly, so it is safer to just restart the Playground.
             if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
             if (0) { // XXX disabled for safety typeof dump == 'function') {
                 dump(text + '\n'); // fast, straight to the real console
@@ -258,7 +258,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             document.activeElement.blur();
             window.focus();
         }, true );
-      
+        // Prevent arrow keys from scrolling the website (since the app may use them as controls).
         window.addEventListener("keydown", function(event) {
             if ([37, 38, 39, 40].indexOf(event.key) > -1 || [37, 38, 39, 40].indexOf(event.keyCode) > -1) {
                 event.preventDefault();

@@ -2,11 +2,10 @@ display.setStatusBar( display.HiddenStatusBar )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode, printToBrowser
+local inputCode
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
-    printToBrowser = require( "printToBrowser" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -304,7 +303,7 @@ local buttonData = {
 for i = 1, #buttonData do
     button[i] = display.newImageRect( groupButtons, buttonData[i][1], 48, 48 )
     button[i].anchorX, button[i].anchorY = 0, 0
-    button[i].x, button[i].y = buttonX, (i == 1 and display.screenOriginY+4 or button[i-1].y+button[i].height+4)
+    button[i].x, button[i].y = buttonX, (i == 1 and display.screenOriginY+4 or button[i-1].y+button[i].height+4) + (environment ~= "simulator" and 8 or 0) -- Adjust y for HTML5 build
     button[i].id = buttonData[i][1]:sub(10,-5)
     button[i]:addEventListener( "touch", buttonData[i][3] )
     button[i].text = display.newText( groupButtons, buttonData[i][2], button[i].x + button[i].width + 8, button[i].y, font, 28 )

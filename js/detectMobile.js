@@ -17,7 +17,7 @@ function isMobile() {
         if (mobileOS.indexOf(window.navigator.platform) !== -1) {
             return true;
         }
-            var desktopOS = ["Win32", "Win64", "Windows", "WinCE", "Mac"];
+        var desktopOS = ["Win32", "Win64", "Windows", "WinCE", "Mac"];
         if (desktopOS.indexOf(window.navigator.platform) !== -1) {
             return false;
         }

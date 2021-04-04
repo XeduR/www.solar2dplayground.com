@@ -6,6 +6,13 @@
 local prefix = "WARNING: "
 local msg = "has been disabled in Solar2D Playground. To use it, you need to download and install Solar2D from https://solar2d.com/."
 
+-- graphics -------------------------------------------------------
+-- NOTE: graphics.defineEffect() results in the following error on Playground restart:
+-- "ERROR: Could not create custom effect. An effect (custom.multiswap) for category (filter) already exists!"
+function graphics.defineEffect()
+    print( prefix .. "graphics.defineEffect() " .. msg )
+end
+
 -- physics --------------------------------------------------------
 local physics = physics or require("physics")
 function physics.setDrawMode()

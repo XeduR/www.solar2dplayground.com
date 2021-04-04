@@ -3,6 +3,12 @@ local window = {}
 local defaultFont = "fnt/OpenSansRegular.ttf"
 local scrollRate = 30
 
+local copyToClipboard
+local environment = system.getInfo( "environment" )
+if environment ~= "simulator" then
+    copyToClipboard = require( "copyToClipboard" )
+end
+
 window.activeWindow = nil
 window.windowOpen = nil
 
@@ -65,7 +71,7 @@ local function scrollImagesHandle( event )
 end
 
 -- Scroll direction seems to be reversed with browsers/HTML5 builds.
-if system.getInfo( "environment" ) ~= "simulator" then
+if environment ~= "simulator" then
     scrollRate = -scrollRate
 end
 -- Handle asset window scrolling when mouse wheel is scrolled.
@@ -96,6 +102,21 @@ local function playSound( event )
         audio.play( event.target.sfx )
     end
     return true
+end
+
+local function copyPathToBrowser( event )
+    if event.phase == "began" then
+        local response = copyToClipboard.copy( event.target.id )
+        if response then
+            print("path copied", event.target.id )
+        end
+    end
+    return true
+end
+
+local function addCopyListener( target, id )
+    target:addEventListener( "touch", copyPathToBrowser )
+    target.id = id
 end
 
 -- Create and automatically populate asset windows.
@@ -134,6 +155,7 @@ function window.new( windowName, group, toggleAssets )
                 local x, y = -240+column*240, -350+row*220
                 
                 local asset = display.newImage( group, filename, x, y )
+                addCopyListener( asset, filename )
                 if asset.width > 180 or asset.height > 120 then
                     local xScale = 160 / asset.width
                     local yScale = 120 / asset.height
@@ -143,9 +165,11 @@ function window.new( windowName, group, toggleAssets )
                 asset.anchorY = 1
                 
                 asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+                addCopyListener( asset.name, filename )
                 asset.name.anchorY = 0
                 
                 asset.size = display.newText( group, "width: ".. asset.width .. ", height: " .. asset.height, x, y+40, defaultFont, assetFontSize )
+                addCopyListener( asset.size, filename )
                 asset.size.anchorY = 0
                 
                 column = column+1
@@ -177,6 +201,7 @@ function window.new( windowName, group, toggleAssets )
                 asset.sfx = audio.loadSound( filename )                
                 
                 asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+                addCopyListener( asset.name, filename )
                 asset.name.anchorY = 0
                 
                 column = column+1
@@ -208,9 +233,11 @@ function window.new( windowName, group, toggleAssets )
                 asset.anchorY = 1
                 
                 asset.text = display.newText( group, placeholder, x, y-asset.height-12, filename, placeholderFontSize )
+                addCopyListener( asset.text, filename )
                 asset.text.anchorY = 1
                 
                 asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+                addCopyListener( asset.name, filename )
                 asset.name.anchorY = 0
                 
                 row = row+1

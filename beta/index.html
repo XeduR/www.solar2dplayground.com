@@ -110,7 +110,7 @@
                 <div class="column-right">
                     <div id="app" class="iframe-container">
                         <iframe id="app-frame" scrolling="no" src="app/index.html"></iframe>
-                        <button id="startButton" onclick="manualStart()" class="load hidden">Start Solar2D Playground</button>
+                        <button id="startButton" onclick="manualStart()" class="load">Start Solar2D Playground</button>
                     </div>
                 </div>
                 
@@ -228,7 +228,7 @@
                         for (var i = 0; i < customProjectCount; i++) {
                             var num = sampleCount+i;
                             buttonsCustom += '<button id="project-'+num+'" class="button-code" onclick="loadCode(\''+num+'\',\''+"custom"+'\',\''+i+'\')">Project #'+(i+1)+'</button>';
-                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-- (Your changes to this project are saved automatically for the duration of this session.)\n";
+                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-- (You can change between projects. Your changes are saved automatically for the duration of your visit.)\n";
                             projectFilename[num] = "Project #"+(i+1);
                         }
                         document.getElementById("custom-buttons").innerHTML = buttonsCustom;
@@ -251,7 +251,11 @@
                     function filenameOnChange() { // If the user added ".lua" extension to the project name, then remove it.
                         if (filenameField.value.substring(filenameField.value.length-4).toLowerCase() == ".lua") {
                             filenameField.value = filename.substring(0,filenameField.value.length-4);
-                        } else if (filenameField.value.length === 0) { // Also, ensure that the field isn't empty either.
+                             // Also, ensure that the field isn't now empty.
+                             if (filenameField.value.length === 0) {
+                                 filenameField.value = "Project #"+(Number(activeCustomProject)+1);
+                             }
+                        } else if (filenameField.value.length === 0) {
                             filenameField.value = "Project #"+(Number(activeCustomProject)+1);
                         }
                         document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
@@ -266,8 +270,9 @@
                         }
                     });
                     
-                    // Since the Playground isn't fully supported on mobile devices, user has to opt to start it manually.
-                    // The Playground may also need to be restarted manually if the user doesn't let it restart it automatically.
+                    // Loading the Playground app may take a few seconds, and it isn't fully supported on all mobile browsers,
+                    // so to avoid any hangups or crashes on page load, the user needs to now explicitly start the app. This
+                    // also applies to restarting the Playground manually if the user doesn't choose automatic restart.
                     function manualStart() {
                         startButton.classList.add("hidden");
                         frames[0].startLoading();
@@ -276,7 +281,7 @@
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via windowResize when the app has loaded.
-                    editor.setSize(null, Math.min(window.innerWidth*0.5*0.6666,960));
+                    editor.setSize(null, Math.min(window.innerWidth*0.5*(2/3),960));
 
                     $.ajax({
                         url: "/demos/demos.json",
@@ -320,10 +325,9 @@
                             }
                         } catch (err) {
                             clearInterval(loader); // Stop the loader from running if there's an error.
-                            // console.log(err);
+                            console.log(err);
                         }
                     }
-                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
@@ -334,7 +338,7 @@
             
         <footer>
             <p style="line-height: 2">
-                <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu "XeduR" Rantanen</a><br>
+                <a href="https://www.erantanen.com/">Solar2D Playground © 2020-2021 Eetu Rantanen</a><br>
                 Solar2D logo is property of the <a href="https://solar2d.com/">Solar2D project</a>.
                 The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
             </p>
