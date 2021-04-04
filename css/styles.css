@@ -18,12 +18,14 @@ main {
 }
 
 footer {
-    height: 90px;
+    max-width: 1920px;
     flex-shrink: 0;
+    width: 100%;
+    display: block;
     background: #080808;
     text-align: center;
     padding: 4px 0px;
-    margin: 0px;
+    margin: 0px auto;
 }
 
 p {
@@ -202,22 +204,22 @@ ul {
 }
 
 button.load {
-    background: #FCBA04;
-    border: 2px solid black;
-    border-radius: 12px;
-    color: #141518;
-    font-family: 'Roboto', sans-serif;
-    font-size: 18px;
-    position: absolute;
-    font-weight: bold;
-    padding: 20px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	background: #ffffff00;
+	border: 1px solid #fcba04;
+	border-radius: 12px;
+	color: #fcba04;
+	font-family: 'Roboto', sans-serif;
+	font-size: 18px;
+	position: absolute;
+	padding: 16px;
+	top: 80%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 button.load:hover {
-    text-decoration: underline;
+	border: 2px solid #fcba04;
+	font-weight: bold;
 }
 
 .disabled {

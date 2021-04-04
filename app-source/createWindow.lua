@@ -105,6 +105,7 @@ local function playSound( event )
     return true
 end
 
+-- Copy the clicked asset's filepath and name to clipboard & show tooltip to user.
 local function copyPathToBrowser( event )
     if event.phase == "began" then
         local tooltip = window.tooltip
@@ -128,7 +129,6 @@ local function addCopyListener( target, id )
     target:addEventListener( "touch", copyPathToBrowser )
     target.id = "\"" .. id .. "\""
 end
-
 
 function window.createTooltip( tooltip )
     window.tooltip = tooltip
