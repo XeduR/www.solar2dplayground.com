@@ -249,7 +249,7 @@ function M.start()
         M.controls.clear.id = "clear"
         
         isConsoleOpen = true
-        printToDisplay( "print() will output text here.\n " )
+        printToDisplay( "print() will output text here and in your browser console (F12).\n " )
         
         maxY = 0
         M.ui.bg:addEventListener( "touch", scroll )
