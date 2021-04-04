@@ -110,10 +110,8 @@ local function copyPathToBrowser( event )
         local tooltip = window.tooltip
         local id = event.target.id
         
-        copyToClipboard.copy( id )
-        if tooltip.inTransition then
-            transition.cancel( tooltip )
-        end
+        if copyToClipboard then copyToClipboard.copy( id ) end
+        if tooltip.inTransition then transition.cancel( tooltip ) end
         tooltip.inTransition = true
         
         tooltip.x, tooltip.y = event.x, event.y - tooltip.bg.height*0.5 - 20
