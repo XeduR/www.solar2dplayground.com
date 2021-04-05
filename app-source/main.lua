@@ -48,8 +48,6 @@ for i, v in pairs(groupList) do
 end
 createWindow.createTooltip( tooltip )
 container:translate( 480, 360 )
-newDisplay._group = groupGlobal
-newDisplay:init()
 printToDisplay.setStyle({
     parent = groupButtons,
     y = 0,
@@ -89,8 +87,8 @@ local _runtimeListeners = {}
 
 function Runtime.addEventListener( ... )
     local t = {...}
-    -- Check that the new Runtime element isn't a table, i.e. a timer or a transition. 
-    if type( t[3] ) ~= "table" then
+    -- Check that the new entry isn't a timer or a transition (i.e. table). 
+    if t[2] == "enterFrame" or type( t[3] ) ~= "table" then
         _runtimeListeners[#_runtimeListeners+1] = { t[2], t[3] }
     end
     _addEventListener( ... )
@@ -123,10 +121,11 @@ local function clearEverything()
     end
     transition.cancelAll()
     timer.cancelAll()
-    -- Start by removing Runtime listeners.
+    -- Start by removing Runtime and display object listeners.
     for i = #_runtimeListeners, 1, -1 do
         Runtime:removeEventListener( _runtimeListeners[i][1], _runtimeListeners[i][2] )
     end
+    newDisplay.removeActiveListeners()
     -- Then remove all display objects and variables.
     local functions = {}
     for index, value in pairs( _G ) do
@@ -320,3 +319,7 @@ logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
 logo.x, logo.y = 480, 320
 
 if environment ~= "simulator" then inputCode.addEventListener( projectListener ) end
+
+-- Initialise the newDisplay module after the Playground UI has been finalised.
+newDisplay._group = groupGlobal
+newDisplay:init()

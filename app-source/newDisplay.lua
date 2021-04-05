@@ -2,6 +2,8 @@ local M = {}
 
 local _type = type
 
+local _activeListeners = {}
+
 local _newGroup = display.newGroup
 local _newContainer = display.newContainer
 local _newSnapshot = display.newSnapshot
@@ -24,6 +26,30 @@ local function _notGroup(t)
     return not (_type(t) == "table" and t[1]._proxy)
 end
 
+local function _insert(parent, t)
+    if _notGroup(parent) then
+        M._group:insert(t)
+    end
+end
+
+-- Store a list of all event listeners for all display objects for removal.
+local function _captureListener(t)
+    local addListener = t.addEventListener
+    t.addEventListener = function(...)
+        local args = {...}
+        _activeListeners[#_activeListeners+1] = { parent = args[1], type = args[2], listener = args[3] }
+        addListener(...)
+    end
+end
+
+function M.removeActiveListeners()
+    for i = 1, #_activeListeners do
+        local t = _activeListeners[i]
+        t.parent:removeEventListener( t.type, t.listener )
+        _activeListeners[i] = nil
+    end
+end
+
 -- Change all default display functions that create display objects or groups to insert
 -- said display objects/groups to a default group to prevent them from overlapping the UI.
 function M.init()
@@ -31,6 +57,7 @@ function M.init()
     function display.newGroup()
         local object = _newGroup()
         M._group:insert(object)
+        _captureListener( object )
         return object
     end
     
@@ -41,6 +68,7 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
+        _captureListener( object )
         return object
     end
         
@@ -50,105 +78,95 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
+        _captureListener( object )
         return object
     end
 
     function display.newContainer(...)
         local t = {...}
         local object = _newContainer(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newSnapshot(...)
         local t = {...}
         local object = _newSnapshot(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newRect(...)
         local t = {...}
         local object = _newRect(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newRoundedRect(...)
         local t = {...}
         local object = _newRoundedRect(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newCircle(...)
         local t = {...}
         local object = _newCircle(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newLine(...)
         local t = {...}
         local object = _newLine(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newPolygon(...)
         local t = {...}
         local object = _newPolygon(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newSprite(...)
         local t = {...}
         local object = _newSprite(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newImage(...)
         local t = {...}
         local object = _newImage(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newImageRect(...)
         local t = {...}
         local object = _newImageRect(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
     function display.newMesh(...)
         local t = {...}
         local object = _newMesh(...)
-        if _notGroup(t[1]) then
-            M._group:insert(object)
-        end
+        _insert( t[1], object )
+        _captureListener( object )
         return object
     end
 
@@ -164,6 +182,7 @@ function M.init()
         end
         local object = _capture(...)
         M._group:insert(object)
+        _captureListener( object )
         return object
     end
     
@@ -172,12 +191,14 @@ function M.init()
         t[2] = false
         local object = _captureBounds(...)
         M._group:insert(object)
+        _captureListener( object )
         return object
     end
     
     function display.captureScreen()
         local object = _captureScreen(false)
         M._group:insert(object)
+        _captureListener( object )
         return object
     end
     
