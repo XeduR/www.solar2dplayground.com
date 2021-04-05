@@ -9,7 +9,7 @@ You can find more of my personal game related projects over at my portfolio site
 <a href="https://ko-fi.com/xedur" rel="Support me">![Foo](https://www.solar2dplayground.com/img/support-me.png)</a>
 
 ## Playground limitations & Solar2D:
-Solar2D's HTML5 builds are still in beta. This means that some mobile browsers aren't supported and certain features aren't useable on Solar2D Playground. This website is also hosted on GitHub Pages, which poses issues with CORS, etc. This means that you are limited to only using the assets that are included in Solar2D Playground.
+Solar2D's HTML5 builds are still in beta. This means that some mobile browsers aren't supported and certain features aren't useable on Solar2D Playground. A few features, such as physics, also behave slightly differently on HTML5 builds (for now at least) compared to other platforms. This website is also hosted on GitHub Pages, which poses issues with CORS, etc. This means that you are limited to only using the assets that are included in Solar2D Playground.
 
 If you wish to develop games and apps without limitations, then [download Solar2D](https://solar2d.com/), a fantastic, free, and open source game engine.
 
