@@ -65,7 +65,7 @@
                     <div class="segment">
                         <div id="line"></div>
                         <h2>Sample Projects:</h2>
-                        <p>Any changes you make to a sample project will be overwritten if you open another project. If you don't want to accidentally lose your progress, then consider using the custom projects below.</p>
+                        <p>Any changes you make to a sample project will be overwritten if you open another project. If you don't want to accidentally lose your progress, then you can copy the sample code to one of the custom projects below or start an entirely new custom project.</p>
                         <div id="sample-buttons"></div>
                         <div id="line"></div>
                         <h2>Custom Projects:</h2>
@@ -86,16 +86,17 @@
                     <div class="segment">
                         <div id="line"></div>
                         <h2>Solar2D Playground:</h2>
-                        <p>Solar2D Playground is an interactive website, developed and maintained by <a href="https://www.erantanen.com">Eetu "XeduR" Rantanen</a>, that allows you to create and run Solar2D projects instantly online.</p>
-                        <p>You can find more of my personal projects over at my code portfolio site: <a href="https://www.xedur.com">www.xedur.com</a>.
-                            I work on all sorts of interesting projects, as well as plugins for Solar2D, in my free time.
-                            If you like what I'm doing and wish to support me, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
+                        <p>Solar2D Playground is an interactive website that allows you to create and run Solar2D projects instantly online.</p>
+                        <p>This website was developed and is maintained by <a href="https://www.erantanen.com">Eetu Rantanen</a>.</p>
+                        <p>You can find more of my personal game related projects over at my portfolio site: <a href="https://www.xedur.com">www.xedur.com</a>.
+                            I work on all sorts of interesting projects in my free time, especially for Solar2D.
+                            If you like what I'm doing, then <a href="https://ko-fi.com/xedur">consider buying me a cup of coffee over at Ko-fi</a>.</p>
                         <button class="kofi"><span><a href="https://ko-fi.com/xedur"><img src="/img/support-me.svg" max-width="306" width="100%"></a></span></button>
                         <div id="line"></div>
                         <h2>Playground limitations & Solar2D:</h2>
-                        <p>For convenience sake, and due to issues like CORS, Solar2D Playground does not support network requests or sockets.
-                            This means that you are limited to using the assets that are included in Solar2D Playground. Solar2D's HTML5 builds are also still in beta.</p>
-                        <p>If you wish to develop games and apps without any such limitations, then <a href="https://solar2d.com/" target="_blank">download Solar2D</a>, a free and open source game engine.</p>
+                        <p>Solar2D's HTML5 builds are still in beta. This means that some mobile browsers aren't supported and certain features aren't useable on Solar2D Playground. This website is also hosted on GitHub Pages, which poses issues with CORS, etc. 
+                            This means that you are limited to only using the assets that are included in Solar2D Playground.</p>
+                        <p>If you wish to develop games and apps without limitations, then <a href="https://solar2d.com/" target="_blank">download Solar2D</a>, a fantastic, free, and open source game engine.</p>
                         <p>Solar2D development is sponsored by its users. Support the project on <a href="https://github.com/sponsors/shchvova">GitHub Sponsors</a> or <a href="https://www.patreon.com/shchvova">Patreon</a>.</p>
                         <div id="line"></div>
                         <p>In true open source spirit, the entire <a href="https://github.com/XeduR/solar2dplayground.com">Solar2D Playground source</a> is available under the MIT License.</p>
@@ -228,7 +229,7 @@
                         for (var i = 0; i < customProjectCount; i++) {
                             var num = sampleCount+i;
                             buttonsCustom += '<button id="project-'+num+'" class="button-code" onclick="loadCode(\''+num+'\',\''+"custom"+'\',\''+i+'\')">Project #'+(i+1)+'</button>';
-                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-- (Your changes to this project are saved automatically for the duration of this session.)\n";
+                            customProject[i] = "-- Project #"+(i+1)+" - Here's an empty project for you to work with.\n-------------------------------------------------------------\n-- You can freely change between projects. All of your changes\n-- are automatically saved until you close the browser window.\n\n";
                             projectFilename[num] = "Project #"+(i+1);
                         }
                         document.getElementById("custom-buttons").innerHTML = buttonsCustom;
@@ -251,7 +252,11 @@
                     function filenameOnChange() { // If the user added ".lua" extension to the project name, then remove it.
                         if (filenameField.value.substring(filenameField.value.length-4).toLowerCase() == ".lua") {
                             filenameField.value = filename.substring(0,filenameField.value.length-4);
-                        } else if (filenameField.value.length === 0) { // Also, ensure that the field isn't empty either.
+                             // Also, ensure that the field isn't now empty.
+                             if (filenameField.value.length === 0) {
+                                 filenameField.value = "Project #"+(Number(activeCustomProject)+1);
+                             }
+                        } else if (filenameField.value.length === 0) {
                             filenameField.value = "Project #"+(Number(activeCustomProject)+1);
                         }
                         document.getElementById( 'project-'+activeProject ).innerHTML = filenameField.value;
@@ -266,8 +271,9 @@
                         }
                     });
                     
-                    // Since the Playground isn't fully supported on mobile devices, user has to opt to start it manually.
-                    // The Playground may also need to be restarted manually if the user doesn't let it restart it automatically.
+                    // Loading the Playground app may take a few seconds, and it isn't fully supported on all mobile browsers,
+                    // so to avoid any hangups or crashes on page load, the user needs to now explicitly start the app. This
+                    // also applies to restarting the Playground manually if the user doesn't choose automatic restart.
                     function manualStart() {
                         startButton.classList.add("hidden");
                         frames[0].startLoading();
@@ -276,7 +282,7 @@
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
                     // The more accurate height will be later assigned via windowResize when the app has loaded.
-                    editor.setSize(null, Math.min(window.innerWidth*0.5*0.6666,960));
+                    editor.setSize(null, Math.min(window.innerWidth*0.5*(2/3),960));
 
                     $.ajax({
                         url: "/demos/demos.json",
@@ -320,7 +326,7 @@
                             }
                         } catch (err) {
                             clearInterval(loader); // Stop the loader from running if there's an error.
-                            // console.log(err);
+                            console.log(err);
                         }
                     }
                     if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
@@ -334,9 +340,7 @@
             
         <footer>
             <p style="line-height: 2">
-                <a href="https://www.erantanen.com/">Solar2D Playground © 2020 Eetu "XeduR" Rantanen</a><br>
-                Solar2D logo is property of the <a href="https://solar2d.com/">Solar2D project</a>.
-                The images used in the app are courtesy of <a href="https://ponywolf.com/">Ponywolf</a>.
+                <a href="https://www.erantanen.com/">Solar2D Playground © 2020-2021 Eetu Rantanen</a>
             </p>
         </footer>
     </div>
