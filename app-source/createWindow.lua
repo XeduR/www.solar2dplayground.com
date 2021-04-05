@@ -141,6 +141,24 @@ function window.createTooltip( tooltip )
     tooltip.alpha = 0
 end
 
+local function compare( a, b )
+    return a < b
+end
+
+-- Create a list of assets and organise them alphabetically.
+local function getAssetList( folder )
+    local list = {}
+    
+    for file in lfs.dir( system.pathForFile( folder, system.ResourceDirectory ) ) do
+        if file ~= "." and file ~= ".." and not file:find("(.txt)") then
+            list[#list+1] = folder .. file
+        end
+    end
+    table.sort( list, compare )
+    
+    return list
+end
+
 -- Create and automatically populate asset windows.
 function window.new( windowName, group, toggleAssets )
     local background = display.newRoundedRect( group.window, 480, 320, 800, 600, 8 )
@@ -163,42 +181,38 @@ function window.new( windowName, group, toggleAssets )
     group.scrollHandle:setFillColor( 0.93, 0.67, 0.07 )
     
     -- Traverse the asset folders create scrollable lists of them to the menu window.
-    local column, row, assetCount, assetFontSize = 0, 1, 0, 18
+    local column, row, assetFontSize = 0, 1, 18
     if windowName == "Images" then
         title.text = "Scroll to view all useable images"
         copyright.text = "These images were created by Ponywolf (ponywolf.com)"
         
-        local folder = "img/"
-        local imageFolder = system.pathForFile( folder, system.ResourceDirectory )
-        for file in lfs.dir( imageFolder ) do
-            if file ~= "." and file ~= ".." and not file:find("(.txt)") then
-                assetCount = assetCount+1
-                local filename = folder .. file
-                local x, y = -240+column*240, -350+row*220
-                
-                local asset = display.newImage( group, filename, x, y )
-                addCopyListener( asset, filename )
-                if asset.width > 180 or asset.height > 120 then
-                    local xScale = 160 / asset.width
-                    local yScale = 120 / asset.height
-                    local scale = math.min( xScale, yScale )
-                    asset.xScale, asset.yScale = scale, scale
-                end
-                asset.anchorY = 1
-                
-                asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
-                addCopyListener( asset.name, filename )
-                asset.name.anchorY = 0
-                
-                asset.size = display.newText( group, "width: ".. asset.width .. ", height: " .. asset.height, x, y+40, defaultFont, assetFontSize )
-                addCopyListener( asset.size, filename )
-                asset.size.anchorY = 0
-                
-                column = column+1
-                if column == 3 then
-                    row = row+1
-                    column = 0
-                end
+        local list = getAssetList( "img/" )
+        for i = 1, #list do
+            local filename = list[i]
+            local x, y = -240+column*240, -350+row*220
+            
+            local asset = display.newImage( group, filename, x, y )
+            addCopyListener( asset, filename )
+            if asset.width > 180 or asset.height > 120 then
+                local xScale = 160 / asset.width
+                local yScale = 120 / asset.height
+                local scale = math.min( xScale, yScale )
+                asset.xScale, asset.yScale = scale, scale
+            end
+            asset.anchorY = 1
+            
+            asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+            addCopyListener( asset.name, filename )
+            asset.name.anchorY = 0
+            
+            asset.size = display.newText( group, "width: ".. asset.width .. ", height: " .. asset.height, x, y+40, defaultFont, assetFontSize )
+            addCopyListener( asset.size, filename )
+            asset.size.anchorY = 0
+            
+            column = column+1
+            if column == 3 then
+                row = row+1
+                column = 0
             end
         end
         -- NB! This may need to be adjusted if more assets are added.
@@ -207,30 +221,26 @@ function window.new( windowName, group, toggleAssets )
     elseif windowName == "SFX" then
         title.text = "Scroll to view all useable sound effects"
         copyright.text = "These audio files were created by Kenney (www.kenney.nl)"
-        
-        local folder = "sfx/"
-        local imageFolder = system.pathForFile( folder, system.ResourceDirectory )
-        for file in lfs.dir( imageFolder ) do
-            if file ~= "." and file ~= ".." and not file:find("(.txt)") then
-                assetCount = assetCount+1
-                local filename = folder .. file
-                local x, y = -170+column*340, -300+row*120
                 
-                local asset = display.newImageRect( group, "ui/buttonAudio.png", 320, 60 )
-                asset.x, asset.y = x, y
-                asset.anchorY = 1
-                asset:addEventListener( "touch", playSound )
-                asset.sfx = audio.loadSound( filename )                
-                
-                asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
-                addCopyListener( asset.name, filename )
-                asset.name.anchorY = 0
-                
-                column = column+1
-                if column == 2 then
-                    row = row+1
-                    column = 0
-                end
+        local list = getAssetList( "sfx/" )
+        for i = 1, #list do
+            local filename = list[i]
+            local x, y = -170+column*340, -300+row*120
+            
+            local asset = display.newImageRect( group, "ui/buttonAudio.png", 320, 60 )
+            asset.x, asset.y = x, y
+            asset.anchorY = 1
+            asset:addEventListener( "touch", playSound )
+            asset.sfx = audio.loadSound( filename )                
+            
+            asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+            addCopyListener( asset.name, filename )
+            asset.name.anchorY = 0
+            
+            column = column+1
+            if column == 2 then
+                row = row+1
+                column = 0
             end
         end
         -- NB! This may need to be adjusted if more assets are added.
@@ -243,27 +253,24 @@ function window.new( windowName, group, toggleAssets )
         local folder = "fnt/"
         local placeholder = "AaBbCcDdEeFfGgHhIiJjKk"
         local placeholderFontSize = 28
-        local imageFolder = system.pathForFile( folder, system.ResourceDirectory )
-        for file in lfs.dir( imageFolder ) do
-            if file ~= "." and file ~= ".." and not file:find("(.txt)") then
-                assetCount = assetCount+1
-                local filename = folder .. file
-                local x, y = 0, -320+row*140
-                
-                local asset = display.newRect( group, x, y, 600, 4 ) 
-                asset:setFillColor(0.93, 0.67, 0.07)
-                asset.anchorY = 1
-                
-                asset.text = display.newText( group, placeholder, x, y-asset.height-12, filename, placeholderFontSize )
-                addCopyListener( asset.text, filename )
-                asset.text.anchorY = 1
-                
-                asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
-                addCopyListener( asset.name, filename )
-                asset.name.anchorY = 0
-                
-                row = row+1
-            end
+        local list = getAssetList( "fnt/" )
+        for i = 1, #list do
+            local filename = list[i]
+            local x, y = 0, -320+row*140
+            
+            local asset = display.newRect( group, x, y, 600, 4 ) 
+            asset:setFillColor(0.93, 0.67, 0.07)
+            asset.anchorY = 1
+            
+            asset.text = display.newText( group, placeholder, x, y-asset.height-12, filename, placeholderFontSize )
+            addCopyListener( asset.text, filename )
+            asset.text.anchorY = 1
+            
+            asset.name = display.newText( group, "\"" .. filename .. "\"", x, y+12, defaultFont, assetFontSize )
+            addCopyListener( asset.name, filename )
+            asset.name.anchorY = 0
+            
+            row = row+1
         end
         -- NB! This may need to be adjusted if more assets are added.
         group.scroll.maxY = row > 3 and 140*(row-4) or 0
