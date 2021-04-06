@@ -87,8 +87,8 @@ local _runtimeListeners = {}
 
 function Runtime.addEventListener( ... )
     local t = {...}
-    -- Check that the new entry isn't a timer or a transition (i.e. table). 
-    if t[2] == "enterFrame" or type( t[3] ) ~= "table" then
+    -- Check that the new entry isn't a timer or a transition (i.e. table).
+    if (t[2] == "enterFrame" and t[3] ~= transition and t[3] ~= timer) or type( t[3] ) ~= "table" then
         _runtimeListeners[#_runtimeListeners+1] = { t[2], t[3] }
     end
     _addEventListener( ... )
