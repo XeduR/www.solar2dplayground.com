@@ -2,8 +2,6 @@ local M = {}
 
 local _type = type
 
-local _activeListeners = {}
-
 local _newGroup = display.newGroup
 local _newContainer = display.newContainer
 local _newSnapshot = display.newSnapshot
@@ -32,24 +30,6 @@ local function _insert(parent, t)
     end
 end
 
--- Store a list of all event listeners for all display objects for removal.
-local function _captureListener(t)
-    local addListener = t.addEventListener
-    t.addEventListener = function(...)
-        local args = {...}
-        _activeListeners[#_activeListeners+1] = { parent = args[1], type = args[2], listener = args[3] }
-        addListener(...)
-    end
-end
-
-function M.removeActiveListeners()
-    for i = 1, #_activeListeners do
-        local t = _activeListeners[i]
-        t.parent:removeEventListener( t.type, t.listener )
-        _activeListeners[i] = nil
-    end
-end
-
 -- Change all default display functions that create display objects or groups to insert
 -- said display objects/groups to a default group to prevent them from overlapping the UI.
 function M.init()
@@ -57,7 +37,6 @@ function M.init()
     function display.newGroup()
         local object = _newGroup()
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
@@ -68,7 +47,6 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
-        _captureListener( object )
         return object
     end
         
@@ -78,7 +56,6 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
-        _captureListener( object )
         return object
     end
 
@@ -86,7 +63,6 @@ function M.init()
         local t = {...}
         local object = _newContainer(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -94,7 +70,6 @@ function M.init()
         local t = {...}
         local object = _newSnapshot(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -102,7 +77,6 @@ function M.init()
         local t = {...}
         local object = _newRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -110,7 +84,6 @@ function M.init()
         local t = {...}
         local object = _newRoundedRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -118,7 +91,6 @@ function M.init()
         local t = {...}
         local object = _newCircle(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -126,7 +98,6 @@ function M.init()
         local t = {...}
         local object = _newLine(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -134,7 +105,6 @@ function M.init()
         local t = {...}
         local object = _newPolygon(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -142,7 +112,6 @@ function M.init()
         local t = {...}
         local object = _newSprite(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -150,7 +119,6 @@ function M.init()
         local t = {...}
         local object = _newImage(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -158,7 +126,6 @@ function M.init()
         local t = {...}
         local object = _newImageRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -166,7 +133,6 @@ function M.init()
         local t = {...}
         local object = _newMesh(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -182,7 +148,6 @@ function M.init()
         end
         local object = _capture(...)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
@@ -191,14 +156,12 @@ function M.init()
         t[2] = false
         local object = _captureBounds(...)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
     function display.captureScreen()
         local object = _captureScreen(false)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
