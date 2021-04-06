@@ -32,4 +32,5 @@ In true open source spirit, the entire [Solar2D Playground source](https://githu
     3. Remove the following code from the function: `JSEvents.registerFocusEventCallback(target,userData,useCapture,callbackfunc,12,"blur");`.
     4. After you've removed it, the remaining function should look like: `function _emscripten_set_blur_callback(target,userData,useCapture,callbackfunc){return 0}`.
     5. Then add the two files back to .bin archive and you are done!
-7. If you have any questions and suggestions concerning Solar2D Playground, feel free to get in touch!
+5. If you need to test new features or fixes, you should push those changes to beta first and test them at [https://www.solar2dplayground.com/beta/](https://www.solar2dplayground.com/beta/) in order to avoid crashing the live site. The beta version does not exist on the Solar2D subdomain.
+6. If you have any questions and suggestions concerning Solar2D Playground, feel free to get in touch!
