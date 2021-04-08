@@ -260,7 +260,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         }, true );
         // Prevent arrow keys from scrolling the website (since the app may use them as controls).
         window.addEventListener("keydown", function(event) {
-            if ([37, 38, 39, 40].indexOf(event.key) > -1 || [37, 38, 39, 40].indexOf(event.keyCode) > -1) {
+            if ([37, 38, 39, 40].indexOf(event.key) > -1) {
                 event.preventDefault();
             }
         }, false );
