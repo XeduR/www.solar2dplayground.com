@@ -127,9 +127,9 @@
                     var customProject = [];
                     var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
                     var hasPlaygroundCrashed = (window.innerWidth > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
+                    var isPlaygroundStarting = false;
                     var relaunchOnMobile = false;
                     var isCustomProject = false;
-                    var hasLoaded = false;
                     var activeCustomProject;
                     var activeProject;
                     var sampleProject;
@@ -140,7 +140,6 @@
                     
                     function restartPlayground(text) {
                         window.removeEventListener("resize", windowResize);
-                        hasLoaded = false;
                         
                         // Clean up the error message by removing references to Lua's loadstring().
                         let firstChange = true;
@@ -275,9 +274,12 @@
                     // so to avoid any hangups or crashes on page load, the user needs to now explicitly start the app. This
                     // also applies to restarting the Playground manually if the user doesn't choose automatic restart.
                     function manualStart() {
-                        startButton.classList.add("hidden");
-                        frames[0].startLoading();
-                        loader = setInterval(checkLoaded, 100);
+                        if (!isPlaygroundStarting) {
+                            isPlaygroundStarting = true;
+                            startButton.classList.add("hidden");
+                            frames[0].startLoading();
+                            loader = setInterval(checkLoaded, 100);
+                        }
                     }
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
@@ -312,7 +314,7 @@
                     // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
                         hasPlaygroundCrashed = false;
-                        hasLoaded = true;
+                        isPlaygroundStarting = false;
                         appModule = document.getElementById("app-frame").contentWindow.Module;
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
@@ -334,6 +336,23 @@
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
                     document.getElementById('import').addEventListener('change', uploadFile)
+                    // Prevent arrow keys from scrolling the website (since the app may use them as controls).
+                    window.addEventListener("keydown", function(event) {
+                        if (event.shiftKey && [82, 83].indexOf(event.key) > -1) {
+                            // event.preventDefault();
+                            // Run the code or restart Playground if it has crashed.
+                            if (event.key == 82) {
+                                if (hasPlaygroundCrashed) {
+                                    manualStart();
+                                } else if (!isPlaygroundStarting) {
+                                    console.log("run code!")
+                                }
+                            // Download the current project file.
+                            } else {
+                                downloadFile();
+                            }
+                        }
+                    }, false );
                 </script>
             </div>
         </main>
