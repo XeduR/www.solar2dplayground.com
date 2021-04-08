@@ -265,6 +265,24 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             }
         }, false );
         
+        window.addEventListener("keyup", function(event) {
+            const gotKey = (["s", "r"].indexOf(event.key) > -1)
+            if (event.shiftKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                event.preventDefault(); // Just in case some browser has a shift+r/s keyboard shortcut.
+                const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
+                // Run the code or restart Playground if it has crashed.
+                if (key == "r") {
+                    if (parent.hasPlaygroundCrashed) {
+                        parent.manualStart();
+                    } else if (!parent.isPlaygroundStarting) {
+                        playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
+                    }
+                // Download the current project file.
+                } else {
+                    parent.downloadFile();
+                }
+            }
+        }, false );
         var playgroundApp = document;
         // If the app isn't run within Iframe, then return to the main page.
         if ( window.location === window.parent.location ) {
