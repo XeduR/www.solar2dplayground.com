@@ -265,6 +265,8 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             }
         }, false );
         
+        var playgroundApp = document;
+        
         window.addEventListener("keyup", function(event) {
             const gotKey = (["s", "r"].indexOf(event.key) > -1)
             if (event.shiftKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
@@ -283,7 +285,7 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
                 }
             }
         }, false );
-        var playgroundApp = document;
+        
         // If the app isn't run within Iframe, then return to the main page.
         if ( window.location === window.parent.location ) {
             var url = "https://" + window.location.hostname;
