@@ -77,6 +77,8 @@
                         <input type="button" id="export" class="button-code" value="Download active project"/>
                         <input type="text" id="projectName" value="solar2dplayground" oninput="filenameOnInput()" onchange="filenameOnChange()" disabled>
                         <div id="line"></div>
+                        <p>Keyboard shortcuts: <b>Shift+R</b>: runs your code or restarts the app if it has crashed. <b>Shift+S</b>: downloads the active project file.</p>
+                        <div id="line"></div>
                     </div>
                 </div>
                 
@@ -180,6 +182,7 @@
                             startButton = document.getElementById("startButton");
                             startButton.classList.remove("hidden");
                         } else {
+                            isPlaygroundStarting = true;
                             loader = setInterval(checkLoaded, 100);
                         }
                     }
@@ -331,7 +334,10 @@
                             console.log(err);
                         }
                     }
-                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
+                    if (!isMobileDevice && !hasPlaygroundCrashed) {
+                        isPlaygroundStarting = true;
+                        loader = setInterval(checkLoaded, 100);
+                    }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
@@ -346,7 +352,7 @@
                                 if (hasPlaygroundCrashed) {
                                     manualStart();
                                 } else if (!isPlaygroundStarting) {
-                                    console.log("run code!")
+                                    frames[0].playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
                                 }
                             // Download the current project file.
                             } else {

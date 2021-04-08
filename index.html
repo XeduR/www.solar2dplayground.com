@@ -77,6 +77,8 @@
                         <input type="button" id="export" class="button-code" value="Download active project"/>
                         <input type="text" id="projectName" value="solar2dplayground" oninput="filenameOnInput()" onchange="filenameOnChange()" disabled>
                         <div id="line"></div>
+                        <p>Keyboard shortcuts: <b>Shift+R</b>: runs your code or restarts the app if it has crashed. <b>Shift+S</b>: downloads the active project file.</p>
+                        <div id="line"></div>
                     </div>
                 </div>
                 
@@ -127,6 +129,7 @@
                     var customProject = [];
                     var widthCrashThreshold = 640; // For some reason, the Playground crashes if it launches with a window width of 640 or less.
                     var hasPlaygroundCrashed = (window.innerWidth > widthCrashThreshold) ? false : true; // Playground won't autoload if "crashed".
+                    var isPlaygroundStarting = false;
                     var relaunchOnMobile = false;
                     var isCustomProject = false;
                     var activeCustomProject;
@@ -179,6 +182,7 @@
                             startButton = document.getElementById("startButton");
                             startButton.classList.remove("hidden");
                         } else {
+                            isPlaygroundStarting = true;
                             loader = setInterval(checkLoaded, 100);
                         }
                     }
@@ -273,9 +277,12 @@
                     // so to avoid any hangups or crashes on page load, the user needs to now explicitly start the app. This
                     // also applies to restarting the Playground manually if the user doesn't choose automatic restart.
                     function manualStart() {
-                        startButton.classList.add("hidden");
-                        frames[0].startLoading();
-                        loader = setInterval(checkLoaded, 100);
+                        if (!isPlaygroundStarting) {
+                            isPlaygroundStarting = true;
+                            startButton.classList.add("hidden");
+                            frames[0].startLoading();
+                            loader = setInterval(checkLoaded, 100);
+                        }
                     }
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
@@ -310,6 +317,7 @@
                     // available, so keep checking until they are, and then finalise the site's functionality.
                     function finalise() {
                         hasPlaygroundCrashed = false;
+                        isPlaygroundStarting = false;
                         appModule = document.getElementById("app-frame").contentWindow.Module;
                         getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
                         editor.setSize(null,getHeight());
@@ -326,11 +334,32 @@
                             console.log(err);
                         }
                     }
-                    if (!isMobileDevice && !hasPlaygroundCrashed) { loader = setInterval(checkLoaded, 100); }
+                    if (!isMobileDevice && !hasPlaygroundCrashed) {
+                        isPlaygroundStarting = true;
+                        loader = setInterval(checkLoaded, 100);
+                    }
                     
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
                     document.getElementById('import').addEventListener('change', uploadFile)
+                    window.addEventListener("keydown", function(event) {
+                        const gotKey = (["s", "r"].indexOf(event.key) > -1)
+                        if (event.shiftKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                            event.preventDefault(); // Just in case some browser has a shift+r/s keyboard shortcut.
+                            const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
+                            // Run the code or restart Playground if it has crashed.
+                            if (key == "r") {
+                                if (hasPlaygroundCrashed) {
+                                    manualStart();
+                                } else if (!isPlaygroundStarting) {
+                                    frames[0].playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
+                                }
+                            // Download the current project file.
+                            } else {
+                                downloadFile();
+                            }
+                        }
+                    }, false );
                 </script>
             </div>
         </main>
