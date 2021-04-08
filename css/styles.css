@@ -333,16 +333,21 @@ body::-webkit-scrollbar-thumb {
 }
 
 button.kofi {
-	position: relative;
-	border-radius: 50px;
+	border-radius: 12px;
     border: none;
 	display: flex;
 	cursor: pointer;
-	height: 60px;
+	height: 70px;
 	width: 100%;
 	max-width: 360px;
 	margin: 16px auto;
 	background: #29abe0;
+}
+
+button.kofi img {
+	width: 100%;
+	max-width: 360px;
+	margin: 0;
 }
 
 button.kofi:hover {

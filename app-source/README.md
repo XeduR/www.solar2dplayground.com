@@ -6,7 +6,7 @@ This website ws developed and is maintained by [Eetu Rantanen](https://www.erant
 
 You can find more of my personal game related projects over at my portfolio site: [www.xedur.com](https://www.xedur.com). I work on all sorts of interesting projects in my free time, especially for Solar2D. If you like what I'm doing, then [consider buying me a cup of coffee over at Ko-fi](https://ko-fi.com/xedur).
 
-<a href="https://ko-fi.com/xedur" rel="Support me">![Foo](https://www.solar2dplayground.com/img/support-me.png)</a>
+<a href="https://ko-fi.com/xedur" rel="Support me">![Foo](https://www.solar2dplayground.com/img/support-me-btn.png)</a>
 
 ## Playground limitations & Solar2D:
 Solar2D's HTML5 builds are still in beta. This means that some mobile browsers aren't supported and certain features aren't useable on Solar2D Playground. A few features, such as physics, also behave slightly differently on HTML5 builds (for now at least) compared to other platforms. This website is also hosted on GitHub Pages, which poses issues with CORS, etc. This means that you are limited to only using the assets that are included in Solar2D Playground.
