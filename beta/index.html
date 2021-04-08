@@ -336,10 +336,9 @@
                     // Add listeners for file import/export functions.
                     document.getElementById("export").addEventListener("click", downloadFile)
                     document.getElementById('import').addEventListener('change', uploadFile)
-                    // Prevent arrow keys from scrolling the website (since the app may use them as controls).
                     window.addEventListener("keydown", function(event) {
-                        if (event.shiftKey && [82, 83].indexOf(event.key) > -1) {
-                            // event.preventDefault();
+                        if (event.ctrlKey && (["s", "r"].indexOf(event.key) > -1 || (event.keyCode !== undefined && [82, 83].indexOf(event.key) > -1))) {
+                            event.preventDefault();
                             // Run the code or restart Playground if it has crashed.
                             if (event.key == 82) {
                                 if (hasPlaygroundCrashed) {
