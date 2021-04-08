@@ -337,10 +337,12 @@
                     document.getElementById("export").addEventListener("click", downloadFile)
                     document.getElementById('import').addEventListener('change', uploadFile)
                     window.addEventListener("keydown", function(event) {
-                        if (event.ctrlKey && (["s", "r"].indexOf(event.key) > -1 || (event.keyCode !== undefined && [82, 83].indexOf(event.key) > -1))) {
+                        const gotKey = (["s", "r"].indexOf(event.key) > -1)
+                        if (event.ctrlKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                            const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
                             event.preventDefault();
                             // Run the code or restart Playground if it has crashed.
-                            if (event.key == 82) {
+                            if (key == "r") {
                                 if (hasPlaygroundCrashed) {
                                     manualStart();
                                 } else if (!isPlaygroundStarting) {
