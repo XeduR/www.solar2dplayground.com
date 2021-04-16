@@ -7,6 +7,8 @@ local copyToClipboard
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     copyToClipboard = require( "copyToClipboard" )
+    -- Scroll direction seems to be reversed with browsers/HTML5 builds.
+    scrollRate = -scrollRate
 end
 
 window.activeWindow = nil
@@ -71,10 +73,6 @@ local function scrollImagesHandle( event )
     return true
 end
 
--- Scroll direction seems to be reversed with browsers/HTML5 builds.
-if environment ~= "simulator" then
-    scrollRate = -scrollRate
-end
 -- Handle asset window scrolling when mouse wheel is scrolled.
 local function mouseScroll( event )
     if window.windowOpen and event.type == "scroll" then
@@ -136,7 +134,7 @@ function window.createTooltip( tooltip )
     tooltip.bg:setFillColor(0.1)
     tooltip.bg.strokeWidth = 2
     tooltip.bg:setStrokeColor( 0.93, 0.67, 0.07 )
-    tooltip.txt = display.newText( tooltip, "", tooltip.bg.x, tooltip.bg.y, defaultFont, 20 )
+    tooltip.txt = display.newText( tooltip, "", tooltip.bg.x, tooltip.bg.y + (environment ~= "simulator" and 6 or 0), defaultFont, 20 )
     tooltip.txt:setFillColor( 1 )
     tooltip.alpha = 0
 end

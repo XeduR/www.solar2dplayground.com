@@ -105,6 +105,8 @@ function Runtime.removeEventListener( ... )
     _removeEventListener( ... )
 end
 
+-- Give users an easy way of seeing which version of Solar2D the Playground is running.
+_G.playgroundVersion = "Solar2D " .. system.getInfo( "build" )
 -- This sandbox project relies on loadstring(), so we'll need to keep a list of all original _G
 -- table entries so that we don't accidentally remove them along with whatever the user creates.
 -- Furthermore, all original global entries are checked and restored after every reset.
