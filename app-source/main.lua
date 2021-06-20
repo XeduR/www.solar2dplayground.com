@@ -127,7 +127,6 @@ local function clearEverything()
     for i = #_runtimeListeners, 1, -1 do
         Runtime:removeEventListener( _runtimeListeners[i][1], _runtimeListeners[i][2] )
     end
-    newDisplay.removeActiveListeners()
     -- Then remove all display objects and variables.
     local functions = {}
     for index, value in pairs( _G ) do

@@ -2,8 +2,6 @@ local M = {}
 
 local _type = type
 
-local _activeListeners = {}
-
 local _newGroup = display.newGroup
 local _newContainer = display.newContainer
 local _newSnapshot = display.newSnapshot
@@ -29,24 +27,6 @@ end
 local function _insert(parent, t)
     if _notGroup(parent) then
         M._group:insert(t)
-    end
-end
-
--- Store a list of all event listeners for all display objects for removal.
-local function _captureListener(t)
-    local addListener = t.addEventListener
-    t.addEventListener = function(...)
-        local args = {...}
-        _activeListeners[#_activeListeners+1] = { parent = args[1], type = args[2], listener = args[3] }
-        addListener(...)
-    end
-end
-
-function M.removeActiveListeners()
-    for i = 1, #_activeListeners do
-        local t = _activeListeners[i]
-        t.parent:removeEventListener( t.type, t.listener )
-        _activeListeners[i] = nil
     end
 end
 
