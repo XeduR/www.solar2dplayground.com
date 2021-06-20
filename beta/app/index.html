@@ -269,8 +269,8 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         
         window.addEventListener("keyup", function(event) {
             const gotKey = (["s", "r"].indexOf(event.key) > -1)
-            if (event.shiftKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
-                event.preventDefault(); // Just in case some browser has a shift+r/s keyboard shortcut.
+            if (event.shiftKey && event.ctrlKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                event.preventDefault(); // Just in case some browser has a shift+ctrl+r/s keyboard shortcut.
                 const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
                 // Run the code or restart Playground if it has crashed.
                 if (key == "r") {

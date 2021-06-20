@@ -77,7 +77,7 @@
                         <input type="button" id="export" class="button-code" value="Download active project"/>
                         <input type="text" id="projectName" value="solar2dplayground" oninput="filenameOnInput()" onchange="filenameOnChange()" disabled>
                         <div id="line"></div>
-                        <p>Keyboard shortcuts: <b>Shift+R</b>: runs your code or restarts the app if it has crashed. <b>Shift+S</b>: downloads the active project file.</p>
+                        <p>Keyboard shortcuts: <b>Ctrl+Shift+R</b>: runs your code or restarts the app if it has crashed. <b>Ctrl+Shift+S</b>: downloads the active project file.</p>
                         <div id="line"></div>
                     </div>
                 </div>
@@ -344,8 +344,8 @@
                     document.getElementById('import').addEventListener('change', uploadFile)
                     window.addEventListener("keyup", function(event) {
                         const gotKey = (["s", "r"].indexOf(event.key) > -1)
-                        if (event.shiftKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
-                            event.preventDefault(); // Just in case some browser has a shift+r/s keyboard shortcut.
+                        if (event.shiftKey && event.ctrlKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                            event.preventDefault(); // Just in case some browser has a shift+ctrl+r/s keyboard shortcut.
                             const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
                             // Run the code or restart Playground if it has crashed.
                             if (key == "r") {
