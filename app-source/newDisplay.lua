@@ -37,7 +37,6 @@ function M.init()
     function display.newGroup()
         local object = _newGroup()
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
@@ -48,7 +47,6 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
-        _captureListener( object )
         return object
     end
         
@@ -58,7 +56,6 @@ function M.init()
         if #t == 1 and not t[1].parent or #t > 1 and _notGroup(t[1]) then
             M._group:insert(object)
         end
-        _captureListener( object )
         return object
     end
 
@@ -66,7 +63,6 @@ function M.init()
         local t = {...}
         local object = _newContainer(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -74,7 +70,6 @@ function M.init()
         local t = {...}
         local object = _newSnapshot(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -82,7 +77,6 @@ function M.init()
         local t = {...}
         local object = _newRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -90,7 +84,6 @@ function M.init()
         local t = {...}
         local object = _newRoundedRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -98,7 +91,6 @@ function M.init()
         local t = {...}
         local object = _newCircle(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -106,7 +98,6 @@ function M.init()
         local t = {...}
         local object = _newLine(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -114,7 +105,6 @@ function M.init()
         local t = {...}
         local object = _newPolygon(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -122,7 +112,6 @@ function M.init()
         local t = {...}
         local object = _newSprite(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -130,7 +119,6 @@ function M.init()
         local t = {...}
         local object = _newImage(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -138,7 +126,6 @@ function M.init()
         local t = {...}
         local object = _newImageRect(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -146,7 +133,6 @@ function M.init()
         local t = {...}
         local object = _newMesh(...)
         _insert( t[1], object )
-        _captureListener( object )
         return object
     end
 
@@ -162,7 +148,6 @@ function M.init()
         end
         local object = _capture(...)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
@@ -171,14 +156,12 @@ function M.init()
         t[2] = false
         local object = _captureBounds(...)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
     function display.captureScreen()
         local object = _captureScreen(false)
         M._group:insert(object)
-        _captureListener( object )
         return object
     end
     
