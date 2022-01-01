@@ -19,5 +19,7 @@ window.versionInfo =
             styles[0], styles[1], styles[2], styles[3], styles[4], styles[5], styles[6], styles[7],
             styles[0], styles[1], styles[2], styles[3], styles[4], styles[5], styles[6]
         );
+		
+        console.log( "print() will output text here and in the in-app console." );
 	}
 };

@@ -3,10 +3,11 @@ audio.setVolume( 0.5 )
 
 require("disabledAPI")
 local lfs = require( "lfs" )
-local inputCode
+local inputCode, versionInfo
 local environment = system.getInfo( "environment" )
 if environment ~= "simulator" then
     inputCode = require( "inputCode" )
+    versionInfo = require( "versionInfo" )
 end
 local newDisplay = require( "newDisplay" )
 local printToDisplay = require( "printToDisplay" )
@@ -48,7 +49,7 @@ for i, v in pairs(groupList) do
 end
 createWindow.createTooltip( tooltip )
 container:translate( 480, 360 )
-printToDisplay.setStyle({
+printToDisplay.start( false, {
     parent = groupButtons,
     y = 0,
     bgColor = {0,0,0,0.8},
@@ -105,8 +106,6 @@ function Runtime.removeEventListener( ... )
     _removeEventListener( ... )
 end
 
--- Give users an easy way of seeing which version of Solar2D the Playground is running.
-_G.playgroundVersion = "Solar2D " .. system.getInfo( "build" )
 -- This sandbox project relies on loadstring(), so we'll need to keep a list of all original _G
 -- table entries so that we don't accidentally remove them along with whatever the user creates.
 -- Furthermore, all original global entries are checked and restored after every reset.
@@ -222,7 +221,7 @@ local function toggleAssets( event )
             for i = 1, #button do
                 button[i].x = buttonX
             end
-            printToDisplay.stop()
+            printToDisplay.hide()
             consoleOpen = false
         end
     end
@@ -237,14 +236,14 @@ local function toggleConsole( event )
             for i = 1, #button do
                 button[i].x = buttonX
             end
-            printToDisplay.stop()
+            printToDisplay.hide()
         else
-            printToDisplay.start()
+            printToDisplay.show()
             for i = 1, #button do
                 button[i].x = button[i].x + 300
             end
-            printToDisplay.controls.scroll.y = button[#button].y + 72
-            printToDisplay.controls.clear.y = printToDisplay.controls.scroll.y + printToDisplay.controls.scroll.height+3
+            printToDisplay.buttonScroll.y = button[#button].y + 72
+            printToDisplay.buttonClear.y = printToDisplay.buttonScroll.y + printToDisplay.buttonScroll.height+3
         end
         consoleOpen = not consoleOpen
     end
@@ -319,7 +318,11 @@ end
 logo = display.newImageRect( groupButtons, "ui/logo.png", 640, 110 )
 logo.x, logo.y = 480, 320
 
-if environment ~= "simulator" then inputCode.addEventListener( projectListener ) end
+if environment ~= "simulator" then
+    inputCode.addEventListener( projectListener )
+    -- Output a Solar2D Playground & Solar2D version info to browser console.
+    versionInfo.output( system.getInfo( "build" ) )
+end
 
 -- Initialise the newDisplay module after the Playground UI has been finalised.
 newDisplay._group = groupGlobal
