@@ -107,6 +107,14 @@ function Runtime.removeEventListener( ... )
     _removeEventListener( ... )
 end
 
+-- Track custom, user-generated shaders/effects.
+local customEffects = {}
+local _defineEffect = graphics.defineEffect
+function graphics.defineEffect( effect )
+    customEffects[#customEffects+1] = effect.category .. "." .. (effect.group or "custom") .. "." .. effect.name 
+    _defineEffect( effect )
+end
+
 -- This sandbox project relies on loadstring(), so we'll need to keep a list of all original _G
 -- table entries so that we don't accidentally remove them along with whatever the user creates.
 -- Furthermore, all original global entries are checked and restored after every reset.
@@ -126,6 +134,11 @@ local function clearEverything()
     -- Start by removing Runtime and display object listeners.
     for i = #_runtimeListeners, 1, -1 do
         Runtime:removeEventListener( _runtimeListeners[i][1], _runtimeListeners[i][2] )
+    end
+    -- Clear any newly created shaders.
+    for i = #customEffects, 1, -1 do
+        graphics.undefineEffect( customEffects[i] )
+        customEffects[i] = nil
     end
     -- Then remove all display objects and variables.
     local functions = {}
