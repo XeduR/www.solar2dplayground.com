@@ -58,6 +58,7 @@ printToDisplay.start( false, {
     buttonSize = 40,
     fontSize = 18,
     font = defaultFont,
+    useHighlighting = true,
     paddingRow = 10,
 })
 

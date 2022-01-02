@@ -121,14 +121,14 @@ local function scroll( event )
             local toY = objectStart + d
             if toY <= 0 and toY >= -maxY then
                 printToDisplay.autoscroll = false
-                printToDisplay.controls.scroll.fill = printToDisplay.controls.scroll.resume
+                printToDisplay.buttonScroll.fill = printToDisplay.buttonScroll.pause
                 output.y = toY
             else
                 objectStart = output.y
                 eventStart = event.y
                 if toY <= 0 then
                     printToDisplay.autoscroll = true
-                    printToDisplay.controls.scroll.fill = printToDisplay.controls.scroll.pause
+                    printToDisplay.buttonScroll.fill = printToDisplay.buttonScroll.resume
                 end
             end
         end
@@ -140,6 +140,7 @@ local function scroll( event )
 end
 
 -- Output a print to the in-app console.
+local firstConsoleOutput = true
 local function outputToConsole( ... )
     for i = 1, arg.n do
         printList[i] = tostring( arg[i] )
@@ -187,7 +188,12 @@ local function outputToConsole( ... )
                 elseif find( log.text, "WARNING:" ) == 1 then
                     log.fill = textColorWarning
                 else
-                    log.fill = textColor
+                    if firstConsoleOutput then
+                        -- Applied only for Solar2D Playground version output.
+                        log.fill = { 1, 105/255, 6/255 }
+                    else
+                        log.fill = textColor
+                    end
                 end
             else
                 log.fill = textColor
@@ -213,6 +219,8 @@ local function outputToConsole( ... )
     for i = 1, arg.n do
         printList[i] = nil
     end
+    
+    firstConsoleOutput = false
 end
 
 -- Button event listener.
@@ -246,7 +254,7 @@ end
 -- print() is set inside resetPrint() so that it can be restored if the user accidentally messes with it.
 function printToDisplay.resetPrint()
     function print( ... )
-        if container then outputToConsole( ... ) end
+        outputToConsole( ... )
         if printToBrowser then printToBrowser.log( ... ) end
         _print( ... )
     end
@@ -254,130 +262,122 @@ end
 
 -- Create the in-app console and start sending print() to the in-app console as well.
 function printToDisplay.start(...)
-    if container then
-        print( "\nSpyric Print to Display: console has already started.\n" )
-    else
-        local t = {...}
-        local startVisible = type(t[1]) ~= "boolean" or t[1]
-        local customStyle = type(t[#t]) == "table" and t[#t] or {}
+    local t = {...}
+    local customStyle = type(t[#t]) == "table" and t[#t] or {}
 
-        -- Update style with user input.
-        for i, v in pairs( customStyle ) do
-            style[i] = v
-        end
-
-        -- Localise style properties.
-        local x = style.x
-        local y = style.y
-        local width = style.width
-        local height = style.height
-        local anchorX = style.anchorX
-        local anchorY = style.anchorY
-        local alpha = style.alpha
-        local buttonSize = style.buttonSize
-        local buttonRounding = style.buttonRounding
-        local buttonPadding = style.buttonPadding
-        local buttonBaseColor = style.buttonBaseColor
-        local buttonIconColor = style.buttonIconColor
-        local paddingTop = style.paddingTop
-        local paddingBottom = style.paddingBottom
-        local paddingLeft = style.paddingLeft
-        local paddingRight = style.paddingRight
-
-        -- Assign initial console properties (localised for speed).
-        scrollThreshold = (height-(paddingTop+paddingBottom))*0.5
-        currentY = paddingTop-height*0.5
-        textWidth = width - (paddingLeft + paddingRight)
-        paddingRow = style.paddingRow
-        textX = paddingLeft-width*0.5
-        textColor = style.textColor
-        textColorError = style.textColorError
-        textColorWarning = style.textColorWarning
-        fontSize = style.fontSize
-        font = style.font
-        useHighlighting = style.useHighlighting
-        activeWhenHidden = style.activeWhenHidden
-        blockTouch = style.blockTouch
-        printToDisplay.autoscroll = true
-        canScroll = false
-
-        -- Create the console's container.
-        container = display.newContainer( width, height )
-        container.anchorX, container.anchorY = anchorX, anchorY
-        container.x, container.y = x, y
-        container.alpha = alpha
-        
-        -- Add a reference for the Playground.
-        printToDisplay.ui = container
-
-        -- Create the console's background.
-        background = display.newRect( container, 0, 0, width, height )
-        background.fill = style.bgColor
-
-        -- Create the console output group.
-        output = display.newGroup()
-        container:insert( output, true )
-
-        -- Calculate the position of the buttons based on the style anchors and button positioning.
-        local buttonY, buttonX = y-anchorY*height+buttonSize*0.5, 0
-        if style.buttonPos == "left" then
-            buttonX = x-anchorX*width-buttonSize*0.5
-        else
-            buttonX = x+(1-anchorX)*width+buttonSize*0.5
-        end
-
-        -- Add all other buttons inside a single group to easily control them.
-        buttonGroup = display.newGroup()
-
-        -- Auto scroll button:
-        ----------------------------
-        buttonScroll = display.newGroup()
-        buttonGroup:insert( buttonScroll )
-
-        local buttonScroll = display.newRect( buttonGroup, 0, 0, buttonSize, buttonSize )
-        buttonScroll.x, buttonScroll.y = buttonX, buttonY
-        buttonScroll.pause = {
-            type = "image",
-            filename = "ui/buttonPause.png"
-        }
-        buttonScroll.resume = {
-            type = "image",
-            filename = "ui/buttonResume.png"
-        }
-        buttonScroll.alpha = alpha
-        buttonScroll:addEventListener( "touch", controls )
-        buttonScroll.id = "autoscroll"
-        buttonScroll.fill = buttonScroll.resume
-        
-        -- Add a reference for the Playground.
-        printToDisplay.buttonScroll = buttonScroll
-
-        -- Clear button:
-        ----------------------------
-        local buttonClear = display.newImageRect( buttonGroup, "ui/buttonClear.png", buttonSize, buttonSize )
-        buttonClear.x, buttonClear.y = buttonX, buttonScroll.y + buttonScroll.height + buttonPadding
-        buttonClear.alpha = alpha
-        buttonClear:addEventListener( "touch", controls )
-        buttonClear.id = "clear"
-        
-        -- Add a reference for the Playground.
-        printToDisplay.buttonClear = buttonClear
-
-        ----------------------------
-
-        local parent = customStyle.parent
-        if parent then
-            parent:insert( container )
-            parent:insert( buttonGroup )
-        end
-
-        outputToConsole( "SOLAR2D PLAYGROUND v" .. system.getInfo( "build" ) )
-        outputToConsole( "print() will output text here and in your browser console (F12).\n " )
-        
-        buttonGroup.isVisible = false
-        container.isVisible = false
-        output.isVisible = false
+    -- Update style with user input.
+    for i, v in pairs( customStyle ) do
+        style[i] = v
     end
+
+    -- Localise style properties.
+    local x = style.x
+    local y = style.y
+    local width = style.width
+    local height = style.height
+    local anchorX = style.anchorX
+    local anchorY = style.anchorY
+    local alpha = style.alpha
+    local buttonSize = style.buttonSize
+    local buttonRounding = style.buttonRounding
+    local buttonPadding = style.buttonPadding
+    local buttonBaseColor = style.buttonBaseColor
+    local buttonIconColor = style.buttonIconColor
+    local paddingTop = style.paddingTop
+    local paddingBottom = style.paddingBottom
+    local paddingLeft = style.paddingLeft
+    local paddingRight = style.paddingRight
+
+    -- Assign initial console properties (localised for speed).
+    scrollThreshold = (height-(paddingTop+paddingBottom))*0.5
+    currentY = paddingTop-height*0.5
+    textWidth = width - (paddingLeft + paddingRight)
+    paddingRow = style.paddingRow
+    textX = paddingLeft-width*0.5
+    textColor = style.textColor
+    textColorError = style.textColorError
+    textColorWarning = style.textColorWarning
+    fontSize = style.fontSize
+    font = style.font
+    useHighlighting = style.useHighlighting
+    activeWhenHidden = style.activeWhenHidden
+    blockTouch = style.blockTouch
+    printToDisplay.autoscroll = true
+    canScroll = false
+
+    -- Create the console's container.
+    container = display.newContainer( width, height )
+    container.anchorX, container.anchorY = anchorX, anchorY
+    container.x, container.y = x, y
+    container.alpha = alpha
+    
+    -- Add a reference for the Playground.
+    printToDisplay.ui = container
+
+    -- Create the console's background.
+    background = display.newRect( container, 0, 0, width, height )
+    background.fill = style.bgColor
+
+    -- Create the console output group.
+    output = display.newGroup()
+    container:insert( output, true )
+
+    -- Calculate the position of the buttons based on the style anchors and button positioning.
+    local buttonY, buttonX = y-anchorY*height+buttonSize*0.5, 0
+    if style.buttonPos == "left" then
+        buttonX = x-anchorX*width-buttonSize*0.5
+    else
+        buttonX = 4+x+(1-anchorX)*width+buttonSize*0.5
+    end
+
+    -- Add all other buttons inside a single group to easily control them.
+    buttonGroup = display.newGroup()
+
+    -- Auto scroll button:
+    ----------------------------
+    local buttonScroll = display.newRect( buttonGroup, 0, 0, buttonSize, buttonSize )
+    buttonScroll.x, buttonScroll.y = buttonX, buttonY
+    buttonScroll.pause = {
+        type = "image",
+        filename = "ui/buttonPause.png"
+    }
+    buttonScroll.resume = {
+        type = "image",
+        filename = "ui/buttonResume.png"
+    }
+    buttonScroll.alpha = alpha
+    buttonScroll:addEventListener( "touch", controls )
+    buttonScroll.id = "autoscroll"
+    buttonScroll.fill = buttonScroll.resume
+    
+    -- Add a reference for the Playground.
+    printToDisplay.buttonScroll = buttonScroll
+
+    -- Clear button:
+    ----------------------------
+    local buttonClear = display.newImageRect( buttonGroup, "ui/buttonClear.png", buttonSize, buttonSize )
+    buttonClear.x, buttonClear.y = buttonX, buttonScroll.y + buttonScroll.height + buttonPadding
+    buttonClear.alpha = alpha
+    buttonClear:addEventListener( "touch", controls )
+    buttonClear.id = "clear"
+    
+    -- Add a reference for the Playground.
+    printToDisplay.buttonClear = buttonClear
+
+    ----------------------------
+
+    local parent = customStyle.parent
+    if parent then
+        parent:insert( container )
+        parent:insert( buttonGroup )
+    end
+
+    outputToConsole( "SOLAR2D PLAYGROUND v" .. system.getInfo( "build" ) )
+    outputToConsole( "print() will output text here and in your browser console (F12).\n " )
+    
+    buttonGroup.isVisible = false
+    container.isVisible = false
+    output.isVisible = false
 end
 
 function printToDisplay.show()
