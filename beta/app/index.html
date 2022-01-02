@@ -1,55 +1,128 @@
-<!doctype html>
-<html lang="en-us">
-   <head>
-        <title>playground</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            body {
-              background-color: black;
-            }
-            body > div {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-            }
-            #loading {
-                flex-direction: column;
-            }
-            progress[value] {
-                appearance: none;
-                background-color: #eee;
-                border-radius: 3px;
-                box-shadow: 0 2px 3px rgba(0,0,0,.5) inset;
-                width: 50%;
-                height: 8px
-            }
-        </style>
-    </head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Solar2D Playground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+          background-color: black;
+        }
+        body > div {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .hidden {
+            display: none;
+        }
+        #loading {
+            flex-direction: column;
+            color: #ffb301;
+        }
+        progress[value] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: none;
+            background-color: #eee;
+            color: #ffb301;
+            box-shadow: 0 4px 4px rgba(0,0,0,.5) inset;
+            width: 100%;
+            max-width: 200px;
+            height: 8px
+        }
+        progress[value]::-webkit-progress-bar {
+            background-color: #eee;
+            box-shadow: 0 4px 4px rgba(0,0,0,.5) inset;
+            width: 100%;
+            max-width: 200px;
+            height: 8px
+        }
+        progress[value]::-webkit-progress-value {
+            background-color: #ffb301;
+            box-shadow: 0 4px 4px rgba(0,0,0,.5) inset;
+            width: 100%;
+            max-width: 200px;
+            height: 8px
+        }
+        progress[value]::-moz-progress-bar {
+            background-color: #ffb301;
+            box-shadow: 0 4px 4px rgba(0,0,0,.5) inset;
+            width: 100%;
+            max-width: 200px;
+            height: 8px
+        }
+        progress[value]::-moz-progress-value {
+            box-shadow: 0 4px 4px rgba(0,0,0,.5) inset;
+            width: 100%;
+            max-width: 200px;
+            height: 8px
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            max-height: 320px;
+            margin: 0 auto;
+        }
+        .logo {
+            position: absolute;
+            width: 100%;
+            max-width: 200px;
+            margin: 0;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+        .bar {
+            position: absolute;
+            width: 100%;
+            max-width: 200px;
+            margin: 0;
+            bottom: 10px;
+            left: 50%;
+            -ms-transform: translate(-50%, -300%);
+            transform: translate(-50%, -300%);
+        }
+        .text {
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            max-width: 440px;
+            margin: 0;
+            bottom: 4px;
+            left: 50%;
+            -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
     <div id="loading">
-      <div></div>
-      <svg style="object-fit: scale-down; max-width: 50%; max-height: 25%;margin: 10px" class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 423 281" width="423" height="281"><style>tspan { white-space:pre }.shp0 { fill: #ffffff } </style><path fill-rule="evenodd" class="shp0" d="M3.16 278.29L3.16 273.77C9.94 275.88 17.41 276.93 25.58 276.93C38.8 276.93 45.41 271.66 45.41 261.12C45.41 253.89 41.01 250.27 32.22 250.27L18.03 250.27C6.01 250.27 0 245 0 234.46C0 221.81 8.66 215.48 25.98 215.48C33.21 215.48 40.22 216.39 46.99 218.19L46.99 222.26C40.22 220.45 33.21 219.55 25.98 219.55C11.82 219.55 4.74 224.52 4.74 234.46C4.74 241.99 9.17 245.75 18.03 245.75L32.22 245.75C44.18 245.75 50.16 250.88 50.16 261.12C50.16 274.38 41.96 281 25.58 281C17.41 281 9.94 280.1 3.16 278.29ZM60.55 248.33C60.55 226.43 71.36 215.48 92.99 215.48C114.29 215.48 124.94 226.43 124.94 248.33C124.94 270.11 114.29 281 92.99 281C71.36 281 60.55 270.11 60.55 248.33ZM92.99 276.93C110.83 276.93 119.74 267.31 119.74 248.06C119.74 229.05 110.83 219.55 92.99 219.55C74.83 219.55 65.74 229.05 65.74 248.06C65.74 267.31 74.83 276.93 92.99 276.93ZM140.98 215.93L140.98 276.48L178.39 276.48L178.39 280.55L136.23 280.55L136.23 215.93L140.98 215.93ZM184.04 280.55L213.28 215.93L218.92 215.93L248.29 280.55L242.65 280.55L233.16 258.86L205.69 258.86L207.09 254.79L231.35 254.79L215.81 219.64L189.1 280.55L184.04 280.55ZM256.2 280.55L256.2 215.93L282.86 215.93C294.55 215.93 300.4 221.1 300.4 231.43C300.4 240.38 294.05 246.72 281.37 250.45L303.2 280.55L296.69 280.55L275.23 250.59L275.23 247.38C288.48 245.43 295.11 240.23 295.11 231.79C295.11 224.02 290.77 220.14 282.1 220.14L260.95 220.14L260.95 280.55L256.2 280.55ZM308.84 280.55L308.84 271.51C330.38 256.54 341.15 244.19 341.15 234.46C341.15 228.74 337.24 225.87 329.4 225.87C322.78 225.87 316.53 227.53 310.65 230.84L310.65 220C316.53 216.99 322.78 215.48 329.4 215.48C345.22 215.48 353.13 221.81 353.13 234.46C353.13 245.6 344.49 257.5 327.23 270.16L353.13 270.16L353.13 280.55L308.84 280.55ZM364.42 280.55L364.42 215.93L392.44 215.93C412.62 215.93 422.71 226.12 422.71 246.48C422.71 269.19 412.62 280.55 392.44 280.55L364.42 280.55ZM390.63 270.16C404.03 270.16 410.74 262.26 410.74 246.48C410.74 233.04 404.03 226.33 390.63 226.33L376.4 226.33L376.4 270.16L390.63 270.16ZM234.64 72.76C231.35 70 230.92 65.06 233.67 61.77L283.33 2.59C286.09 -0.69 291.03 -1.13 294.32 1.63C297.45 4.26 297.86 8.96 295.24 12.09L245.09 71.85C242.47 74.97 237.76 75.39 234.64 72.76ZM218.72 69.5C214.55 71.02 209.9 68.85 208.38 64.68L199.95 41.51C198.43 37.34 200.6 32.69 204.77 31.17C208.47 29.83 212.6 31.75 213.95 35.45L223 60.33C224.35 64.02 222.42 68.15 218.72 69.5ZM237.83 97.77C241.86 96.31 246.36 98.4 247.83 102.44L274.25 175.03C275.72 179.06 273.62 183.56 269.59 185.03C265.75 186.42 261.47 184.43 260.07 180.59L233.39 107.29C232 103.45 233.99 99.17 237.83 97.77ZM224.92 104.63C228.32 107.48 228.77 112.59 225.91 115.99L210.07 134.88C207.22 138.28 202.1 138.72 198.7 135.87C195.69 133.34 195.29 128.8 197.82 125.79L214.84 105.51C217.37 102.49 221.9 102.1 224.92 104.63ZM218.66 89.45C217.92 93.68 213.85 96.53 209.63 95.78L133.55 82.37C129.32 81.62 126.47 77.56 127.22 73.33C127.93 69.31 131.8 66.6 135.82 67.31L212.64 80.85C216.66 81.56 219.38 85.43 218.66 89.45ZM288.42 87.58C287.65 91.95 283.44 94.89 279.07 94.12L254.8 89.84C250.43 89.07 247.48 84.86 248.25 80.49C248.93 76.62 252.66 74 256.54 74.69L282.61 79.28C286.49 79.97 289.1 83.7 288.42 87.58Z" /></svg>
-      <progress value="0" max="100" id="progress"></progress>
-      <div id="status">Downloading...</div>
-      <div></div>
+        <div class="container">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 423 281" width="423" height="281"><style>tspan { white-space:pre }.shp0 { fill: #ffffff } </style><path fill-rule="evenodd" class="shp0" d="M3.16 278.29L3.16 273.77C9.94 275.88 17.41 276.93 25.58 276.93C38.8 276.93 45.41 271.66 45.41 261.12C45.41 253.89 41.01 250.27 32.22 250.27L18.03 250.27C6.01 250.27 0 245 0 234.46C0 221.81 8.66 215.48 25.98 215.48C33.21 215.48 40.22 216.39 46.99 218.19L46.99 222.26C40.22 220.45 33.21 219.55 25.98 219.55C11.82 219.55 4.74 224.52 4.74 234.46C4.74 241.99 9.17 245.75 18.03 245.75L32.22 245.75C44.18 245.75 50.16 250.88 50.16 261.12C50.16 274.38 41.96 281 25.58 281C17.41 281 9.94 280.1 3.16 278.29ZM60.55 248.33C60.55 226.43 71.36 215.48 92.99 215.48C114.29 215.48 124.94 226.43 124.94 248.33C124.94 270.11 114.29 281 92.99 281C71.36 281 60.55 270.11 60.55 248.33ZM92.99 276.93C110.83 276.93 119.74 267.31 119.74 248.06C119.74 229.05 110.83 219.55 92.99 219.55C74.83 219.55 65.74 229.05 65.74 248.06C65.74 267.31 74.83 276.93 92.99 276.93ZM140.98 215.93L140.98 276.48L178.39 276.48L178.39 280.55L136.23 280.55L136.23 215.93L140.98 215.93ZM184.04 280.55L213.28 215.93L218.92 215.93L248.29 280.55L242.65 280.55L233.16 258.86L205.69 258.86L207.09 254.79L231.35 254.79L215.81 219.64L189.1 280.55L184.04 280.55ZM256.2 280.55L256.2 215.93L282.86 215.93C294.55 215.93 300.4 221.1 300.4 231.43C300.4 240.38 294.05 246.72 281.37 250.45L303.2 280.55L296.69 280.55L275.23 250.59L275.23 247.38C288.48 245.43 295.11 240.23 295.11 231.79C295.11 224.02 290.77 220.14 282.1 220.14L260.95 220.14L260.95 280.55L256.2 280.55ZM308.84 280.55L308.84 271.51C330.38 256.54 341.15 244.19 341.15 234.46C341.15 228.74 337.24 225.87 329.4 225.87C322.78 225.87 316.53 227.53 310.65 230.84L310.65 220C316.53 216.99 322.78 215.48 329.4 215.48C345.22 215.48 353.13 221.81 353.13 234.46C353.13 245.6 344.49 257.5 327.23 270.16L353.13 270.16L353.13 280.55L308.84 280.55ZM364.42 280.55L364.42 215.93L392.44 215.93C412.62 215.93 422.71 226.12 422.71 246.48C422.71 269.19 412.62 280.55 392.44 280.55L364.42 280.55ZM390.63 270.16C404.03 270.16 410.74 262.26 410.74 246.48C410.74 233.04 404.03 226.33 390.63 226.33L376.4 226.33L376.4 270.16L390.63 270.16ZM234.64 72.76C231.35 70 230.92 65.06 233.67 61.77L283.33 2.59C286.09 -0.69 291.03 -1.13 294.32 1.63C297.45 4.26 297.86 8.96 295.24 12.09L245.09 71.85C242.47 74.97 237.76 75.39 234.64 72.76ZM218.72 69.5C214.55 71.02 209.9 68.85 208.38 64.68L199.95 41.51C198.43 37.34 200.6 32.69 204.77 31.17C208.47 29.83 212.6 31.75 213.95 35.45L223 60.33C224.35 64.02 222.42 68.15 218.72 69.5ZM237.83 97.77C241.86 96.31 246.36 98.4 247.83 102.44L274.25 175.03C275.72 179.06 273.62 183.56 269.59 185.03C265.75 186.42 261.47 184.43 260.07 180.59L233.39 107.29C232 103.45 233.99 99.17 237.83 97.77ZM224.92 104.63C228.32 107.48 228.77 112.59 225.91 115.99L210.07 134.88C207.22 138.28 202.1 138.72 198.7 135.87C195.69 133.34 195.29 128.8 197.82 125.79L214.84 105.51C217.37 102.49 221.9 102.1 224.92 104.63ZM218.66 89.45C217.92 93.68 213.85 96.53 209.63 95.78L133.55 82.37C129.32 81.62 126.47 77.56 127.22 73.33C127.93 69.31 131.8 66.6 135.82 67.31L212.64 80.85C216.66 81.56 219.38 85.43 218.66 89.45ZM288.42 87.58C287.65 91.95 283.44 94.89 279.07 94.12L254.8 89.84C250.43 89.07 247.48 84.86 248.25 80.49C248.93 76.62 252.66 74 256.54 74.69L282.61 79.28C286.49 79.97 289.1 83.7 288.42 87.58Z" /></svg>
+            <progress class="bar hidden" value="0" max="100" id="progress"></progress>
+            <div class="text hidden" id="status">Loading...</div>
+        </div>
     </div>
 
     <div>
-      <canvas id="canvas" align="center" oncontextmenu="event.preventDefault()"></canvas>
+        <canvas id="canvas" align="center" oncontextmenu="event.preventDefault()"></canvas>
     </div>
-
+    
     <script type='text/javascript'>
-      var statusElement = document.getElementById('status');
-      var progressElement = document.getElementById('progress');
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
 
-      var Module = {
-        Zlib:
+        var Module = {
+            Zlib:
 /** @license zlib.js 2012 - imaya [ https://github.com/imaya/zlib.js ] The MIT License */(function() {'use strict';function l(a){throw a;}var r=void 0,t,aa=this;function v(a,b){var c=a.split("."),d=aa;!(c[0]in d)&&d.execScript&&d.execScript("var "+c[0]);for(var f;c.length&&(f=c.shift());)!c.length&&b!==r?d[f]=b:d=d[f]?d[f]:d[f]={}};var y="undefined"!==typeof Uint8Array&&"undefined"!==typeof Uint16Array&&"undefined"!==typeof Uint32Array&&"undefined"!==typeof DataView;new (y?Uint8Array:Array)(256);var z;for(z=0;256>z;++z)for(var B=z,ba=7,B=B>>>1;B;B>>>=1)--ba;var ca=[0,1996959894,3993919788,2567524794,124634137,1886057615,3915621685,2657392035,249268274,2044508324,3772115230,2547177864,162941995,2125561021,3887607047,2428444049,498536548,1789927666,4089016648,2227061214,450548861,1843258603,4107580753,2211677639,325883990,1684777152,4251122042,2321926636,335633487,1661365465,4195302755,2366115317,997073096,1281953886,3579855332,2724688242,1006888145,1258607687,3524101629,2768942443,901097722,1119000684,3686517206,2898065728,853044451,1172266101,3705015759,
 2882616665,651767980,1373503546,3369554304,3218104598,565507253,1454621731,3485111705,3099436303,671266974,1594198024,3322730930,2970347812,795835527,1483230225,3244367275,3060149565,1994146192,31158534,2563907772,4023717930,1907459465,112637215,2680153253,3904427059,2013776290,251722036,2517215374,3775830040,2137656763,141376813,2439277719,3865271297,1802195444,476864866,2238001368,4066508878,1812370925,453092731,2181625025,4111451223,1706088902,314042704,2344532202,4240017532,1658658271,366619977,
 2362670323,4224994405,1303535960,984961486,2747007092,3569037538,1256170817,1037604311,2765210733,3554079995,1131014506,879679996,2909243462,3663771856,1141124467,855842277,2852801631,3708648649,1342533948,654459306,3188396048,3373015174,1466479909,544179635,3110523913,3462522015,1591671054,702138776,2966460450,3352799412,1504918807,783551873,3082640443,3233442989,3988292384,2596254646,62317068,1957810842,3939845945,2647816111,81470997,1943803523,3814918930,2489596804,225274430,2053790376,3826175755,
@@ -85,109 +158,137 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
         postRun: [],
         print: function() {},
         printErr: function(text) {
-          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-          if (0) { // XXX disabled for safety typeof dump == 'function') {
-            dump(text + '\n'); // fast, straight to the real console
-          } else {
-            console.error(text);
-             if( typeof(text) === "string" && text.toUpperCase().indexOf("ERROR") >= 0) alert(text);
-          }
+            // If the Playground encounters an error, it's possible that due to the nature of HTML5 builds,
+            // it'll keep throwing the same error endlessly, so it is safer to just restart the Playground.
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            if (0) { // XXX disabled for safety typeof dump == 'function') {
+                dump(text + '\n'); // fast, straight to the real console
+            } else {
+                if (typeof(text) === "string" && text.toUpperCase().indexOf("ERROR") >= 0) parent.restartPlayground(text);
+            }
         },
         canvas: (function() {
-          var canvas = document.getElementById('canvas');
+            var canvas = document.getElementById('canvas');
 
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+            // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+            // application robust, you may want to override this behavior before shipping!
+            // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+            canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
-          return canvas;
+            return canvas;
         })(),
-        setStatus: function(text, current, total) {
-          var a = text.split('...');
-          if (a.length > 1) {
-            var caption = a[0];
-            a = a[1].split('/');
-            if (a.length > 1)
-            {
-              var b = a[0].split('(')
-              current = isNaN(b[1]) ? 0 : Number(b[1])
-              var b = a[1].split(')')
-              total = isNaN(b[0]) ? 0 : Number(b[0])
+        setStatus: function(text, current, total ) {
+            if (total > 1 && current > 0) {
+                progressElement.value = current/total*100;
             }
-          }
-          if (total > 0) {
-            if (Module.setStatus.hasOwnProperty('last') == false) Module.setStatus.last = 0;
-            var now = Date.now();
-            if (now - Module.setStatus.last < 1000) return; // if this is a progress update, skip it if too soon
-
-            Module.setStatus.last = now;
-            progressElement.value = current;
-            progressElement.max = total;
-            progressElement.hidden = false;
-          }
-          statusElement.innerHTML = text;
+            statusElement.innerHTML = text;
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.',
-            this.totalDependencies-left, this.totalDependencies);
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'Loading complete.',
+            this.totalDependencies-left, this.totalDependencies );
         }
-      };
-      Module.setStatus('Downloading...', 0, 0);
-      window.onerror = function(event) {
+    };
+    Module.setStatus('Loading...', 0, 0);
+    window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
         Module.setStatus('Exception thrown, see JavaScript console', 0, 0);
         Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
+            if (text) Module.printErr('[post-exception status] ' + text);
         };
-      };
+    };
     </script>
+    
+    <!-- The code below is mainly changes made specifically for the Playground. -->
+    <script src="../js/detectMobile.js"></script>
     <script>
-          Module.setStatus('Downloading application...', 0, 0);
-    			Module.locateFile = function (path) { return Module.hasOwnProperty(path) ? Module[path] : path; }
-			    var xml = new XMLHttpRequest();
-			    xml.onreadystatechange = function () {
-				    switch (this.readyState) {
-					    case XMLHttpRequest.DONE:     // val=4
-						    if (this.status == 200 && this.response) {
-							    Module.setStatus('Unpacking...', 0, 0);
-							    var compressed = new Uint8Array(this.response);
-							    var unzip = new Zlib.Unzip(compressed);
-							    var filenames = unzip.getFilenames();
-							    for (var i = 0; i < filenames.length; i++) {
-								    var uncompressed = unzip.decompress(filenames[i]);
-								    if (filenames[i].indexOf('.js') > 0) {
-									    var blob = new Blob([uncompressed], { type: "application/javascript" });
-									    var url = URL.createObjectURL(blob);
-									    var app = document.createElement('script');
-									    app.setAttribute('src', url);
-									    document.head.appendChild(app);
-								    }
-								    else if (filenames[i].indexOf('.wasm') > 0) {
-									    var blob = new Blob([uncompressed], { type: "application/wasm" });
-									    var url = URL.createObjectURL(blob);
-									    Module[filenames[i]] = url;		// save blob for locateFile
-								    }
-							    }
-						    }
-						    else {
-							    alert('Failed to load .bin file');
-						    }
-						    break;
-				    }
-			    };
-          xml.open('GET', "playground.bin", true);
-          xml.responseType = 'arraybuffer';
-          xml.send(null);
+        var isMobileDevice = isMobile();
+        // Start loading the Playground HTML5 application.
+        function startLoading() {
+            parent.relaunchOnMobile = false;
+            document.getElementById("progress").classList.remove("hidden");
+            document.getElementById("status").classList.remove("hidden");
+            Module.setStatus('Loading Playground...', 0, 0);
+            var xml = new XMLHttpRequest();
+            xml.onreadystatechange = function () {
+                switch (this.readyState) {
+                    case XMLHttpRequest.DONE:     // val=4
+                    if (this.status == 200 && this.response) {
+                        Module.setStatus('Unpacking...', 0, 0);
+                        var compressed = new Uint8Array(this.response);
+                        var unzip = new Zlib.Unzip(compressed);
+                        var filenames = unzip.getFilenames();
+                        for (var i = 0; i < filenames.length; i++) {
+                            var uncompressed = unzip.decompress(filenames[i]);
+                            if (filenames[i].indexOf('.js') > 0) {
+                                var blob = new Blob([uncompressed], { type: "application/javascript" });
+                                var url = URL.createObjectURL(blob);
+                                var app = document.createElement('script');
+                                app.setAttribute('src', url);
+                                document.head.appendChild(app);
+                            }
+                            else if (filenames[i].indexOf('.wasm') > 0) {
+                                var blob = new Blob([uncompressed], { type: "application/wasm" });
+                                var url = URL.createObjectURL(blob);
+                                Module[filenames[i]] = url;		// save blob for locateFile
+                            }
+                        }
+                    }
+                    else {
+                        alert('Failed to load .bin file');
+                    }
+                    break;
+                }
+            };
+            xml.open('GET', "playground.bin", true);
+            xml.responseType = 'arraybuffer';
+            xml.send(null);
+        }
+        
+        window.addEventListener('load',function(){window.focus()});
+        window.addEventListener('mousedown', function () {
+            document.activeElement.blur();
+            window.focus();
+        }, true );
+        // Prevent arrow keys from scrolling the website (since the app may use them as controls).
+        window.addEventListener("keydown", function(event) {
+            if (["ArrowLeft","ArrowUp","ArrowRight","ArrowDown"].indexOf(event.key) > -1 || (event.keyCode !== undefined && [37, 38, 39, 40].indexOf(event.keyCode))) {
+                event.preventDefault();
+            }
+        }, false );
+        
+        var playgroundApp = document;
+        
+        window.addEventListener("keyup", function(event) {
+            const gotKey = (["s", "r"].indexOf(event.key) > -1)
+            if (event.shiftKey && event.ctrlKey && (gotKey || (event.keyCode !== undefined && [82, 83].indexOf(event.keyCode) > -1))) {
+                event.preventDefault(); // Just in case some browser has a shift+ctrl+r/s keyboard shortcut.
+                const key = gotKey ? event.key : (event.keyCode == 82) ? "r" : "s";
+                // Run the code or restart Playground if it has crashed.
+                if (key == "r") {
+                    if (parent.hasPlaygroundCrashed) {
+                        parent.manualStart();
+                    } else if (!parent.isPlaygroundStarting) {
+                        playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
+                    }
+                // Download the current project file.
+                } else {
+                    parent.downloadFile();
+                }
+            }
+        }, false );
+        
+        // If the app isn't run within Iframe, then return to the main page.
+        if ( window.location === window.parent.location ) {
+            var url = "https://" + window.location.hostname;
+            window.location.replace(url);
+        }
+        // Don't start the Playground if it's not running on a server.
+        if (window.location.href.substring(0,7) != "file://") {
+            // If non-mobile device, then start the Playground automatically.
+            if (!isMobileDevice && !parent.hasPlaygroundCrashed || parent.relaunchOnMobile) { startLoading() }
+        }
     </script>
-    <script>
-      window.addEventListener('load',function(){window.focus()});
-      window.addEventListener('mousedown', function () {
-        document.activeElement.blur();
-        window.focus();
-      }, true);
-    </script>
-  </body>
+</body>
 </html>
