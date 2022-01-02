@@ -319,7 +319,7 @@
                         hasPlaygroundCrashed = false;
                         isPlaygroundStarting = false;
                         appModule = document.getElementById("app-frame").contentWindow.Module;
-                        getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
+                        getHeight = appModule._jsContextGetWindowHeight;
                         editor.setSize(null,getHeight());
                         window.addEventListener("resize", windowResize);
                     }
