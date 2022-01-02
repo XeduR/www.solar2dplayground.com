@@ -205,8 +205,7 @@
                     
                     // Update the widthPrompt text when window is resized or if a mobile device's orientation changes.
                     function updateWidth() {
-                        let width = window.innerWidth;
-                        widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + width + 'pixels.</p></div>'
+                        widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + window.innerWidth + 'pixels.</p></div>'
                     }
                     updateWidth(); // Set the initial dimensions for the widthPrompt.
                     
