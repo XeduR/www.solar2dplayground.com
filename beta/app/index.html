@@ -211,10 +211,12 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             document.getElementById("progress").classList.remove("hidden");
             document.getElementById("status").classList.remove("hidden");
             Module.setStatus('Loading Playground...', 0, 0);
+            
+            Module.locateFile = function (path) { return Module.hasOwnProperty(path) ? Module[path] : path; }
             var xml = new XMLHttpRequest();
             xml.onreadystatechange = function () {
-                switch (this.readyState) {
-                    case XMLHttpRequest.DONE:     // val=4
+            switch (this.readyState) {
+                case XMLHttpRequest.DONE:     // val=4
                     if (this.status == 200 && this.response) {
                         Module.setStatus('Unpacking...', 0, 0);
                         var compressed = new Uint8Array(this.response);
@@ -228,15 +230,13 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
                                 var app = document.createElement('script');
                                 app.setAttribute('src', url);
                                 document.head.appendChild(app);
-                            }
-                            else if (filenames[i].indexOf('.wasm') > 0) {
+                            } else if (filenames[i].indexOf('.wasm') > 0) {
                                 var blob = new Blob([uncompressed], { type: "application/wasm" });
                                 var url = URL.createObjectURL(blob);
                                 Module[filenames[i]] = url;		// save blob for locateFile
                             }
                         }
-                    }
-                    else {
+                    } else {
                         alert('Failed to load .bin file');
                     }
                     break;
