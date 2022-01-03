@@ -139,7 +139,7 @@
                     var loader;
                     
                     function restartPlayground(text) {
-                        window.removeEventListener("resize", windowResize);
+                        window.removeEventListener("resize", editorResize);
                         
                         // Clean up the error message by removing references to Lua's loadstring().
                         let firstChange = true;
@@ -200,24 +200,25 @@
                         disclaimer.style.color = "white";
                         disclaimer.classList.remove("hidden");
                     }
-                    
-                    // Update the widthPrompt text when window is resized or if a mobile device's orientation changes.
-                    function updateWidth() {
-                        widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + window.innerWidth + 'pixels.</p></div>'
-                    }
-                    updateWidth(); // Set the initial dimensions for the widthPrompt.
-                    
+                                        
                     // Match the code editor's height with the app's height.
                     function windowResize() {
-                        updateWidth();
-                        editor.setSize(null,document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight);
+                        if (hasPlaygroundCrashed) {
+                            // If Playground has crashed, then calculate an approximate height for the editor.
+                            editor.setSize(null, Math.min(window.innerWidth*0.5*(2/3),960));
+                        } else {
+                            editor.setSize(null,document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight);
+                        }
+                        widthPrompt.innerHTML = '<div class="overlay"><p id="widthPrompt">Solar2D Playground requires a minimum window width of 960 pixels.<br><br>Your current window width is ' + window.innerWidth + 'pixels.</p></div>'
                     }
+                    // Update the widthPrompt text when window is resized or if a mobile device's orientation changes.
+                    window.addEventListener("resize", windowResize);
                     
                     // Check if the user is on a mobile device or not, or if the widthCrashThreshold has been triggered.
                     if (isMobileDevice || hasPlaygroundCrashed) {
                         startButton.classList.remove("hidden");
                         if (isMobileDevice) {
-                            window.addEventListener("orientationchange", updateWidth );
+                            window.addEventListener("orientationchange", windowResize );
                             showDisclaimer("mobile")
                         }
                     }
@@ -277,13 +278,12 @@
                         if (!isPlaygroundStarting) {
                             isPlaygroundStarting = true;
                             startButton.classList.add("hidden");
-                            frames[0].startLoading();
+                            document.getElementById("app-frame").contentWindow.startLoading();
                             loader = setInterval(checkLoaded, 100);
                         }
                     }
                     
                     // Give the editor an initial height based on the height of the window and aspect ratio of the app.
-                    // The more accurate height will be later assigned via windowResize when the app has loaded.
                     editor.setSize(null, Math.min(window.innerWidth*0.5*(2/3),960));
 
                     $.ajax({
@@ -316,7 +316,7 @@
                         hasPlaygroundCrashed = false;
                         isPlaygroundStarting = false;
                         editor.setSize( null, document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight );
-                        window.addEventListener("resize", windowResize);
+                        window.addEventListener("resize", editorResize);
                     }
                     function checkLoaded() {
                         try {
@@ -347,7 +347,7 @@
                                 if (hasPlaygroundCrashed) {
                                     manualStart();
                                 } else if (!isPlaygroundStarting) {
-                                    frames[0].playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
+                                    document.getElementById("app-frame").contentWindow.playgroundApp.dispatchEvent( new CustomEvent( 'inputCode' ) )
                                 }
                             // Download the current project file.
                             } else {
