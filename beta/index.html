@@ -135,7 +135,6 @@
                     var activeCustomProject;
                     var activeProject;
                     var sampleProject;
-                    var getHeight;
                     var filename;
                     var loader;
                     
@@ -211,7 +210,7 @@
                     // Match the code editor's height with the app's height.
                     function windowResize() {
                         updateWidth();
-                        editor.setSize(null,getHeight());
+                        editor.setSize(null,document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight);
                     }
                     
                     // Check if the user is on a mobile device or not, or if the widthCrashThreshold has been triggered.
