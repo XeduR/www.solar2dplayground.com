@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Solar2D Playground</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -210,10 +211,12 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             document.getElementById("progress").classList.remove("hidden");
             document.getElementById("status").classList.remove("hidden");
             Module.setStatus('Loading Playground...', 0, 0);
+            
+            Module.locateFile = function (path) { return Module.hasOwnProperty(path) ? Module[path] : path; }
             var xml = new XMLHttpRequest();
             xml.onreadystatechange = function () {
-                switch (this.readyState) {
-                    case XMLHttpRequest.DONE:     // val=4
+            switch (this.readyState) {
+                case XMLHttpRequest.DONE:     // val=4
                     if (this.status == 200 && this.response) {
                         Module.setStatus('Unpacking...', 0, 0);
                         var compressed = new Uint8Array(this.response);
@@ -221,25 +224,16 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
                         var filenames = unzip.getFilenames();
                         for (var i = 0; i < filenames.length; i++) {
                             var uncompressed = unzip.decompress(filenames[i]);
-                            var blob = new Blob([uncompressed], { type: "application/javascript" });
-                            var url = URL.createObjectURL(blob);
                             if (filenames[i].indexOf('.js') > 0) {
+                                var blob = new Blob([uncompressed], { type: "application/javascript" });
+                                var url = URL.createObjectURL(blob);
                                 var app = document.createElement('script');
                                 app.setAttribute('src', url);
                                 document.head.appendChild(app);
-                            } else if (filenames[i].indexOf('.mem') > 0) {
-                                var memoryInitializer = 'coronaHtml5App.html.mem';
-                                if (typeof Module['locateFile'] === 'function') {
-                                    memoryInitializer = Module['locateFile'](memoryInitializer);
-                                } else if (Module['memoryInitializerPrefixURL']) {
-                                    memoryInitializer = Module['memoryInitializerPrefixURL'] + memoryInitializer;
-                                }
-                                var meminitXHR = Module['memoryInitializerRequest'] = new XMLHttpRequest();
-                                meminitXHR.open('GET', url, true);
-                                meminitXHR.responseType = 'arraybuffer';
-                                meminitXHR.send(null);
-                            } else {
-                                alert('Invalid .bin file');
+                            } else if (filenames[i].indexOf('.wasm') > 0) {
+                                var blob = new Blob([uncompressed], { type: "application/wasm" });
+                                var url = URL.createObjectURL(blob);
+                                Module[filenames[i]] = url;		// save blob for locateFile
                             }
                         }
                     } else {
@@ -291,11 +285,8 @@ k.p.toString(16)+", data=0x"+p.toString(16)))}return m};t.L=function(a){this.j=a
             var url = "https://" + window.location.hostname;
             window.location.replace(url);
         }
-        // Don't start the Playground if it's not running on a server.
-        if (window.location.href.substring(0,7) != "file://") {
-            // If non-mobile device, then start the Playground automatically.
-            if (!isMobileDevice && !parent.hasPlaygroundCrashed || parent.relaunchOnMobile) { startLoading() }
-        }
+        // If non-mobile device, then start the Playground automatically.
+        if (!isMobileDevice && !parent.hasPlaygroundCrashed || parent.relaunchOnMobile) { startLoading() }    
     </script>
 </body>
 </html>

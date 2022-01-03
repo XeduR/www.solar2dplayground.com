@@ -135,7 +135,6 @@
                     var activeCustomProject;
                     var activeProject;
                     var sampleProject;
-                    var appModule;
                     var getHeight;
                     var filename;
                     var loader;
@@ -317,9 +316,7 @@
                     function finalise() {
                         hasPlaygroundCrashed = false;
                         isPlaygroundStarting = false;
-                        appModule = document.getElementById("app-frame").contentWindow.Module;
-                        getHeight = appModule.cwrap( "jsContextGetWindowHeight" );
-                        editor.setSize(null,getHeight());
+                        editor.setSize( null, document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight );
                         window.addEventListener("resize", windowResize);
                     }
                     function checkLoaded() {
