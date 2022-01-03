@@ -138,9 +138,7 @@
                     var filename;
                     var loader;
                     
-                    function restartPlayground(text) {
-                        window.removeEventListener("resize", editorResize);
-                        
+                    function restartPlayground(text) {                        
                         // Clean up the error message by removing references to Lua's loadstring().
                         let firstChange = true;
                         let start, end;
@@ -316,7 +314,6 @@
                         hasPlaygroundCrashed = false;
                         isPlaygroundStarting = false;
                         editor.setSize( null, document.getElementById("app-frame").contentWindow._jsContextGetWindowHeight );
-                        window.addEventListener("resize", editorResize);
                     }
                     function checkLoaded() {
                         try {
